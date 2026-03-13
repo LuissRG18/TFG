@@ -29,8 +29,7 @@ export interface Usuario {
 
 // ─── Favorito guardado en BD ───────────────────────────────────────────────
 export interface Favorito extends Articulo {
-  _id: string;
-  notas?: string;
+  _id: string;  articuloId: string;  // ID externo del artículo (distinto del _id de Mongo)  notas?: string;
   etiquetas?: string[];
   leidoMasTarde?: boolean;
   createdAt: string;

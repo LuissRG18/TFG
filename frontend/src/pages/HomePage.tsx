@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FlaskConical, Search, Bookmark, BarChart2, ArrowRight, Atom, Brain, Dna, Calculator } from 'lucide-react';
+import { FlaskConical, Search, Bookmark, BarChart2, Atom, Brain, Dna, Calculator } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import { AREAS_CIENTIFICAS } from '../types';
 // import heroBg from '../assets/hero-bg.jpg';
@@ -12,6 +12,8 @@ import imgFisica from '../assets/imgFisica-jpg.png';
 import imgBiologia from '../assets/imgBiologia.jpg.png';
 import imgMatematicas from '../assets/imgMatematicas.jpg.png';
 import imgQuimica from '../assets/imgQuimica.jpg.png';
+import imgEconomia from '../assets/imgEconomia.jpg';
+import imgPsicologia from '../assets/imgPsicologia.jpg';
 
 const AREA_IMAGES: Record<string, string> = {
   cs: imgInformatica,
@@ -20,6 +22,8 @@ const AREA_IMAGES: Record<string, string> = {
   biology: imgBiologia,
   mathematics: imgMatematicas,
   chemistry: imgQuimica,
+  economics: imgEconomia,
+  psychology: imgPsicologia,
 };
 
 const TRENDING = [
@@ -118,10 +122,9 @@ const HomePage = () => {
         <div className="section-container">
           <div className="section-header">
             <h2 className="section-title">Explora por área</h2>
-            <Link to="/areas" className="btn-link">Ver todas <ArrowRight size={14} /></Link>
           </div>
           <div className="areas-grid">
-            {AREAS_CIENTIFICAS.slice(0, 6).map((area) => (
+            {AREAS_CIENTIFICAS.map((area) => (
               <Link
                 key={area.id}
                 to={`/areas/${area.id}`}

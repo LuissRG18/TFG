@@ -82,7 +82,7 @@ const FavoritosPage = () => {
         {favoritos.map((fav) => (
           <div key={fav._id} className="favorito-wrapper">
             <ArticuloCard
-              articulo={fav}
+              articulo={{ ...fav, id: fav.articuloId }}
               favoritoId={fav._id}
               onFavoritoChange={cargar}
             />

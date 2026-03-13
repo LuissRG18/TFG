@@ -7,6 +7,8 @@ import imgFisica from '../assets/imgFisica-jpg.png';
 import imgBiologia from '../assets/imgBiologia.jpg.png';
 import imgMatematicas from '../assets/imgMatematicas.jpg.png';
 import imgQuimica from '../assets/imgQuimica.jpg.png';
+import imgEconomia from '../assets/imgEconomia.jpg';
+import imgPsicologia from '../assets/imgPsicologia.jpg';
 
 const AREA_IMAGES: Record<string, string> = {
   cs: imgInformatica,
@@ -15,6 +17,8 @@ const AREA_IMAGES: Record<string, string> = {
   biology: imgBiologia,
   mathematics: imgMatematicas,
   chemistry: imgQuimica,
+  economics: imgEconomia,
+  psychology: imgPsicologia,
 };
 
 const AreasPage = () => (

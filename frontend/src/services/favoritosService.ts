@@ -19,7 +19,9 @@ export const obtenerFavoritos = async (params?: {
 };
 
 export const agregarFavorito = async (payload: AgregarFavoritoPayload) => {
-  const { data } = await api.post('/favoritos', payload);
+  // Backend expects 'articuloId'; Articulo type uses 'id' — map it here
+  const { id, ...rest } = payload;
+  const { data } = await api.post('/favoritos', { articuloId: id, ...rest });
   return data;
 };
 
