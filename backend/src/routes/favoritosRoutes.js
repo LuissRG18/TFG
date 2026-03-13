@@ -8,6 +8,8 @@ const {
   checkFavorito,
   guardarBusqueda,
   obtenerBusquedas,
+  eliminarBusqueda,
+  obtenerColecciones,
 } = require('../controllers/favoritosController');
 const { proteger } = require('../middleware/auth');
 
@@ -20,6 +22,8 @@ router.delete('/:id', eliminarFavorito);
 router.get('/check', checkFavorito);
 router.post('/busqueda', guardarBusqueda);
 router.get('/busquedas', obtenerBusquedas);
+router.delete('/busquedas/:id', eliminarBusqueda);
+router.get('/colecciones', obtenerColecciones);
 
 module.exports = router;
 

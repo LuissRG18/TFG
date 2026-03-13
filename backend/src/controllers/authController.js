@@ -187,5 +187,26 @@ const cambiarPassword = async (req, res) => {
   }
 };
 
-module.exports = { registro, login, obtenerPerfil, actualizarPerfil, cambiarPassword };
+// @desc    Subir avatar del usuario
+// @route   POST /api/auth/avatar
+// @access  Privado
+const subirAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ ok: false, mensaje: 'No se ha enviado ningún archivo.' });
+    }
+    // Build a public URL for the uploaded file
+    const avatarUrl = `/public/avatars/${req.file.filename}`;
+    const usuario = await User.findByIdAndUpdate(
+      req.usuario._id,
+      { avatar: avatarUrl },
+      { new: true }
+    );
+    res.json({ ok: true, mensaje: 'Avatar actualizado.', avatar: avatarUrl, usuario });
+  } catch (error) {
+    res.status(500).json({ ok: false, mensaje: 'Error al subir el avatar.', error: error.message });
+  }
+};
+
+module.exports = { registro, login, obtenerPerfil, actualizarPerfil, cambiarPassword, subirAvatar };
 

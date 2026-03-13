@@ -70,6 +70,11 @@ const articuloFavoritoSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    coleccion: {
+      type: String,
+      trim: true,
+      default: '',
+    },
   },
   { timestamps: true }
 );

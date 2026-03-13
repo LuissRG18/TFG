@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 
 const authRoutes      = require('./routes/authRoutes');
@@ -11,14 +13,49 @@ const usuariosRoutes  = require('./routes/usuariosRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ── Seguridad ────────────────────────────────
+app.use(helmet());
+
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map((s) => s.trim())
+  : ['http://localhost:5173', 'http://localhost:4173'];
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // Allow requests with no origin (e.g. curl, Postman) and whitelisted origins
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: origen no permitido → ${origin}`));
+  },
+  credentials: true,
+}));
+
+// Rate limiting — general
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, mensaje: 'Demasiadas peticiones. Inténtalo más tarde.' },
+});
+
+// Rate limiting — auth routes (stricter)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, mensaje: 'Demasiados intentos de autenticación. Inténtalo en 15 minutos.' },
+});
+
+app.use(generalLimiter);
+
 // ── Middlewares ──────────────────────────────
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static(require('path').join(__dirname, '../public')));
 
 // ── Rutas ────────────────────────────────────
-app.use('/api/auth',       authRoutes);
+app.use('/api/auth',       authLimiter, authRoutes);
 app.use('/api/articulos',  articulosRoutes);
 app.use('/api/favoritos',  favoritosRoutes);
 app.use('/api/usuarios',   usuariosRoutes);

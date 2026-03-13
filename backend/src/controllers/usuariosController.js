@@ -66,5 +66,48 @@ const eliminarUsuario = async (req, res) => {
   }
 };
 
-module.exports = { obtenerUsuarios, obtenerUsuarioPorId, cambiarEstadoUsuario, eliminarUsuario };
+// @desc    Estadísticas globales de la plataforma (admin)
+// @route   GET /api/usuarios/estadisticas
+// @access  Privado/Admin
+const estadisticasGlobales = async (req, res) => {
+  try {
+    const Busqueda = require('../models/Busqueda');
+    const totalUsuarios = await User.countDocuments();
+    const totalActivos  = await User.countDocuments({ activo: true });
+    const totalFavoritos = await ArticuloFavorito.countDocuments();
+    const totalBusquedas = await Busqueda.countDocuments();
+
+    const usuariosPorMes = await User.aggregate([
+      { $group: { _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } }, total: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+      { $limit: 12 },
+    ]);
+
+    const favoritosPorFuente = await ArticuloFavorito.aggregate([
+      { $group: { _id: '$fuente', total: { $sum: 1 } } },
+    ]);
+
+    const busquedasPorFuente = await Busqueda.aggregate([
+      { $group: { _id: '$fuente', total: { $sum: 1 } } },
+    ]);
+
+    res.json({
+      ok: true,
+      estadisticas: {
+        totalUsuarios,
+        totalActivos,
+        totalFavoritos,
+        totalBusquedas,
+        usuariosPorMes,
+        favoritosPorFuente,
+        busquedasPorFuente,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ ok: false, mensaje: 'Error al obtener estadísticas globales.', error: error.message });
+  }
+};
+
+module.exports = { obtenerUsuarios, obtenerUsuarioPorId, cambiarEstadoUsuario, eliminarUsuario, estadisticasGlobales };
+
 

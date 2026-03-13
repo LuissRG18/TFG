@@ -42,7 +42,7 @@ const obtenerFavoritos = async (req, res) => {
 const agregarFavorito = async (req, res) => {
   try {
     const { articuloId, fuente, titulo, autores, anio, abstract, abstractDivulgativo,
-            area, palabrasClave, urlOriginal, urlPdf, revista, notas, etiquetas } = req.body;
+            area, palabrasClave, urlOriginal, urlPdf, revista, notas, etiquetas, coleccion } = req.body;
 
     const yaExiste = await ArticuloFavorito.findOne({
       usuario: req.usuario._id,
@@ -60,7 +60,7 @@ const agregarFavorito = async (req, res) => {
     const favorito = await ArticuloFavorito.create({
       usuario: req.usuario._id,
       articuloId, fuente, titulo, autores, anio, abstract, abstractDivulgativo,
-      area, palabrasClave, urlOriginal, urlPdf, revista, notas, etiquetas,
+      area, palabrasClave, urlOriginal, urlPdf, revista, notas, etiquetas, coleccion: coleccion || '',
     });
 
     res.status(201).json({
@@ -94,11 +94,12 @@ const actualizarFavorito = async (req, res) => {
       });
     }
 
-    const { notas, etiquetas, leidoMasTarde, abstractDivulgativo } = req.body;
+    const { notas, etiquetas, leidoMasTarde, abstractDivulgativo, coleccion } = req.body;
     if (notas !== undefined) favorito.notas = notas;
     if (etiquetas !== undefined) favorito.etiquetas = etiquetas;
     if (leidoMasTarde !== undefined) favorito.leidoMasTarde = leidoMasTarde;
     if (abstractDivulgativo !== undefined) favorito.abstractDivulgativo = abstractDivulgativo;
+    if (coleccion !== undefined) favorito.coleccion = coleccion;
 
     await favorito.save();
 
@@ -194,12 +195,47 @@ const guardarBusqueda = async (req, res) => {
 // @access  Privado
 const obtenerBusquedas = async (req, res) => {
   try {
+    const { pagina = 1, limite = 30 } = req.query;
+    const total = await Busqueda.countDocuments({ usuario: req.usuario._id });
     const busquedas = await Busqueda.find({ usuario: req.usuario._id })
       .sort({ createdAt: -1 })
-      .limit(20);
-    res.json({ ok: true, busquedas });
+      .skip((pagina - 1) * Number(limite))
+      .limit(Number(limite));
+    res.json({ ok: true, total, totalPaginas: Math.ceil(total / limite), busquedas });
   } catch (error) {
     res.status(500).json({ ok: false, mensaje: 'Error al obtener el historial.', error: error.message });
+  }
+};
+
+// @desc    Eliminar una búsqueda del historial
+// @route   DELETE /api/favoritos/busquedas/:id
+// @access  Privado
+const eliminarBusqueda = async (req, res) => {
+  try {
+    const busqueda = await Busqueda.findOneAndDelete({
+      _id: req.params.id,
+      usuario: req.usuario._id,
+    });
+    if (!busqueda) return res.status(404).json({ ok: false, mensaje: 'Búsqueda no encontrada.' });
+    res.json({ ok: true, mensaje: 'Búsqueda eliminada.' });
+  } catch (error) {
+    res.status(500).json({ ok: false, mensaje: 'Error al eliminar la búsqueda.', error: error.message });
+  }
+};
+
+// @desc    Obtener colecciones del usuario (lista de nombres únicos)
+// @route   GET /api/favoritos/colecciones
+// @access  Privado
+const obtenerColecciones = async (req, res) => {
+  try {
+    const resultado = await ArticuloFavorito.aggregate([
+      { $match: { usuario: req.usuario._id, coleccion: { $ne: '' } } },
+      { $group: { _id: '$coleccion', total: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]);
+    res.json({ ok: true, colecciones: resultado });
+  } catch (error) {
+    res.status(500).json({ ok: false, mensaje: 'Error al obtener colecciones.', error: error.message });
   }
 };
 
@@ -211,5 +247,7 @@ module.exports = {
   checkFavorito,
   guardarBusqueda,
   obtenerBusquedas,
+  eliminarBusqueda,
+  obtenerColecciones,
 };
 

@@ -44,8 +44,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('scilens_usuario');
   };
 
+  const actualizarUsuario = (parcial: Partial<Usuario>) => {
+    setUsuario((prev) => {
+      if (!prev) return prev;
+      const nuevo = { ...prev, ...parcial };
+      localStorage.setItem('scilens_usuario', JSON.stringify(nuevo));
+      return nuevo;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ usuario, token, login, registro, logout, loading }}>
+    <AuthContext.Provider value={{ usuario, token, login, registro, logout, loading, actualizarUsuario }}>
       {children}
     </AuthContext.Provider>
   );
