@@ -37,7 +37,7 @@ export const actualizarFavorito = async (
 };
 
 export const checkFavorito = async (articuloId: string) => {
-  const { data } = await api.get(`/favoritos/check/${articuloId}`);
+  const { data } = await api.get('/favoritos/check', { params: { id: articuloId } });
   return data as { ok: boolean; esFavorito: boolean; favorito?: Favorito };
 };
 

@@ -13,13 +13,11 @@ interface Props {
 
 const BADGE_COLORS: Record<string, string> = {
   arxiv: 'badge-arxiv',
-  semanticscholar: 'badge-semantic',
   crossref: 'badge-crossref',
 };
 
 const FUENTE_LABEL: Record<string, string> = {
   arxiv: 'arXiv',
-  semanticscholar: 'Semantic Scholar',
   crossref: 'CrossRef',
 };
 

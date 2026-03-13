@@ -124,7 +124,7 @@ const HomePage = () => {
             {AREAS_CIENTIFICAS.slice(0, 6).map((area) => (
               <Link
                 key={area.id}
-                to={`/buscar?q=${encodeURIComponent(area.label)}&area=${area.id}`}
+                to={`/areas/${area.id}`}
                 className="area-card"
               >
                 <div className="area-card-cover">

@@ -7,6 +7,7 @@ import PrivateRoute from './components/PrivateRoute';
 import HomePage from './pages/HomePage';
 import BuscarPage from './pages/BuscarPage';
 import AreasPage from './pages/AreasPage';
+import AreaDetallePage from './pages/AreaDetallePage';
 import ArticuloPage from './pages/ArticuloPage';
 import FavoritosPage from './pages/FavoritosPage';
 import EstadisticasPage from './pages/EstadisticasPage';
@@ -25,6 +26,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/buscar" element={<BuscarPage />} />
               <Route path="/areas" element={<AreasPage />} />
+              <Route path="/areas/:areaId" element={<AreaDetallePage />} />
               <Route path="/articulo/:fuente/:id" element={<ArticuloPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/registro" element={<RegistroPage />} />

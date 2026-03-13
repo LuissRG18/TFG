@@ -5,13 +5,12 @@ import ArticuloCard from '../components/ArticuloCard';
 import SearchBar from '../components/SearchBar';
 import type { Articulo } from '../types';
 import { AREAS_CIENTIFICAS } from '../types';
-import { buscarArxiv, buscarSemanticScholar, buscarCrossRef } from '../services/articulosService';
+import { buscarArxiv, buscarCrossRef } from '../services/articulosService';
 
-type Fuente = 'arxiv' | 'semanticscholar' | 'crossref';
+type Fuente = 'arxiv' | 'crossref';
 
 const FUENTES: { id: Fuente; label: string }[] = [
   { id: 'arxiv', label: 'arXiv' },
-  { id: 'semanticscholar', label: 'Semantic Scholar' },
   { id: 'crossref', label: 'CrossRef' },
 ];
 
@@ -34,16 +33,16 @@ const BuscarPage = () => {
     setLoading(true);
     setError('');
     try {
-      const params = { q: query, area: area || undefined, pagina, limite: 10 };
+      const limite = 10;
+      const params = { q: query, area: area || undefined, pagina, limite };
       let result;
       if (fuente === 'arxiv') result = await buscarArxiv(params);
-      else if (fuente === 'semanticscholar') result = await buscarSemanticScholar(params);
       else result = await buscarCrossRef(params);
 
       setArticulos(result.articulos);
       setTotal(result.total);
-    } catch {
-      setError('No se pudo conectar con la API. Inténtalo de nuevo.');
+    } catch (err: any) {
+      setError(err.message || 'No se pudo conectar con la API. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }

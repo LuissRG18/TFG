@@ -30,7 +30,7 @@
 /* ── Reset ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { font-size: 16px; scroll-behavior: smooth; }
+html { font-size: 16px; scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -38,6 +38,7 @@ body {
   color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -56,7 +57,9 @@ img { max-width: 100%; }
 .page-container {
   max-width: 900px;
   margin: 0 auto;
-  padding: calc(64px + 2rem) 1.25rem 4rem;
+  padding: calc(64px + 2rem) 1rem 4rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ── Utilities ───────────────────────────────────────── */
@@ -136,6 +139,7 @@ img { max-width: 100%; }
   color: #fff;
   letter-spacing: -0.01em;
 }
+.navbar--scrolled .navbar-logo { color: var(--text); }
 .navbar-links {
   display: flex;
   align-items: center;
@@ -607,7 +611,7 @@ img { max-width: 100%; }
 }
 .articulos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 1.25rem;
   align-items: start;
 }
@@ -747,6 +751,8 @@ img { max-width: 100%; }
   border-radius: 16px;
   padding: 2rem;
   box-shadow: var(--shadow);
+  overflow: hidden;
+  word-break: break-word;
 }
 .articulo-detail-title {
   font-size: 1.45rem;
@@ -806,7 +812,7 @@ img { max-width: 100%; }
   min-height: 82vh;
   display: flex;
   align-items: center;
-  padding: 5rem 1.25rem 5rem;
+  padding: 5rem 1rem 5rem;
   overflow: hidden;
   background-size: cover;
   background-position: center 35%;
@@ -923,7 +929,7 @@ img { max-width: 100%; }
 }
 
 /* ── Sections ────────────────────────────────────────── */
-.section { padding: 4rem 1.25rem; }
+.section { padding: 4rem 1rem; }
 .section-container { max-width: 1100px; margin: 0 auto; }
 .section-title {
   font-size: 1.6rem;
@@ -943,7 +949,7 @@ img { max-width: 100%; }
 .features-section { background: var(--bg-mid); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
   gap: 1.5rem;
 }
 .feature-card {
@@ -973,8 +979,8 @@ img { max-width: 100%; }
 .areas-section { background: var(--bg); }
 .areas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-  gap: 1.40rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 1.25rem;
 }
 .area-card {
   background: #fff;
@@ -1024,27 +1030,62 @@ img { max-width: 100%; }
 .cta-desc { color: var(--text-muted); font-size: 0.95rem; }
 
 /* ── Areas page ──────────────────────────────────────── */
-.areas-grid-full {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.25rem;
+.area-card-cover-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0ea5e9 100%);
+  font-size: 3rem;
 }
-.area-card-full {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 2rem 1.5rem;
+
+/* ── Area Detail Page ──────────────────────────────── */
+.area-detail-hero {
+  position: relative;
+  min-height: 280px;
+  background-size: cover;
+  background-position: center;
+  background-color: #0f172a;
+  display: flex;
+  align-items: flex-end;
+  padding-top: 64px;
+}
+.area-detail-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.28) 60%, rgba(0,0,0,0.12) 100%);
+}
+.area-detail-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  text-align: center;
-  transition: all 0.2s;
+  gap: 0.4rem;
 }
-.area-card-full:hover { box-shadow: var(--shadow-lg); border-color: rgba(14,165,233,0.4); transform: translateY(-3px); }
-.area-emoji-lg { font-size: 2.5rem; }
-.area-label-lg { font-size: 1rem; font-weight: 600; color: var(--text); }
-.area-link-text { font-size: 0.82rem; color: var(--indigo); font-weight: 500; }
+.area-back-link {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.72);
+  font-weight: 500;
+  width: fit-content;
+  transition: color 0.2s;
+}
+.area-back-link:hover { color: #fff; }
+.area-detail-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.area-detail-subtitle {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.78);
+}
 
 /* ── Auth pages ──────────────────────────────────────── */
 .auth-page {
@@ -1131,7 +1172,7 @@ img { max-width: 100%; }
 /* ── Estadísticas page ───────────────────────────────── */
 .stats-kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -1149,7 +1190,7 @@ img { max-width: 100%; }
 .kpi-label { font-size: 0.82rem; color: var(--text-muted); }
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 1.5rem;
 }
 .chart-card {
@@ -1166,7 +1207,7 @@ img { max-width: 100%; }
 .perfil-page { max-width: 800px; }
 .perfil-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: 1.5rem;
 }
 .perfil-card {
@@ -1177,10 +1218,77 @@ img { max-width: 100%; }
   box-shadow: var(--shadow);
 }
 .perfil-section-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  margin-bottom: 1.25rem;
-  color: var(--text);
   display: flex;
   align-items: center;
+}
+
+/* ════════════════════════════════════════════
+   RESPONSIVE — mobile-first fixes
+   ════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  /* Base */
+  .page-container { padding: calc(64px + 1.25rem) 0.85rem 3rem; }
+  .section { padding: 2.5rem 0.85rem; }
+
+  /* Hero */
+  .hero { padding: 4rem 0.85rem 3rem; min-height: 70vh; }
+  .hero-title { font-size: clamp(1.9rem, 8vw, 2.6rem); }
+  .hero-subtitle { font-size: 0.95rem; }
+  .hero-content { gap: 1rem; }
+  .trending-tag { font-size: 0.74rem; padding: 0.18rem 0.5rem; }
+
+  /* Cards */
+  .area-card-cover { height: 180px; }
+  .articulo-detail-card { padding: 1.15rem; border-radius: 12px; }
+  .articulo-detail-title { font-size: 1.2rem; }
+  .auth-card { padding: 1.5rem 1.1rem; border-radius: 14px; }
+  .perfil-card { padding: 1.25rem; }
+  .kpi-card { padding: 1rem; }
+
+  /* Grids */
+  .areas-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .features-grid { grid-template-columns: 1fr; }
+  .stats-kpis { grid-template-columns: 1fr 1fr; }
+
+  /* Section headers */
+  .section-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .page-title { font-size: 1.45rem; }
+
+  /* Filters */
+  .buscar-filters-bar { gap: 0.4rem; }
+  .filter-btn { font-size: 0.78rem; padding: 0.3rem 0.6rem; }
+
+  /* Pagination */
+  .pagination { gap: 0.5rem; }
+  .btn-outline-sm, .btn-primary-sm { padding: 0.35rem 0.65rem; font-size: 0.8rem; }
+
+  /* Navbar mobile menu */
+  .mobile-menu { padding: 0.5rem 0.85rem 0.85rem; }
+
+  /* Area detail hero */
+  .area-detail-hero { min-height: 180px; }
+  .area-detail-title { font-size: clamp(1.4rem, 6vw, 2rem); }
+}
+
+@media (max-width: 768px) {
+  .hero-icons { display: none; }
+  .hero-content { padding-left: 0; max-width: 100%; }
+
+  /* Single-column articulo grid already handled, but ensure no overflow */
+  .articulos-grid { grid-template-columns: 1fr; }
+
+  /* Area cards: 2 columns on tablet-small */
+  .areas-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
+
+  /* Artículo detail card */
+  .articulo-detail-card { padding: 1.5rem; }
+
+  /* Stats */
+  .stats-kpis { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+  .chart-wide { grid-column: auto; }
+
+  /* CTA */
+  .cta-btns { flex-direction: column; align-items: center; }
 }

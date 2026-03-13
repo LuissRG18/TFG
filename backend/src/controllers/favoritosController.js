@@ -151,10 +151,11 @@ const eliminarFavorito = async (req, res) => {
 // @access  Privado
 const checkFavorito = async (req, res) => {
   try {
-    const { fuente } = req.query;
+    const { id, fuente } = req.query;
+    if (!id) return res.status(400).json({ ok: false, mensaje: 'id es obligatorio.' });
     const favorito = await ArticuloFavorito.findOne({
       usuario: req.usuario._id,
-      articuloId: req.params.articuloId,
+      articuloId: id,
       ...(fuente && { fuente }),
     });
 

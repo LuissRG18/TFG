@@ -72,12 +72,21 @@ const buscarArxiv = async (req, res) => {
 // SEMANTIC SCHOLAR
 // ─────────────────────────────────────────────
 
+// Simple throttle: free tier allows ~1 req/s; we enforce 1100 ms minimum gap
+let _lastSemanticCall = 0;
+const semanticThrottle = () => {
+  const now = Date.now();
+  const wait = Math.max(0, 1100 - (now - _lastSemanticCall));
+  _lastSemanticCall = now + wait;
+  return wait > 0 ? new Promise((r) => setTimeout(r, wait)) : Promise.resolve();
+};
+
 // @desc    Buscar artículos en Semantic Scholar
-// @route   GET /api/articulos/semantic/buscar?q=...&pagina=1&limite=10
+// @route   GET /api/articulos/semantic/buscar?q=...&pagina=1&limite=5
 // @access  Público
 const buscarSemanticScholar = async (req, res) => {
   try {
-    const { q, area, pagina = 1, limite = 10 } = req.query;
+    const { q, area, pagina = 1, limite = 5 } = req.query;
 
     if (!q) {
       return res.status(400).json({ ok: false, mensaje: 'El término de búsqueda es obligatorio.' });
@@ -86,6 +95,18 @@ const buscarSemanticScholar = async (req, res) => {
     const offset = (pagina - 1) * limite;
     const campos = 'paperId,title,authors,year,abstract,externalIds,fieldsOfStudy,publicationVenue,openAccessPdf,citationCount';
 
+    // Semantic Scholar requires exact field names (capitalized)
+    const AREA_MAP = {
+      cs: 'Computer Science',
+      medicine: 'Medicine',
+      physics: 'Physics',
+      biology: 'Biology',
+      mathematics: 'Mathematics',
+      chemistry: 'Chemistry',
+      economics: 'Economics',
+      psychology: 'Psychology',
+    };
+
     const params = new URLSearchParams({
       query: q,
       fields: campos,
@@ -93,7 +114,10 @@ const buscarSemanticScholar = async (req, res) => {
       limit: limite.toString(),
     });
 
-    if (area) params.append('fieldsOfStudy', area);
+    const fieldOfStudy = area ? (AREA_MAP[area] || null) : null;
+    if (fieldOfStudy) params.append('fieldsOfStudy', fieldOfStudy);
+
+    await semanticThrottle();
 
     const url = `https://api.semanticscholar.org/graph/v1/paper/search?${params}`;
     const respuesta = await axios.get(url, { timeout: 10000 });
@@ -115,6 +139,10 @@ const buscarSemanticScholar = async (req, res) => {
 
     res.json({ ok: true, total: datos.total || articulos.length, articulos });
   } catch (error) {
+    const status = error.response?.status;
+    if (status === 429) {
+      return res.status(429).json({ ok: false, mensaje: 'Límite de peticiones alcanzado en Semantic Scholar. Espera unos segundos e inténtalo de nuevo.' });
+    }
     res.status(500).json({ ok: false, mensaje: 'Error al buscar en Semantic Scholar.', error: error.message });
   }
 };
@@ -262,8 +290,6 @@ const obtenerEstadisticas = async (req, res) => {
 
 module.exports = {
   buscarArxiv,
-  buscarSemanticScholar,
-  obtenerDetalleSemanticScholar,
   buscarCrossRef,
   obtenerEstadisticas,
 };

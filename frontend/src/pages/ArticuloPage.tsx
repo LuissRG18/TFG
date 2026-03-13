@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   ExternalLink, FileText, Bookmark, BookmarkCheck,
   ArrowLeft, Loader2, AlertCircle, Sparkles, Users, Calendar, BookOpen, Quote
 } from 'lucide-react';
 import type { Articulo } from '../types';
-import { obtenerDetalleSemanticScholar } from '../services/articulosService';
-import { buscarArxiv } from '../services/articulosService';
+import { buscarArxiv, buscarCrossRef } from '../services/articulosService';
 import { agregarFavorito, eliminarFavorito, checkFavorito } from '../services/favoritosService';
 import { useAuth } from '../context/AuthContext';
 
 const ArticuloPage = () => {
   const { fuente, id } = useParams<{ fuente: string; id: string }>();
+  const navigate = useNavigate();
   const { usuario } = useAuth();
   const [articulo, setArticulo] = useState<Articulo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,12 +27,11 @@ const ArticuloPage = () => {
       setLoading(true);
       setError('');
       try {
-        if (fuente === 'semanticscholar') {
-          const res = await obtenerDetalleSemanticScholar(decodeURIComponent(id));
-          setArticulo(res.articulo);
-        } else if (fuente === 'arxiv') {
-          // Para arXiv hacemos una búsqueda por ID
+        if (fuente === 'arxiv') {
           const res = await buscarArxiv({ q: decodeURIComponent(id), limite: 1 });
+          setArticulo(res.articulos[0] || null);
+        } else if (fuente === 'crossref') {
+          const res = await buscarCrossRef({ q: decodeURIComponent(id), limite: 1 });
           setArticulo(res.articulos[0] || null);
         }
       } catch {
@@ -93,14 +92,14 @@ const ArticuloPage = () => {
 
   return (
     <div className="page-container articulo-page">
-      <Link to="/buscar" className="btn-link mb-4 inline-flex">
-        <ArrowLeft size={14} /> Volver a resultados
-      </Link>
+      <button onClick={() => navigate(-1)} className="btn-link mb-4 inline-flex">
+        <ArrowLeft size={14} /> Volver
+      </button>
 
       <div className="articulo-detail-card">
         {/* Badges */}
         <div className="flex flex-wrap gap-2 mb-3">
-          <span className={`badge badge-${fuente}`}>{fuente === 'semanticscholar' ? 'Semantic Scholar' : fuente === 'arxiv' ? 'arXiv' : 'CrossRef'}</span>
+          <span className={`badge badge-${fuente}`}>{fuente === 'arxiv' ? 'arXiv' : 'CrossRef'}</span>
           {articulo.anio && <span className="badge badge-year"><Calendar size={12} /> {articulo.anio}</span>}
           {articulo.revista && <span className="badge badge-default"><BookOpen size={12} /> {articulo.revista}</span>}
         </div>

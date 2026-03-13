@@ -17,7 +17,7 @@ router.get('/', obtenerFavoritos);
 router.post('/', agregarFavorito);
 router.put('/:id', actualizarFavorito);
 router.delete('/:id', eliminarFavorito);
-router.get('/check/:articuloId', checkFavorito);
+router.get('/check', checkFavorito);
 router.post('/busqueda', guardarBusqueda);
 router.get('/busquedas', obtenerBusquedas);
 

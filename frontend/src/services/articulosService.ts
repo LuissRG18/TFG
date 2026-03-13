@@ -19,16 +19,6 @@ export const buscarArxiv = async (params: BusquedaParams): Promise<ResultadoBusq
   return data;
 };
 
-export const buscarSemanticScholar = async (params: BusquedaParams): Promise<ResultadoBusqueda> => {
-  const { data } = await api.get('/articulos/semantic/buscar', { params });
-  return data;
-};
-
-export const obtenerDetalleSemanticScholar = async (paperId: string): Promise<{ ok: boolean; articulo: Articulo }> => {
-  const { data } = await api.get(`/articulos/semantic/${paperId}`);
-  return data;
-};
-
 export const buscarCrossRef = async (params: BusquedaParams): Promise<ResultadoBusqueda> => {
   const { data } = await api.get('/articulos/crossref/buscar', { params });
   return data;

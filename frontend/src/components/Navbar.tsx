@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FlaskConical, Search, BookMarked, BarChart2, LogIn, LogOut, User, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 const Navbar = () => {
   const { usuario, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHome = location.pathname === '/';
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -14,6 +16,8 @@ const Navbar = () => {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  const isSolid = scrolled || !isHome;
 
   const handleLogout = () => {
     logout();
@@ -24,7 +28,7 @@ const Navbar = () => {
     `nav-link${isActive ? ' nav-link-active' : ''}`;
 
   return (
-    <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
+    <nav className={`navbar${isSolid ? ' navbar--scrolled' : ''}`}>
       <div className="navbar-inner">
         {/* Logo */}
         <Link to="/" className="navbar-logo">
