@@ -1,0 +1,25 @@
+const express = require('express');
+const router = express.Router();
+const {
+  obtenerFavoritos,
+  agregarFavorito,
+  actualizarFavorito,
+  eliminarFavorito,
+  checkFavorito,
+  guardarBusqueda,
+  obtenerBusquedas,
+} = require('../controllers/favoritosController');
+const { proteger } = require('../middleware/auth');
+
+router.use(proteger);
+
+router.get('/', obtenerFavoritos);
+router.post('/', agregarFavorito);
+router.put('/:id', actualizarFavorito);
+router.delete('/:id', eliminarFavorito);
+router.get('/check/:articuloId', checkFavorito);
+router.post('/busqueda', guardarBusqueda);
+router.get('/busquedas', obtenerBusquedas);
+
+module.exports = router;
+
