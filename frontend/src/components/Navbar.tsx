@@ -1,12 +1,19 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FlaskConical, Search, BookMarked, BarChart2, LogIn, LogOut, User, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Navbar = () => {
   const { usuario, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -14,17 +21,15 @@ const Navbar = () => {
   };
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-      isActive ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-100'
-    }`;
+    `nav-link${isActive ? ' nav-link-active' : ''}`;
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
       <div className="navbar-inner">
         {/* Logo */}
         <Link to="/" className="navbar-logo">
-          <FlaskConical size={24} className="text-indigo-600" />
-          <span>Sci<span className="text-indigo-600">Lens</span></span>
+          <FlaskConical size={24} style={{ color: 'var(--accent)' }} />
+          <span>Sci<span style={{ color: 'var(--accent)' }}>Lens</span></span>
         </Link>
 
         {/* Desktop links */}

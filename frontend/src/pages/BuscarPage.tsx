@@ -137,7 +137,7 @@ const BuscarPage = () => {
               {total.toLocaleString()} resultados para <strong>"{query}"</strong>
             </p>
           </div>
-          <div className="articulos-list">
+          <div className="articulos-grid">
             {articulos.map((art) => (
               <ArticuloCard key={`${art.fuente}-${art.id}`} articulo={art} />
             ))}

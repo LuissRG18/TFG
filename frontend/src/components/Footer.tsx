@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const Footer = () => (
   <footer className="footer">
     <div className="footer-inner">
-      <div className="flex items-center gap-2 text-indigo-400">
+      <div className="flex items-center gap-2" style={{ color: 'var(--accent)' }}>
         <FlaskConical size={18} />
         <span className="font-semibold text-white">SciLens</span>
       </div>

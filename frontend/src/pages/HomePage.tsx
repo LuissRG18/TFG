@@ -2,6 +2,25 @@ import { Link } from 'react-router-dom';
 import { FlaskConical, Search, Bookmark, BarChart2, ArrowRight, Atom, Brain, Dna, Calculator } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import { AREAS_CIENTIFICAS } from '../types';
+// import heroBg from '../assets/hero-bg.jpg';
+// import hero2 from '../assets/hero2.jpg';
+
+import outerspacebackground from '../assets/outer-space-background.jpg';
+import imgInformatica from '../assets/imgInformatica.jpg.jpg';
+import imgMedicina from '../assets/imgMedicina.jpg.jpg';
+import imgFisica from '../assets/imgFisica-jpg.png';
+import imgBiologia from '../assets/imgBiologia.jpg.png';
+import imgMatematicas from '../assets/imgMatematicas.jpg.png';
+import imgQuimica from '../assets/imgQuimica.jpg.png';
+
+const AREA_IMAGES: Record<string, string> = {
+  cs: imgInformatica,
+  medicine: imgMedicina,
+  physics: imgFisica,
+  biology: imgBiologia,
+  mathematics: imgMatematicas,
+  chemistry: imgQuimica,
+};
 
 const TRENDING = [
   'inteligencia artificial', 'cambio climático', 'física cuántica',
@@ -42,7 +61,7 @@ const HomePage = () => {
   return (
     <div className="home-page">
       {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="hero">
+      <section className="hero" style={{ backgroundImage: `url(${outerspacebackground})` }}>
         <div className="hero-bg" />
         <div className="hero-content">
           <div className="hero-badge">
@@ -108,8 +127,13 @@ const HomePage = () => {
                 to={`/buscar?q=${encodeURIComponent(area.label)}&area=${area.id}`}
                 className="area-card"
               >
-                <span className="area-emoji">{area.emoji}</span>
-                <span className="area-label">{area.label}</span>
+                <div className="area-card-cover">
+                  <img src={AREA_IMAGES[area.id]} alt={area.label} className="area-card-img" />
+                </div>
+                <div className="area-card-body">
+                  <span className="area-label">{area.label}</span>
+                  <span className="area-explore">Explorar artículos →</span>
+                </div>
               </Link>
             ))}
           </div>
