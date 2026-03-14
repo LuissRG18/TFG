@@ -24,6 +24,11 @@ export const buscarArxiv = async (params: BusquedaParams): Promise<ResultadoBusq
   return data;
 };
 
+export const obtenerArxivPorId = async (id: string): Promise<{ ok: boolean; articulo: Articulo }> => {
+  const { data } = await api.get(`/articulos/arxiv/${encodeURIComponent(id)}`);
+  return data;
+};
+
 export const buscarCrossRef = async (params: BusquedaParams): Promise<ResultadoBusqueda> => {
   const { data } = await api.get('/articulos/crossref/buscar', { params });
   return data;

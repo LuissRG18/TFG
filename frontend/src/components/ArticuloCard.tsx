@@ -165,8 +165,8 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
 
         {articulo.palabrasClave.length > 0 && (
           <div className="articulo-tags">
-            {articulo.palabrasClave.slice(0, 5).map((kw) => (
-              <span key={kw} className="tag">{kw}</span>
+            {articulo.palabrasClave.slice(0, 5).map((kw, i) => (
+              <span key={`${kw}-${i}`} className="tag">{kw}</span>
             ))}
           </div>
         )}

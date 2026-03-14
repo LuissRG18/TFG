@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   ExternalLink, FileText, Bookmark, BookmarkCheck,
   ArrowLeft, Loader2, AlertCircle, Sparkles, Users, Calendar, BookOpen, Quote
 } from 'lucide-react';
 import type { Articulo } from '../types';
-import { buscarArxiv, buscarCrossRef } from '../services/articulosService';
+import { obtenerArxivPorId, buscarCrossRef } from '../services/articulosService';
 import { agregarFavorito, eliminarFavorito, checkFavorito } from '../services/favoritosService';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,8 +28,8 @@ const ArticuloPage = () => {
       setError('');
       try {
         if (fuente === 'arxiv') {
-          const res = await buscarArxiv({ q: decodeURIComponent(id), limite: 1 });
-          setArticulo(res.articulos[0] || null);
+          const res = await obtenerArxivPorId(decodeURIComponent(id));
+          setArticulo(res.articulo || null);
         } else if (fuente === 'crossref') {
           const res = await buscarCrossRef({ q: decodeURIComponent(id), limite: 1 });
           setArticulo(res.articulos[0] || null);
@@ -82,7 +82,7 @@ const ArticuloPage = () => {
   if (error || !articulo) return (
     <div className="page-container">
       <div className="error-banner"><AlertCircle size={18} /> {error || 'Artículo no encontrado.'}</div>
-      <Link to="/buscar" className="btn-outline mt-4 inline-flex"><ArrowLeft size={14} /> Volver</Link>
+      <button onClick={() => navigate(-1)} className="btn-outline mt-4 inline-flex"><ArrowLeft size={14} /> Volver</button>
     </div>
   );
 
@@ -134,8 +134,8 @@ const ArticuloPage = () => {
         {/* Palabras clave */}
         {articulo.palabrasClave.length > 0 && (
           <div className="articulo-tags mb-4">
-            {articulo.palabrasClave.map((kw) => (
-              <span key={kw} className="tag">{kw}</span>
+            {articulo.palabrasClave.map((kw, i) => (
+              <span key={`${kw}-${i}`} className="tag">{kw}</span>
             ))}
           </div>
         )}

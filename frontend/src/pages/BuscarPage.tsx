@@ -122,7 +122,7 @@ const BuscarPage = () => {
 
       {filtrosOpen && (
         <div className="filtros-panel">
-          {/* Ãrea cientÃ­fica */}
+          {/* Área científica */}
           <div className="filter-section">
             <label className="filter-label">Ãrea cientÃ­fica</label>
             <div className="filter-areas">
@@ -153,9 +153,9 @@ const BuscarPage = () => {
             </div>
           </div>
 
-          {/* MÃ­nimo de citas */}
+          {/* Mínimo de citas */}
           <div className="filter-section">
-            <label className="filter-label">MÃ­nimo de citas</label>
+            <label className="filter-label">Mínimo de citas</label>
             <input
               type="number" placeholder="ej. 10" value={minCitas}
               onChange={(e) => setMinCitas(e.target.value)}
@@ -191,14 +191,14 @@ const BuscarPage = () => {
       {!query && (
         <div className="empty-state">
           <Search size={48} className="text-gray-300" />
-          <p className="text-gray-400">Introduce un tÃ©rmino para empezar a buscar</p>
+          <p className="text-gray-400">Introduce un término para empezar a buscar</p>
         </div>
       )}
 
       {loading && (
         <div className="loading-state">
           <Loader2 size={32} className="animate-spin text-indigo-500" />
-          <p className="text-gray-400">Buscando artÃ­culos...</p>
+          <p className="text-gray-400">Buscando artículos...</p>
         </div>
       )}
 
@@ -220,22 +220,22 @@ const BuscarPage = () => {
               <ArticuloCard key={`${art.fuente}-${art.id}`} articulo={art} />
             ))}
           </div>
-          {/* PaginaciÃ³n */}
+          {/* Paginación */}
           <div className="pagination">
             <button
               onClick={() => setPagina((p) => Math.max(1, p - 1))}
               disabled={pagina === 1}
               className="btn-outline-sm"
             >
-              â† Anterior
+              ← Anterior
             </button>
-            <span className="pagination-info">PÃ¡gina {pagina}</span>
+            <span className="pagination-info">Página {pagina}</span>
             <button
               onClick={() => setPagina((p) => p + 1)}
               disabled={articulos.length < 10}
               className="btn-outline-sm"
             >
-              Siguiente â†’
+              Siguiente →
             </button>
           </div>
         </>

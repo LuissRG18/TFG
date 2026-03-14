@@ -85,6 +85,62 @@ const buscarArxiv = async (req, res) => {
   }
 };
 
+// @desc    Obtener un artículo de arXiv por su ID exacto
+// @route   GET /api/articulos/arxiv/:id
+// @access  Público
+const obtenerArxivPorId = async (req, res) => {
+  try {
+    const id = decodeURIComponent(req.params.id);
+    const url = `https://export.arxiv.org/api/query?id_list=${encodeURIComponent(id)}&max_results=1`;
+
+    const respuesta = await axios.get(url, { timeout: 10000 });
+    const xml = respuesta.data;
+
+    const entradas = xml.match(/<entry>([\s\S]*?)<\/entry>/g) || [];
+    if (entradas.length === 0) {
+      return res.status(404).json({ ok: false, mensaje: 'Artículo no encontrado.' });
+    }
+
+    const entrada = entradas[0];
+    const getId = (tag) => {
+      const m = entrada.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i'));
+      return m ? m[1].trim() : '';
+    };
+
+    const artId = getId('id').replace('http://arxiv.org/abs/', '').replace('https://arxiv.org/abs/', '');
+    const titulo = getId('title').replace(/\s+/g, ' ');
+    const abstract = getId('summary').replace(/\s+/g, ' ');
+    const publicado = getId('published');
+    const anio = publicado ? new Date(publicado).getFullYear() : null;
+
+    const autoresMatch = entrada.match(/<author>[\s\S]*?<name>([\s\S]*?)<\/name>[\s\S]*?<\/author>/g) || [];
+    const autores = autoresMatch.map((a) => {
+      const m = a.match(/<name>([\s\S]*?)<\/name>/);
+      return m ? m[1].trim() : '';
+    });
+
+    const categoriasMatch = entrada.match(/term="([^"]+)"/g) || [];
+    const categorias = [...new Set(categoriasMatch.map((c) => c.replace(/term="([^"]+)"/, '$1')))];
+
+    const articulo = {
+      id: artId,
+      fuente: 'arxiv',
+      titulo,
+      autores,
+      anio,
+      abstract,
+      palabrasClave: categorias,
+      urlOriginal: `https://arxiv.org/abs/${artId}`,
+      urlPdf: `https://arxiv.org/pdf/${artId}`,
+      revista: 'arXiv',
+    };
+
+    res.json({ ok: true, articulo });
+  } catch (error) {
+    res.status(500).json({ ok: false, mensaje: 'Error al obtener el artículo de arXiv.', error: error.message });
+  }
+};
+
 // ─────────────────────────────────────────────
 // SEMANTIC SCHOLAR
 // ─────────────────────────────────────────────
@@ -306,6 +362,7 @@ const obtenerEstadisticas = async (req, res) => {
 };
 
 module.exports = {
+  obtenerArxivPorId,
   buscarArxiv,
   buscarCrossRef,
   obtenerEstadisticas,
