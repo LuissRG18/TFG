@@ -4,6 +4,22 @@ const axios = require('axios');
 // ARXIV
 // ─────────────────────────────────────────────
 
+// Mapping from our internal area IDs to valid arXiv category prefixes
+const ARXIV_CAT_MAP = {
+  cs: 'cs',
+  physics: 'physics',
+  mathematics: 'math',
+  biology: 'q-bio',
+  medicine: 'q-bio',
+  chemistry: 'physics.chem-ph',
+  economics: 'econ',
+  psychology: 'q-bio.NC',
+  engineering: 'eess',
+  astronomy: 'astro-ph',
+  environmental: 'physics.ao-ph',
+  neuroscience: 'q-bio.NC',
+};
+
 // @desc    Buscar artículos en arXiv
 // @route   GET /api/articulos/arxiv/buscar?q=...&area=...&pagina=1&limite=10
 // @access  Público
@@ -17,7 +33,8 @@ const buscarArxiv = async (req, res) => {
 
     const inicio = (pagina - 1) * limite;
     let query = `all:${encodeURIComponent(q)}`;
-    if (area) query += `+AND+cat:${area}`;
+    const arxivCat = area ? (ARXIV_CAT_MAP[area] || null) : null;
+    if (arxivCat) query += `+AND+cat:${arxivCat}`;
 
     const url = `https://export.arxiv.org/api/query?search_query=${query}&start=${inicio}&max_results=${limite}&sortBy=relevance&sortOrder=descending`;
 

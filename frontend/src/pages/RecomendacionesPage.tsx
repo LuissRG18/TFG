@@ -6,6 +6,22 @@ import { AREAS_CIENTIFICAS } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { buscarArxiv } from '../services/articulosService';
 
+// English search terms for each area (arXiv is in English)
+const AREA_QUERIES_EN: Record<string, string> = {
+  cs: 'computer science',
+  physics: 'physics',
+  mathematics: 'mathematics',
+  biology: 'biology',
+  medicine: 'medicine',
+  chemistry: 'chemistry',
+  economics: 'economics',
+  psychology: 'psychology',
+  engineering: 'engineering',
+  astronomy: 'astronomy',
+  environmental: 'environmental science',
+  neuroscience: 'neuroscience',
+};
+
 const RecomendacionesPage = () => {
   const { usuario } = useAuth();
   const [articulos, setArticulos] = useState<Articulo[]>([]);
@@ -22,9 +38,7 @@ const RecomendacionesPage = () => {
     setLoading(true);
     setError('');
     try {
-      // Use the area id as query term to get fresh papers
-      const areaInfo = AREAS_CIENTIFICAS.find((a) => a.id === areaEfectiva);
-      const query = areaInfo ? areaInfo.label : areaEfectiva;
+      const query = AREA_QUERIES_EN[areaEfectiva] ?? areaEfectiva;
       const res = await buscarArxiv({ q: query, area: areaEfectiva, limite: 8 });
       setArticulos(res.articulos);
     } catch {

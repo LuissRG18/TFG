@@ -14,6 +14,10 @@ import imgMatematicas from '../assets/imgMatematicas.jpg.png';
 import imgQuimica from '../assets/imgQuimica.jpg.png';
 import imgEconomia from '../assets/imgEconomia.jpg';
 import imgPsicologia from '../assets/imgPsicologia.jpg';
+import imgIngenieria from '../assets/imgIngenieria.jpg';
+import imgAstronomia from '../assets/imgAstronomía.jpg';
+import imgMedioAmbiente from '../assets/imgMedioAmbiente.jpg';
+import imgNeurociencia from '../assets/imgNeurociencia.jpg';
 
 const AREA_IMAGES: Record<string, string> = {
   cs: imgInformatica,
@@ -24,6 +28,10 @@ const AREA_IMAGES: Record<string, string> = {
   chemistry: imgQuimica,
   economics: imgEconomia,
   psychology: imgPsicologia,
+  engineering: imgIngenieria,
+  astronomy: imgAstronomia,
+  environmental: imgMedioAmbiente,
+  neuroscience: imgNeurociencia,
 };
 
 const AREA_QUERIES: Record<string, string> = {
@@ -35,6 +43,10 @@ const AREA_QUERIES: Record<string, string> = {
   chemistry: 'chemistry',
   economics: 'economics',
   psychology: 'psychology',
+  engineering: 'engineering',
+  astronomy: 'astronomy',
+  environmental: 'environmental science',
+  neuroscience: 'neuroscience',
 };
 
 type Fuente = 'arxiv' | 'crossref';

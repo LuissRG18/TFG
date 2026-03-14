@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { FlaskConical, Search, Bookmark, BarChart2, Atom, Brain, Dna, Calculator } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import { AREAS_CIENTIFICAS } from '../types';
+import { useAuth } from '../context/AuthContext';
 // import heroBg from '../assets/hero-bg.jpg';
 // import hero2 from '../assets/hero2.jpg';
 
@@ -14,6 +15,10 @@ import imgMatematicas from '../assets/imgMatematicas.jpg.png';
 import imgQuimica from '../assets/imgQuimica.jpg.png';
 import imgEconomia from '../assets/imgEconomia.jpg';
 import imgPsicologia from '../assets/imgPsicologia.jpg';
+import imgIngenieria from '../assets/imgIngenieria.jpg';
+import imgAstronomia from '../assets/imgAstronomía.jpg';
+import imgMedioAmbiente from '../assets/imgMedioAmbiente.jpg';
+import imgNeurociencia from '../assets/imgNeurociencia.jpg';
 
 const AREA_IMAGES: Record<string, string> = {
   cs: imgInformatica,
@@ -24,6 +29,10 @@ const AREA_IMAGES: Record<string, string> = {
   chemistry: imgQuimica,
   economics: imgEconomia,
   psychology: imgPsicologia,
+  engineering: imgIngenieria,
+  astronomy: imgAstronomia,
+  environmental: imgMedioAmbiente,
+  neuroscience: imgNeurociencia,
 };
 
 const TRENDING = [
@@ -62,6 +71,7 @@ const SCIENCE_ICONS = [
 ];
 
 const HomePage = () => {
+  const { usuario } = useAuth();
   return (
     <div className="home-page">
       {/* ── HERO ─────────────────────────────────────────── */}
@@ -144,16 +154,18 @@ const HomePage = () => {
       </section>
 
       {/* ── CTA ─────────────────────────────────────────── */}
-      <section className="section cta-section">
-        <div className="cta-card">
-          <h2 className="cta-title">Empieza a explorar ahora</h2>
-          <p className="cta-desc">Crea una cuenta gratuita para guardar tus favoritos y ver tus estadísticas.</p>
-          <div className="flex gap-3 justify-center flex-wrap">
-            <Link to="/registro" className="btn-primary">Crear cuenta gratis</Link>
-            <Link to="/buscar" className="btn-outline">Explorar sin registrarse</Link>
+      {!usuario && (
+        <section className="section cta-section">
+          <div className="cta-card">
+            <h2 className="cta-title">Empieza a explorar ahora</h2>
+            <p className="cta-desc">Crea una cuenta gratuita para guardar tus favoritos y ver tus estadísticas.</p>
+            <div className="flex gap-3 justify-center flex-wrap">
+              <Link to="/registro" className="btn-primary">Crear cuenta gratis</Link>
+              <Link to="/buscar" className="btn-outline">Explorar sin registrarse</Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 };
