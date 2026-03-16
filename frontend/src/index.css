@@ -1089,11 +1089,11 @@ img { max-width: 100%; }
 
 /* ── Auth pages ──────────────────────────────────────── */
 .auth-page {
-  min-height: calc(100vh - 60px);
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1.25rem;
+  padding: calc(64px + 2rem) 1.25rem 2rem;
   background: transparent;
 }
 .auth-card {
