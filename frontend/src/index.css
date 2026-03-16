@@ -1247,6 +1247,20 @@ img { max-width: 100%; }
   max-width: 100% !important;
 }
 
+@media (max-width: 600px) {
+  .admin-charts-grid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+  .admin-charts-grid .chart-card canvas {
+    max-height: 260px !important;
+    max-width: 100% !important;
+  }
+  .admin-charts-grid .chart-card--wide canvas {
+    max-height: 200px !important;
+  }
+}
+
 .admin-table-wrapper {
   overflow-x: auto;
   border: 1px solid var(--border);
