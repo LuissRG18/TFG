@@ -21,7 +21,7 @@ const allowedOrigins = process.env.FRONTEND_URL
   : ['http://localhost:5173', 'http://localhost:4173'];
 
 // Allow all Vercel preview/deployment URLs for this project
-const vercelPreviewRegex = /^https:\/\/frontend(-[a-z0-9]+)*-luis-projects-dc2ad089\.vercel\.app$/;
+const vercelPreviewRegex = /^https:\/\/[a-z0-9-]+-luis-projects-dc2ad089\.vercel\.app$/;
 
 app.use(cors({
   origin: (origin, cb) => {
