@@ -62,7 +62,15 @@ app.use('/public', express.static(require('path').join(__dirname, '../public')))
 
 // ── Ruta de diagnóstico (sin DB, para verificar que la función arranca) ──────
 app.get('/api/ping', (req, res) => {
-  res.json({ ok: true, env: !!process.env.MONGODB_URI, node: process.version });
+  res.json({
+    ok: true,
+    node: process.version,
+    env: {
+      MONGODB_URI: !!process.env.MONGODB_URI,
+      JWT_SECRET: !!process.env.JWT_SECRET,
+      FRONTEND_URL: process.env.FRONTEND_URL || '(no definida)',
+    },
+  });
 });
 
 // ── Conexión DB (serverless-safe) ────────────

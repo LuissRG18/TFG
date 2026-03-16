@@ -9,7 +9,7 @@ const connectDB = async () => {
 
   if (!cached.promise) {
     cached.promise = mongoose
-      .connect(process.env.MONGODB_URI)
+      .connect((process.env.MONGODB_URI || '').trim())
       .then((m) => {
         console.log(`✅ MongoDB conectado: ${m.connection.host}`);
         return m;

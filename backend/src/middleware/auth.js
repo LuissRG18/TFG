@@ -19,7 +19,7 @@ const proteger = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, (process.env.JWT_SECRET || '').trim());
     const usuario = await User.findById(decoded.id).select('-password');
 
     if (!usuario || !usuario.activo) {
