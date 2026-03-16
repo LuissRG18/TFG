@@ -49,13 +49,19 @@ const EstadisticasPage = () => {
     </div>
   );
 
-  // Gráfico: artículos por año (line)
+  // Gráfico: artículos por año (line) — rellena todos los años hasta el actual
+  const currentYear = new Date().getFullYear();
   const aniosSorted = [...stats.porAnio].sort((a, b) => (a._id || 0) - (b._id || 0));
+  const minYear = aniosSorted.length > 0 ? Math.min(aniosSorted[0]._id, 1990) : 1990;
+  const anioMap = new Map(aniosSorted.map((a) => [a._id, a.total]));
+  const allYears: number[] = [];
+  for (let y = minYear; y <= currentYear; y++) allYears.push(y);
+
   const lineData = {
-    labels: aniosSorted.map((a) => a._id?.toString() || 'N/A'),
+    labels: allYears.map((y) => y.toString()),
     datasets: [{
       label: 'Artículos guardados',
-      data: aniosSorted.map((a) => a.total),
+      data: allYears.map((y) => anioMap.get(y) ?? 0),
       borderColor: '#6366f1',
       backgroundColor: 'rgba(99,102,241,0.15)',
       fill: true,
