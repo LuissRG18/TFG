@@ -68,7 +68,7 @@ const FavoritosPage = () => {
           <BookMarked size={28} className="text-indigo-500" />
           <h1 className="page-title">Mis Favoritos</h1>
         </div>
-        <p className="page-subtitle">{total} artÃ­culo(s) guardado(s)</p>
+        <p className="page-subtitle">{total} artículo(s) guardado(s)</p>
       </div>
 
       {/* Filtros */}
@@ -77,7 +77,7 @@ const FavoritosPage = () => {
           Todos
         </button>
         <button onClick={() => setFiltroLeer(true)} className={`filter-btn ${filtroLeer === true ? 'active' : ''}`}>
-          <Clock size={13} /> Leer mÃ¡s tarde
+          <Clock size={13} /> Leer más tarde
         </button>
         {colecciones.map((c) => (
           <button key={c._id} onClick={() => { setFiltroColeccion(c._id); setFiltroLeer(undefined); }} className={`filter-btn ${filtroColeccion === c._id ? 'active' : ''}`}>
@@ -97,7 +97,7 @@ const FavoritosPage = () => {
       {!loading && favoritos.length === 0 && (
         <div className="empty-state">
           <BookMarked size={48} className="text-gray-300" />
-          <p className="text-gray-400">AÃºn no tienes favoritos guardados.</p>
+          <p className="text-gray-400">Aún no tienes favoritos guardados.</p>
         </div>
       )}
 
@@ -139,13 +139,13 @@ const FavoritosPage = () => {
         ))}
       </div>
 
-      {/* PaginaciÃ³n */}
+      {/* Paginación */}
       {totalPaginas > 1 && (
         <div className="pagination">
           <button onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={pagina === 1} className="btn-outline-sm">
             <ChevronLeft size={14} /> Anterior
           </button>
-          <span className="pagination-info">PÃ¡gina {pagina} / {totalPaginas}</span>
+          <span className="pagination-info">Página {pagina} / {totalPaginas}</span>
           <button onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={pagina >= totalPaginas} className="btn-outline-sm">
             Siguiente <ChevronRight size={14} />
           </button>

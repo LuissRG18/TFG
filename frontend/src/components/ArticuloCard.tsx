@@ -115,7 +115,7 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
           </span>
           {articulo.anio && <span className="cover-meta">{articulo.anio}</span>}
           {articulo.citaciones !== undefined && articulo.citaciones > 0 && (
-            <span className="cover-meta">ðŸ“š {articulo.citaciones} citas</span>
+            <span className="cover-meta">📊 {articulo.citaciones} citas</span>
           )}
         </div>
       </div>
@@ -132,7 +132,7 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
         {articulo.autores.length > 0 && (
           <p className="articulo-autores">
             {articulo.autores.slice(0, 4).join(', ')}
-            {articulo.autores.length > 4 && ` +${articulo.autores.length - 4} mÃ¡s`}
+            {articulo.autores.length > 4 && ` +${articulo.autores.length - 4} más`}
           </p>
         )}
 
@@ -157,7 +157,7 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
             </p>
             {abstractTexto.length > 300 && (
               <button onClick={() => setExpandido(!expandido)} className="btn-ver-mas">
-                {expandido ? <><ChevronUp size={14} /> Ver menos</> : <><ChevronDown size={14} /> Ver mÃ¡s</>}
+                {expandido ? <><ChevronUp size={14} /> Ver menos</> : <><ChevronDown size={14} /> Ver más</>}
               </button>
             )}
           </div>
@@ -174,7 +174,7 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
         {/* Acciones */}
         <div className="articulo-acciones">
           <a href={articulo.urlOriginal} target="_blank" rel="noreferrer" className="btn-link">
-            <ExternalLink size={14} /> Ver artÃ­culo
+            <ExternalLink size={14} /> Ver artículo
           </a>
           {articulo.urlPdf && (
             <a href={articulo.urlPdf} target="_blank" rel="noreferrer" className="btn-link">

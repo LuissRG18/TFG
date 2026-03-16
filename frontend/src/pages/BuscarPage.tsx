@@ -124,7 +124,7 @@ const BuscarPage = () => {
         <div className="filtros-panel">
           {/* Área científica */}
           <div className="filter-section">
-            <label className="filter-label">Ãrea cientÃ­fica</label>
+            <label className="filter-label">Área científica</label>
             <div className="filter-areas">
               <button onClick={() => setArea('')} className={`filter-btn ${!area ? 'active' : ''}`}>Todas</button>
               {AREAS_CIENTIFICAS.map((a) => (
@@ -135,9 +135,9 @@ const BuscarPage = () => {
             </div>
           </div>
 
-          {/* Rango de aÃ±os */}
+          {/* Rango de años */}
           <div className="filter-section">
-            <label className="filter-label">Rango de aÃ±os</label>
+            <label className="filter-label">Rango de años</label>
             <div className="flex gap-2 items-center flex-wrap">
               <input
                 type="number" placeholder="Desde (ej. 2018)" value={anioDesde}
