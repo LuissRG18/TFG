@@ -97,10 +97,17 @@ app.use((req, res) => {
 });
 
 // ── Arranque ─────────────────────────────────
-connectDB().then(() => {
+// Conectar a la base de datos (Vercel reutiliza el módulo entre invocaciones)
+connectDB();
+
+// Arranque local cuando se ejecuta directamente (npm run dev / npm start)
+if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     console.log(`📡 Entorno: ${process.env.NODE_ENV || 'development'}`);
   });
-});
+}
+
+// Exportar la app para Vercel (función serverless)
+module.exports = app;
 
