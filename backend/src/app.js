@@ -22,12 +22,15 @@ const allowedOrigins = process.env.FRONTEND_URL
 
 // Allow all Vercel preview/deployment URLs for this project
 const vercelPreviewRegex = /^https:\/\/[a-z0-9-]+-luis-projects-dc2ad089\.vercel\.app$/;
+// Allow production frontend and its preview deployments
+const vercelFrontendRegex = /^https:\/\/frontend-eta-nine-95(-[a-z0-9-]+)?\.vercel\.app$/;
 
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin) return cb(null, true);
     if (allowedOrigins.includes(origin)) return cb(null, true);
     if (vercelPreviewRegex.test(origin)) return cb(null, true);
+    if (vercelFrontendRegex.test(origin)) return cb(null, true);
     cb(null, false);
   },
   credentials: true,
