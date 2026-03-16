@@ -35,6 +35,7 @@ const generalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: false, // necesario en entornos serverless (sin store distribuido)
   message: { ok: false, mensaje: 'Demasiadas peticiones. Inténtalo más tarde.' },
 });
 
@@ -44,6 +45,7 @@ const authLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: false,
   message: { ok: false, mensaje: 'Demasiados intentos de autenticación. Inténtalo en 15 minutos.' },
 });
 
@@ -53,6 +55,18 @@ app.use(generalLimiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static(require('path').join(__dirname, '../public')));
+
+// ── Conexión DB (serverless-safe) ────────────
+// Se coloca antes de las rutas para garantizar que MongoDB esté listo.
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('DB connection error:', err.message);
+    res.status(500).json({ ok: false, mensaje: 'Error de conexión a la base de datos.' });
+  }
+});
 
 // ── Rutas ────────────────────────────────────
 app.use('/api/auth',       authLimiter, authRoutes);
@@ -94,18 +108,6 @@ app.get('/api/health', (req, res) => {
 // ── 404 ──────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ ok: false, mensaje: 'Ruta no encontrada.' });
-});
-
-// ── Middleware de conexión DB (serverless-safe) ──────────────────────────────
-// Garantiza que MongoDB esté conectado antes de procesar cada petición.
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    console.error('DB connection error:', err.message);
-    res.status(500).json({ ok: false, mensaje: 'Error de conexión a la base de datos.' });
-  }
 });
 
 // ── Arranque local cuando se ejecuta directamente (npm run dev / npm start) ──
