@@ -24,7 +24,8 @@ app.use(cors({
   origin: (origin, cb) => {
     // Allow requests with no origin (e.g. curl, Postman) and whitelisted origins
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    cb(new Error(`CORS: origen no permitido → ${origin}`));
+    // Return false → cors sends 403, avoids triggering the global 500 error handler
+    cb(null, false);
   },
   credentials: true,
 }));
