@@ -82,7 +82,7 @@ const Navbar = () => {
           {/* Dark mode toggle */}
           <button
             onClick={toggleDarkMode}
-            className="btn-outline-sm"
+            className="btn-outline-sm theme-toggle-btn"
             title={darkMode ? 'Modo claro' : 'Modo oscuro'}
           >
             {darkMode ? <Sun size={15} /> : <Moon size={15} />}

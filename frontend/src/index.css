@@ -170,7 +170,7 @@ img { max-width: 100%; }
 
 @media (max-width: 768px) {
   .navbar-links { display: none; }
-  .navbar-auth > *:not(.mobile-menu-btn) { display: none; }
+  .navbar-auth > *:not(.mobile-menu-btn):not(.theme-toggle-btn) { display: none; }
   .mobile-menu-btn { display: flex; }
 }
 
