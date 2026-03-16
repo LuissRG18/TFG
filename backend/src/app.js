@@ -20,11 +20,14 @@ const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map((s) => s.trim())
   : ['http://localhost:5173', 'http://localhost:4173'];
 
+// Allow all Vercel preview/deployment URLs for this project
+const vercelPreviewRegex = /^https:\/\/frontend(-[a-z0-9]+)*-luis-projects-dc2ad089\.vercel\.app$/;
+
 app.use(cors({
   origin: (origin, cb) => {
-    // Allow requests with no origin (e.g. curl, Postman) and whitelisted origins
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    // Return false → cors sends 403, avoids triggering the global 500 error handler
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    if (vercelPreviewRegex.test(origin)) return cb(null, true);
     cb(null, false);
   },
   credentials: true,
