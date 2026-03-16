@@ -96,15 +96,25 @@ app.use((req, res) => {
   res.status(404).json({ ok: false, mensaje: 'Ruta no encontrada.' });
 });
 
-// ── Arranque ─────────────────────────────────
-// Conectar a la base de datos (Vercel reutiliza el módulo entre invocaciones)
-connectDB();
+// ── Middleware de conexión DB (serverless-safe) ──────────────────────────────
+// Garantiza que MongoDB esté conectado antes de procesar cada petición.
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('DB connection error:', err.message);
+    res.status(500).json({ ok: false, mensaje: 'Error de conexión a la base de datos.' });
+  }
+});
 
-// Arranque local cuando se ejecuta directamente (npm run dev / npm start)
+// ── Arranque local cuando se ejecuta directamente (npm run dev / npm start) ──
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-    console.log(`📡 Entorno: ${process.env.NODE_ENV || 'development'}`);
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+      console.log(`📡 Entorno: ${process.env.NODE_ENV || 'development'}`);
+    });
   });
 }
 
