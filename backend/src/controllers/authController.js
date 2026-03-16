@@ -195,8 +195,9 @@ const subirAvatar = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ ok: false, mensaje: 'No se ha enviado ningún archivo.' });
     }
-    // Build a public URL for the uploaded file
-    const avatarUrl = `/public/avatars/${req.file.filename}`;
+    const mimeType = req.file.mimetype;
+    const base64 = req.file.buffer.toString('base64');
+    const avatarUrl = `data:${mimeType};base64,${base64}`;
     const usuario = await User.findByIdAndUpdate(
       req.usuario._id,
       { avatar: avatarUrl },
