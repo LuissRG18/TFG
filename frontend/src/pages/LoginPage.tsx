@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FlaskConical, Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
@@ -28,10 +28,6 @@ const LoginPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <div className="auth-logo">
-          <FlaskConical size={32} className="text-indigo-600" />
-          <span className="auth-logo-text">SciLens</span>
-        </div>
         <h1 className="auth-title">Bienvenido de nuevo</h1>
         <p className="auth-subtitle">Inicia sesión para acceder a tus favoritos</p>
 
