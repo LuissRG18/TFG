@@ -167,6 +167,19 @@ img { max-width: 100%; }
   -webkit-backdrop-filter: blur(18px);
   gap: 0.25rem;
 }
+.mobile-menu .nav-link,
+.mobile-menu a,
+.mobile-menu button {
+  color: #334155;
+}
+.mobile-menu .nav-link:hover,
+.mobile-menu a:hover {
+  color: var(--accent);
+  background: rgba(14,165,233,0.07);
+}
+.mobile-menu .nav-link-active {
+  color: var(--accent);
+}
 
 @media (max-width: 768px) {
   .navbar-links { display: none; }
@@ -1427,6 +1440,19 @@ img { max-width: 100%; }
 [data-theme="dark"] .mobile-menu {
   background: rgba(15,23,42,0.97);
   border-top-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .mobile-menu .nav-link,
+[data-theme="dark"] .mobile-menu a,
+[data-theme="dark"] .mobile-menu button {
+  color: #94a3b8;
+}
+[data-theme="dark"] .mobile-menu .nav-link:hover,
+[data-theme="dark"] .mobile-menu a:hover {
+  color: var(--accent);
+  background: rgba(14,165,233,0.1);
+}
+[data-theme="dark"] .mobile-menu .nav-link-active {
+  color: var(--accent);
 }
 
 /* ── Cards & panels ── */
