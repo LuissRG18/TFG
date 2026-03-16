@@ -56,6 +56,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static(require('path').join(__dirname, '../public')));
 
+// ── Ruta de diagnóstico (sin DB, para verificar que la función arranca) ──────
+app.get('/api/ping', (req, res) => {
+  res.json({ ok: true, env: !!process.env.MONGODB_URI, node: process.version });
+});
+
 // ── Conexión DB (serverless-safe) ────────────
 // Se coloca antes de las rutas para garantizar que MongoDB esté listo.
 app.use(async (req, res, next) => {
@@ -108,6 +113,12 @@ app.get('/api/health', (req, res) => {
 // ── 404 ──────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ ok: false, mensaje: 'Ruta no encontrada.' });
+});
+
+// ── Error handler global ──────────────────────────────────────────────────────
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ ok: false, mensaje: err.message, stack: err.stack });
 });
 
 // ── Arranque local cuando se ejecuta directamente (npm run dev / npm start) ──
