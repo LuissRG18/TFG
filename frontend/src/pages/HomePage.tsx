@@ -88,7 +88,7 @@ const HomePage = () => {
           </h1>
           <p className="hero-subtitle">
             Busca, comprende y guarda artículos científicos reales. Millones de papers
-            de arXiv, Semantic Scholar y CrossRef al alcance de todos.
+            de arXiv y CrossRef al alcance de todos.
           </p>
           <div className="hero-search">
             <SearchBar size="lg" placeholder="¿Qué quieres explorar hoy?" />

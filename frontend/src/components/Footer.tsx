@@ -11,7 +11,6 @@ const Footer = () => (
       <p className="text-sm text-gray-400">
         Explorador de artículos científicos · Datos de{' '}
         <a href="https://arxiv.org" target="_blank" rel="noreferrer" className="hover:text-indigo-400 underline">arXiv</a>,{' '}
-        <a href="https://www.semanticscholar.org" target="_blank" rel="noreferrer" className="hover:text-indigo-400 underline">Semantic Scholar</a> &{' '}
         <a href="https://www.crossref.org" target="_blank" rel="noreferrer" className="hover:text-indigo-400 underline">CrossRef</a>
       </p>
       <div className="flex items-center gap-4 text-sm text-gray-500">
