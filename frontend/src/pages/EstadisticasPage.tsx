@@ -52,10 +52,9 @@ const EstadisticasPage = () => {
   // Gráfico: artículos por año (line) — rellena todos los años hasta el actual
   const currentYear = new Date().getFullYear();
   const aniosSorted = [...stats.porAnio].sort((a, b) => (a._id || 0) - (b._id || 0));
-  const minYear = aniosSorted.length > 0 ? Math.min(aniosSorted[0]._id, 1990) : 1990;
   const anioMap = new Map(aniosSorted.map((a) => [a._id, a.total]));
   const allYears: number[] = [];
-  for (let y = minYear; y <= currentYear; y++) allYears.push(y);
+  for (let y = 2020; y <= currentYear; y++) allYears.push(y);
 
   const lineData = {
     labels: allYears.map((y) => y.toString()),
