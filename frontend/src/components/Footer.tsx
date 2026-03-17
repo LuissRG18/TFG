@@ -56,10 +56,9 @@ const Footer = () => (
         <ul className="footer-links">
           <li><a href="https://arxiv.org" target="_blank" rel="noreferrer">arXiv</a></li>
           <li><a href="https://www.crossref.org" target="_blank" rel="noreferrer">CrossRef</a></li>
-          <li><a href="https://www.semanticscholar.org" target="_blank" rel="noreferrer">Semantic Scholar</a></li>
         </ul>
         <div className="footer-contact">
-          <span><MapPin size={13} /> Madrid, España</span>
+          <span><MapPin size={13} /> Valencia, España</span>
           <span><Mail size={13} /> contact@scilens.app</span>
         </div>
       </div>
@@ -67,7 +66,6 @@ const Footer = () => (
     </div>
     <div className="footer-bottom">
       <p>© {new Date().getFullYear()} SciLens · Todos los derechos reservados</p>
-      <p>Hecho con ♥ para amantes de la ciencia</p>
     </div>
   </footer>
 );

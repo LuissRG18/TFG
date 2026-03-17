@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FlaskConical, Search, Bookmark, BarChart2, Sparkles } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
@@ -18,6 +18,7 @@ import imgIngenieria from '../assets/imgIngenieria.jpg';
 import imgAstronomia from '../assets/imgAstronomía.jpg';
 import imgMedioAmbiente from '../assets/imgMedioAmbiente.jpg';
 import imgNeurociencia from '../assets/imgNeurociencia.jpg';
+import logodescilens from '../assets/Logo de SciLens.png';
 
 const AREA_IMAGES: Record<string, string> = {
   cs: imgInformatica,
@@ -41,36 +42,115 @@ const TRENDING = [
 
 const SERVICES = [
   {
-    icon: <Search size={32} color="#fff" />,
+    icon: <Search size={26} color="#fff" />,
     title: 'Busca & Explora',
     desc: 'Accede a millones de artículos científicos de arXiv, Semantic Scholar y CrossRef en una sola búsqueda unificada.',
     link: '/buscar',
-    img: imgAstronomia,
   },
   {
-    icon: <FlaskConical size={32} color="#fff" />,
+    icon: <FlaskConical size={26} color="#fff" />,
     title: 'Modo Divulgativo',
     desc: 'Lee los abstracts en un lenguaje más accesible sin perder el rigor científico del artículo original.',
     link: '/buscar',
-    img: imgMedicina,
   },
   {
-    icon: <Bookmark size={32} color="#fff" />,
+    icon: <Bookmark size={26} color="#fff" />,
     title: 'Tus Favoritos',
     desc: 'Guarda los artículos que más te interesan, organízalos con etiquetas y añade notas personalizadas.',
     link: '/favoritos',
-    img: imgPsicologia,
   },
   {
-    icon: <BarChart2 size={32} color="#fff" />,
+    icon: <BarChart2 size={26} color="#fff" />,
     title: 'Estadísticas',
     desc: 'Visualiza tu actividad científica con gráficos interactivos por área temática, año y fuente de datos.',
     link: '/estadisticas',
-    img: imgMatematicas,
   },
 ];
 
-const SOCIAL_AREAS = ['cs', 'biology', 'physics', 'engineering'];
+
+
+const AreasMarquee = () => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const animRef = useRef<number>(0);
+  const pausedRef = useRef(false);
+  const isDragging = useRef(false);
+  const dragStartX = useRef(0);
+  const dragScrollLeft = useRef(0);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    const track = trackRef.current;
+    if (!wrapper || !track) return;
+    const tick = () => {
+      if (!pausedRef.current) {
+        wrapper.scrollLeft += 0.7;
+        if (wrapper.scrollLeft >= track.scrollWidth / 2) {
+          wrapper.scrollLeft = 0;
+        }
+      }
+      animRef.current = requestAnimationFrame(tick);
+    };
+    animRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animRef.current);
+  }, []);
+
+  const doubled = [...AREAS_CIENTIFICAS, ...AREAS_CIENTIFICAS];
+
+  return (
+    <div className="areas-marquee-outer">
+      <div
+        className="areas-marquee-wrapper"
+        ref={wrapperRef}
+        onMouseEnter={() => { pausedRef.current = true; }}
+        onMouseLeave={() => {
+          pausedRef.current = false;
+          isDragging.current = false;
+          wrapperRef.current?.classList.remove('is-dragging');
+        }}
+        onMouseDown={(e) => {
+          isDragging.current = true;
+          pausedRef.current = true;
+          dragStartX.current = e.clientX;
+          dragScrollLeft.current = wrapperRef.current?.scrollLeft ?? 0;
+          wrapperRef.current?.classList.add('is-dragging');
+        }}
+        onMouseMove={(e) => {
+          if (!isDragging.current || !wrapperRef.current) return;
+          e.preventDefault();
+          const dx = e.clientX - dragStartX.current;
+          wrapperRef.current.scrollLeft = dragScrollLeft.current - dx;
+        }}
+        onMouseUp={() => {
+          isDragging.current = false;
+          pausedRef.current = false;
+          wrapperRef.current?.classList.remove('is-dragging');
+        }}
+        onTouchStart={() => { pausedRef.current = true; }}
+        onTouchEnd={() => { pausedRef.current = false; }}
+      >
+        <div className="areas-marquee-track" ref={trackRef}>
+          {doubled.map((area, i) => (
+            <a
+              key={`${area.id}-${i}`}
+              href={`/areas/${area.id}`}
+              className="area-card"
+              onClick={(e) => { if (isDragging.current) e.preventDefault(); }}
+            >
+              <div className="area-card-cover">
+                <img src={AREA_IMAGES[area.id]} alt={area.label} className="area-card-img" />
+              </div>
+              <div className="area-card-body">
+                <span className="area-label">{area.label}</span>
+                <span className="area-explore">Explorar artículos →</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const HomePage = () => {
   const { usuario } = useAuth();
@@ -131,6 +211,32 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+        
+        {/* ── SOBRE SCILENS ────────────────────────────────── */}
+      <section className="about-section">
+        <div className="about-container">
+          <div className="about-image-wrapper">
+            <img src={logodescilens} alt="Sobre SciLens" />
+          </div>
+          <div className="about-content">
+            <p className="section-eyebrow">Sobre SciLens</p>
+            <h2 className="section-title-xl">Más sobre nuestra plataforma</h2>
+            <p className="about-text">
+              SciLens nació con la misión de aglomerar el acceso al conocimiento científico.
+              Conectamos a millones de artículos de arXiv y CrossRef, y los
+              hacemos accesibles para estudiantes, investigadores y cualquier persona con curiosidad.
+            </p>
+            <p className="about-text">
+              Con herramientas de búsqueda avanzada, comparación de papers, recomendaciones
+              personalizadas y visualización de estadísticas, te ayudamos a navegar el vasto océano
+              del conocimiento con facilidad y precisión.
+            </p>
+            <Link to="/registro" className="btn-dark" style={{ marginTop: '0.5rem', width: 'fit-content' }}>
+              Comenzar ahora
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* ── SERVICIOS ────────────────────────────────────── */}
       <section className="section services-section">
@@ -138,22 +244,19 @@ const HomePage = () => {
           <p className="section-eyebrow">Qué ofrecemos</p>
           <div className="services-header">
             <h2 className="section-title-xl">Nuestros servicios</h2>
-            <Link to="/buscar" className="btn-outline">Ver todo</Link>
+            {/* <Link to="/buscar" className="btn-outline">Ver todo</Link> */}
           </div>
           <div className="services-grid">
             {SERVICES.map((s) => (
               <div key={s.title} className="service-card">
-                <div className="service-card-visual">
-                  <img src={s.img} alt={s.title} />
-                  <div className="service-card-icon-overlay">{s.icon}</div>
-                </div>
+                <div className="service-card-icon">{s.icon}</div>
                 <div className="service-card-body">
                   <h3 className="service-card-title">{s.title}</h3>
                   <p className="service-card-desc">{s.desc}</p>
                 </div>
-                <div className="service-card-footer">
+                {/* <div className="service-card-footer">
                   <Link to={s.link} className="btn-dark-sm">Comenzar</Link>
-                </div>
+                </div> */}
               </div>
             ))}
           </div>
@@ -170,72 +273,11 @@ const HomePage = () => {
             </div>
             <Link to="/areas" className="btn-outline">Ver todas</Link>
           </div>
-          <div className="areas-grid">
-            {AREAS_CIENTIFICAS.map((area) => (
-              <Link
-                key={area.id}
-                to={`/areas/${area.id}`}
-                className="area-card"
-              >
-                <div className="area-card-cover">
-                  <img src={AREA_IMAGES[area.id]} alt={area.label} className="area-card-img" />
-                </div>
-                <div className="area-card-body">
-                  <span className="area-label">{area.label}</span>
-                  <span className="area-explore">Explorar artículos →</span>
-                </div>
-              </Link>
-            ))}
-          </div>
         </div>
+        <AreasMarquee />
       </section>
 
-      {/* ── SOBRE SCILENS ────────────────────────────────── */}
-      <section className="about-section">
-        <div className="about-container">
-          <div className="about-image-wrapper">
-            <img src={outerspacebackground} alt="Sobre SciLens" />
-          </div>
-          <div className="about-content">
-            <p className="section-eyebrow">Sobre SciLens</p>
-            <h2 className="section-title-xl">Más sobre nuestra plataforma</h2>
-            <p className="about-text">
-              SciLens nació con la misión de democratizar el acceso al conocimiento científico.
-              Conectamos a millones de artículos de arXiv, CrossRef y Semantic Scholar, y los
-              hacemos accesibles para estudiantes, investigadores y cualquier persona con curiosidad.
-            </p>
-            <p className="about-text">
-              Con herramientas de búsqueda avanzada, comparación de papers, recomendaciones
-              personalizadas y visualización de estadísticas, te ayudamos a navegar el vasto océano
-              del conocimiento con facilidad y precisión.
-            </p>
-            <Link to="/registro" className="btn-dark" style={{ marginTop: '0.5rem', width: 'fit-content' }}>
-              Comenzar ahora
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── COLECCIONES / REDES ──────────────────────────── */}
-      <section className="social-proof-section">
-        <div className="social-proof-header">
-          <p className="section-eyebrow">Nuestras colecciones</p>
-          <h2 className="section-title-xl">Síguenos en nuestras áreas</h2>
-          <p className="social-proof-desc">
-            Millones de artículos curados de las mejores fuentes científicas del mundo, actualizados en tiempo real.
-          </p>
-        </div>
-        <div className="social-proof-grid">
-          {SOCIAL_AREAS.map((id) => (
-            <Link key={id} to={`/areas/${id}`} className="social-proof-item">
-              <img src={AREA_IMAGES[id]} alt={id} />
-            </Link>
-          ))}
-        </div>
-        <div className="flex justify-center">
-          <Link to="/areas" className="btn-dark">Ver todas las áreas</Link>
-        </div>
-      </section>
+      
 
       {/* ── CTA FINAL ────────────────────────────────────── */}
       {!usuario && (
