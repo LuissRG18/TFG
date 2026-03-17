@@ -1,10 +1,9 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { FlaskConical, Search, Bookmark, BarChart2, Atom, Brain, Dna, Calculator } from 'lucide-react';
+import { FlaskConical, Search, Bookmark, BarChart2, Sparkles } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import { AREAS_CIENTIFICAS } from '../types';
 import { useAuth } from '../context/AuthContext';
-// import heroBg from '../assets/hero-bg.jpg';
-// import hero2 from '../assets/hero2.jpg';
 
 import outerspacebackground from '../assets/outer-space-background.jpg';
 import imgInformatica from '../assets/imgInformatica.jpg.jpg';
@@ -40,40 +39,44 @@ const TRENDING = [
   'CRISPR', 'machine learning', 'neurociencia',
 ];
 
-const FEATURES = [
+const SERVICES = [
   {
-    icon: <Search size={24} className="text-indigo-500" />,
+    icon: <Search size={32} color="#fff" />,
     title: 'Busca & Explora',
-    desc: 'Accede a millones de artículos científicos de arXiv, Semantic Scholar y CrossRef en una sola búsqueda.',
+    desc: 'Accede a millones de artículos científicos de arXiv, Semantic Scholar y CrossRef en una sola búsqueda unificada.',
+    link: '/buscar',
+    img: imgAstronomia,
   },
   {
-    icon: <FlaskConical size={24} className="text-emerald-500" />,
+    icon: <FlaskConical size={32} color="#fff" />,
     title: 'Modo Divulgativo',
-    desc: 'Lee los abstracts en un lenguaje más accesible, sin perder el rigor científico.',
+    desc: 'Lee los abstracts en un lenguaje más accesible sin perder el rigor científico del artículo original.',
+    link: '/buscar',
+    img: imgMedicina,
   },
   {
-    icon: <Bookmark size={24} className="text-amber-500" />,
+    icon: <Bookmark size={32} color="#fff" />,
     title: 'Tus Favoritos',
-    desc: 'Guarda los artículos que más te interesan y organízalos con etiquetas y notas.',
+    desc: 'Guarda los artículos que más te interesan, organízalos con etiquetas y añade notas personalizadas.',
+    link: '/favoritos',
+    img: imgPsicologia,
   },
   {
-    icon: <BarChart2 size={24} className="text-rose-500" />,
+    icon: <BarChart2 size={32} color="#fff" />,
     title: 'Estadísticas',
-    desc: 'Visualiza tu actividad científica con gráficos interactivos por área, año y fuente.',
+    desc: 'Visualiza tu actividad científica con gráficos interactivos por área temática, año y fuente de datos.',
+    link: '/estadisticas',
+    img: imgMatematicas,
   },
 ];
 
-const SCIENCE_ICONS = [
-  <Atom size={32} className="text-indigo-400" />,
-  <Brain size={32} className="text-purple-400" />,
-  <Dna size={32} className="text-emerald-400" />,
-  <Calculator size={32} className="text-amber-400" />,
-];
+const SOCIAL_AREAS = ['cs', 'biology', 'physics', 'engineering'];
 
 const HomePage = () => {
   const { usuario } = useAuth();
   return (
     <div className="home-page">
+
       {/* ── HERO ─────────────────────────────────────────── */}
       <section className="hero" style={{ backgroundImage: `url(${outerspacebackground})` }}>
         <div className="hero-bg" />
@@ -103,7 +106,7 @@ const HomePage = () => {
           </div>
         </div>
         <div className="hero-icons">
-          {SCIENCE_ICONS.map((icon, i) => (
+          {([<Search size={28} />, <Sparkles size={28} />, <Bookmark size={28} />, <BarChart2 size={28} />] as React.ReactNode[]).map((icon, i) => (
             <div key={i} className="hero-icon-bubble" style={{ animationDelay: `${i * 0.4}s` }}>
               {icon}
             </div>
@@ -111,16 +114,46 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ── FEATURES ────────────────────────────────────── */}
-      <section className="section features-section">
+      {/* ── STATS STRIP ──────────────────────────────────── */}
+      <div className="stats-strip">
+        <div className="stats-strip-inner">
+          <div>
+            <div className="stat-strip-number">10<span>M+</span></div>
+            <div className="stat-strip-label">Artículos indexados</div>
+          </div>
+          <div>
+            <div className="stat-strip-number">12</div>
+            <div className="stat-strip-label">Áreas científicas</div>
+          </div>
+          <div>
+            <div className="stat-strip-number">3</div>
+            <div className="stat-strip-label">Fuentes de datos</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── SERVICIOS ────────────────────────────────────── */}
+      <section className="section services-section">
         <div className="section-container">
-          <h2 className="section-title">Todo lo que necesitas</h2>
-          <div className="features-grid">
-            {FEATURES.map((f) => (
-              <div key={f.title} className="feature-card">
-                <div className="feature-icon">{f.icon}</div>
-                <h3 className="feature-title">{f.title}</h3>
-                <p className="feature-desc">{f.desc}</p>
+          <p className="section-eyebrow">Qué ofrecemos</p>
+          <div className="services-header">
+            <h2 className="section-title-xl">Nuestros servicios</h2>
+            <Link to="/buscar" className="btn-outline">Ver todo</Link>
+          </div>
+          <div className="services-grid">
+            {SERVICES.map((s) => (
+              <div key={s.title} className="service-card">
+                <div className="service-card-visual">
+                  <img src={s.img} alt={s.title} />
+                  <div className="service-card-icon-overlay">{s.icon}</div>
+                </div>
+                <div className="service-card-body">
+                  <h3 className="service-card-title">{s.title}</h3>
+                  <p className="service-card-desc">{s.desc}</p>
+                </div>
+                <div className="service-card-footer">
+                  <Link to={s.link} className="btn-dark-sm">Comenzar</Link>
+                </div>
               </div>
             ))}
           </div>
@@ -130,8 +163,12 @@ const HomePage = () => {
       {/* ── ÁREAS ───────────────────────────────────────── */}
       <section className="section areas-section">
         <div className="section-container">
-          <div className="section-header">
-            <h2 className="section-title">Explora por área</h2>
+          <div className="services-header">
+            <div>
+              <p className="section-eyebrow">Conocimiento especializado</p>
+              <h2 className="section-title-xl">Explora por área</h2>
+            </div>
+            <Link to="/areas" className="btn-outline">Ver todas</Link>
           </div>
           <div className="areas-grid">
             {AREAS_CIENTIFICAS.map((area) => (
@@ -153,15 +190,66 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ── CTA ─────────────────────────────────────────── */}
+      {/* ── SOBRE SCILENS ────────────────────────────────── */}
+      <section className="about-section">
+        <div className="about-container">
+          <div className="about-image-wrapper">
+            <img src={outerspacebackground} alt="Sobre SciLens" />
+          </div>
+          <div className="about-content">
+            <p className="section-eyebrow">Sobre SciLens</p>
+            <h2 className="section-title-xl">Más sobre nuestra plataforma</h2>
+            <p className="about-text">
+              SciLens nació con la misión de democratizar el acceso al conocimiento científico.
+              Conectamos a millones de artículos de arXiv, CrossRef y Semantic Scholar, y los
+              hacemos accesibles para estudiantes, investigadores y cualquier persona con curiosidad.
+            </p>
+            <p className="about-text">
+              Con herramientas de búsqueda avanzada, comparación de papers, recomendaciones
+              personalizadas y visualización de estadísticas, te ayudamos a navegar el vasto océano
+              del conocimiento con facilidad y precisión.
+            </p>
+            <Link to="/registro" className="btn-dark" style={{ marginTop: '0.5rem', width: 'fit-content' }}>
+              Comenzar ahora
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── COLECCIONES / REDES ──────────────────────────── */}
+      <section className="social-proof-section">
+        <div className="social-proof-header">
+          <p className="section-eyebrow">Nuestras colecciones</p>
+          <h2 className="section-title-xl">Síguenos en nuestras áreas</h2>
+          <p className="social-proof-desc">
+            Millones de artículos curados de las mejores fuentes científicas del mundo, actualizados en tiempo real.
+          </p>
+        </div>
+        <div className="social-proof-grid">
+          {SOCIAL_AREAS.map((id) => (
+            <Link key={id} to={`/areas/${id}`} className="social-proof-item">
+              <img src={AREA_IMAGES[id]} alt={id} />
+            </Link>
+          ))}
+        </div>
+        <div className="flex justify-center">
+          <Link to="/areas" className="btn-dark">Ver todas las áreas</Link>
+        </div>
+      </section>
+
+      {/* ── CTA FINAL ────────────────────────────────────── */}
       {!usuario && (
-        <section className="section cta-section">
-          <div className="cta-card">
-            <h2 className="cta-title">Empieza a explorar ahora</h2>
-            <p className="cta-desc">Crea una cuenta gratuita para guardar tus favoritos y ver tus estadísticas.</p>
-            <div className="flex gap-3 justify-center flex-wrap">
-              <Link to="/registro" className="btn-primary">Crear cuenta gratis</Link>
-              <Link to="/buscar" className="btn-outline">Explorar sin registrarse</Link>
+        <section className="cta-dark-section">
+          <div className="cta-dark-inner">
+            <p className="section-eyebrow">Únete hoy</p>
+            <h2 className="cta-dark-title">Empieza a explorar la ciencia ahora</h2>
+            <p className="cta-dark-desc">
+              Crea una cuenta gratuita para guardar tus artículos favoritos, ver estadísticas
+              personalizadas y recibir recomendaciones a tu medida.
+            </p>
+            <div className="cta-dark-buttons">
+              <Link to="/registro" className="btn-light">Crear cuenta gratis</Link>
+              <Link to="/buscar" className="btn-outline-white">Explorar sin registrarse</Link>
             </div>
           </div>
         </section>
