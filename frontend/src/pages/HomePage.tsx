@@ -44,7 +44,7 @@ const SERVICES = [
   {
     icon: <Search size={26} color="#fff" />,
     title: 'Busca & Explora',
-    desc: 'Accede a millones de artículos científicos de arXiv, Semantic Scholar y CrossRef en una sola búsqueda unificada.',
+    desc: 'Accede a millones de artículos científicos de arXiv y CrossRef en una sola búsqueda unificada.',
     link: '/buscar',
   },
   {
