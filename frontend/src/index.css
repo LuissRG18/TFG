@@ -1111,7 +1111,6 @@ img { max-width: 100%; }
   flex-direction: column;
   transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s;
 }
-.area-card:hover { box-shadow: var(--shadow-md); border-color: rgba(14,165,233,0.35); transform: translateY(-3px); }
 .area-card-cover {
   height: 260px;
   overflow: hidden;
@@ -1123,7 +1122,6 @@ img { max-width: 100%; }
   display: block;
   transition: transform 0.35s ease;
 }
-.area-card:hover .area-card-img { transform: scale(1.06); }
 .area-card-body {
   padding: 0.85rem 1rem 1rem;
   display: flex;
@@ -1144,7 +1142,11 @@ img { max-width: 100%; }
   width: fit-content;
   transition: background 0.2s;
 }
-.area-card:hover .area-explore { background: #2d2d2d; }
+@media (hover: hover) {
+  .area-card:hover { box-shadow: var(--shadow-md); border-color: rgba(14,165,233,0.35); transform: translateY(-3px); }
+  .area-card:hover .area-card-img { transform: scale(1.06); }
+  .area-card:hover .area-explore { background: #2d2d2d; }
+}
 
 /* ── Areas marquee (HomePage) ────────────────────────── */
 .areas-marquee-outer {
