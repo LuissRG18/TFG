@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   ExternalLink, FileText, Bookmark, BookmarkCheck,
   ChevronDown, ChevronUp, Sparkles, Download, Share2, Copy, CheckCheck,
@@ -32,6 +32,12 @@ const FUENTE_LABEL: Record<string, string> = {
 
 const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare, isSelectedForCompare }: Props) => {
   const { usuario } = useAuth();
+  const navigate = useNavigate();
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button, a, input')) return;
+    navigate(`/articulo/${articulo.fuente}/${encodeURIComponent(articulo.id)}`);
+  };
   const [expandido, setExpandido] = useState(false);
   const [mostraDivulgativo, setMostraDivulgativo] = useState(false);
   const [guardado, setGuardado] = useState(!!favoritoId);
@@ -97,7 +103,11 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
     : articulo.abstract;
 
   return (
-    <article className={`articulo-card ${isSelectedForCompare ? 'articulo-card--selected' : ''}`}>
+    <article
+      className={`articulo-card ${isSelectedForCompare ? 'articulo-card--selected' : ''}`}
+      onClick={handleCardClick}
+      style={{ cursor: 'pointer' }}
+    >
       {/* Visual cover band */}
       <div className={`articulo-card-cover cover-${articulo.fuente}`}>
         <div className="articulo-card-header">
