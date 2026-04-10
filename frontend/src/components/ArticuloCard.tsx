@@ -21,13 +21,11 @@ interface Props {
 const BADGE_COLORS: Record<string, string> = {
   arxiv: 'badge-arxiv',
   crossref: 'badge-crossref',
-  semanticscholar: 'badge-semanticscholar',
 };
 
 const FUENTE_LABEL: Record<string, string> = {
   arxiv: 'arXiv',
   crossref: 'CrossRef',
-  semanticscholar: 'Semantic Scholar',
 };
 
 const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare, isSelectedForCompare }: Props) => {

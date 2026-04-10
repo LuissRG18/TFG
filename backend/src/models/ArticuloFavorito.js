@@ -7,14 +7,14 @@ const articuloFavoritoSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
-    // ID externo del artículo (arXiv, Semantic Scholar, etc.)
+    // ID externo del artículo (arXiv, CrossRef, etc.)
     articuloId: {
       type: String,
       required: [true, 'El ID del artículo es obligatorio'],
     },
     fuente: {
       type: String,
-      enum: ['arxiv', 'semanticscholar', 'crossref', 'otro'],
+      enum: ['arxiv', 'crossref', 'otro'],
       required: [true, 'La fuente del artículo es obligatoria'],
     },
     titulo: {

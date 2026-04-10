@@ -187,7 +187,7 @@ const HomePage = () => {
         </div>
         <div className="hero-icons">
           {([<Search size={28} />, <Sparkles size={28} />, <Bookmark size={28} />, <BarChart2 size={28} />] as React.ReactNode[]).map((icon, i) => (
-            <div key={i} className="hero-icon-bubble" style={{ animationDelay: `${i * 0.4}s` }}>
+            <div key={i} className={`hero-icon-bubble hero-icon-bubble-${i}`}>
               {icon}
             </div>
           ))}
