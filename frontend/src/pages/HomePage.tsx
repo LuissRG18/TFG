@@ -6,6 +6,7 @@ import { AREAS_CIENTIFICAS } from '../types';
 import { useAuth } from '../context/AuthContext';
 
 import outerspacebackground from '../assets/outer-space-background.jpg';
+import imgArtemisIICrew from '../assets/imgArtemis2.webp';
 import imgInformatica from '../assets/imgInformatica.jpg.jpg';
 import imgMedicina from '../assets/imgMedicina.jpg.jpg';
 import imgFisica from '../assets/imgFisica-jpg.png';
@@ -261,6 +262,49 @@ const HomePage = () => {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ── ARTEMIS II ───────────────────────────────────── */}
+      <section
+        className="artemis-home-section"
+        style={{ backgroundImage: `url(${imgArtemisIICrew})` }}
+      >
+        <div className="artemis-home-overlay" />
+        <div className="artemis-home-content">
+          <div className="artemis-home-left">
+            <span className="artemis-home-eyebrow">Misión activa · NASA</span>
+            <h2 className="artemis-home-title">Artemis II</h2>
+            <p className="artemis-home-desc">
+              Por primera vez en más de 50 años, cuatro astronautas viajarán al espacio profundo
+              a bordo de la cápsula Orion. Reid Wiseman, Victor Glover, Christina Koch y
+              Jeremy Hansen rodearán la Luna en una órbita libre, abriendo el camino
+              al regreso humano permanente a nuestro satélite natural.
+            </p>
+            <div className="artemis-home-actions">
+              <Link to="/artemis" className="artemis-home-btn-primary">
+                Descubrir la misión
+              </Link>
+              <Link to="/areas/astronomy" className="artemis-home-btn-ghost">
+                Artículos de astronomía
+              </Link>
+              <a
+                href="https://www.nasa.gov/missions/artemis/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="artemis-home-btn-ghost"
+              >
+                NASA.gov ↗
+              </a>
+            </div>
+          </div>
+          <ul className="artemis-home-facts">
+            <li><span>Destino</span>Órbita lunar distante</li>
+            <li><span>Vehículo</span>Orion · SLS Block 1</li>
+            <li><span>Duración</span>~10 días</li>
+            <li><span>Tripulación</span>4 astronautas (NASA / CSA)</li>
+          </ul>
+        </div>
+        <p className="artemis-home-credit">Imagen: NASA — Dominio público</p>
       </section>
 
       {/* ── ÁREAS ───────────────────────────────────────── */}

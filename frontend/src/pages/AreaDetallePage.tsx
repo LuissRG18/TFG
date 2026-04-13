@@ -4,6 +4,7 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import { AREAS_CIENTIFICAS } from '../types';
 import type { Articulo } from '../types';
 import ArticuloCard from '../components/ArticuloCard';
+import ArtemisHero from '../components/ArtemisHero';
 import { buscarArxiv, buscarCrossRef } from '../services/articulosService';
 
 import imgInformatica from '../assets/imgInformatica.jpg.jpg';
@@ -79,8 +80,8 @@ const AreaDetallePage = () => {
       else result = await buscarCrossRef(params);
       setArticulos(result.articulos);
       setTotal(result.total);
-    } catch (err: any) {
-      setError(err.message || 'No se pudo conectar con la API. Inténtalo de nuevo.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo conectar con la API. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -123,6 +124,9 @@ const AreaDetallePage = () => {
           </p>
         </div>
       </div>
+
+      {/* ── Artemis II highlight (only for astronomy) ── */}
+      {area.id === 'astronomy' && <ArtemisHero />}
 
       {/* ── Content ── */}
       <div className="page-container" style={{ paddingTop: '2rem' }}>

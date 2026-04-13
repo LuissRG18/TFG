@@ -20,10 +20,10 @@ const FavoritosPage = () => {
   const cargar = async (p = pagina) => {
     setLoading(true);
     try {
-      const params: Record<string, unknown> = { pagina: p, limite: LIMITE };
-      if (filtroLeer !== undefined) params.leidoMasTarde = filtroLeer;
-      if (filtroColeccion) params.coleccion = filtroColeccion;
-      const res = await obtenerFavoritos(params as any);
+      const params: Parameters<typeof obtenerFavoritos>[0] = { pagina: p, limite: LIMITE };
+      if (filtroLeer !== undefined) params!.leidoMasTarde = filtroLeer;
+      if (filtroColeccion) params!.coleccion = filtroColeccion;
+      const res = await obtenerFavoritos(params);
       setFavoritos(res.favoritos);
       setTotal(res.total);
       setTotalPaginas(res.totalPaginas || 1);
@@ -45,6 +45,7 @@ const FavoritosPage = () => {
     setPagina(1);
   }, [filtroLeer, filtroColeccion]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { cargar(pagina); }, [pagina, filtroLeer, filtroColeccion]);
   useEffect(() => { cargarColecciones(); }, []);
 
@@ -113,9 +114,9 @@ const FavoritosPage = () => {
               <button
                 onClick={() => toggleLeerMasTarde(fav)}
                 className={`btn-link ${fav.leidoMasTarde ? 'text-amber-500' : ''}`}
-                title="Leer mÃ¡s tarde"
+                title="Leer más tarde"
               >
-                <Clock size={14} /> {fav.leidoMasTarde ? 'Quitar de "leer despuÃ©s"' : 'Leer mÃ¡s tarde'}
+                <Clock size={14} /> {fav.leidoMasTarde ? 'Quitar de "leer después"' : 'Leer más tarde'}
               </button>
               {fav.coleccion && (
                 <span className="inline-flex items-center gap-1 text-xs text-gray-500">
