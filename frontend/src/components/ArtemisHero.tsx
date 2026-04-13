@@ -77,7 +77,7 @@ const ArtemisHero = () => {
         if (!launch) throw new Error('No data');
 
         const crew: CrewMember[] = (launch.rocket?.spacecraft_stage?.launch_crew ?? []).map(
-          (c: any) => ({
+          (c: { id: number; astronaut?: { name?: string; agency?: { name?: string }; profile_image_thumbnail?: string }; role?: { role?: string } }) => ({
             id: c.id,
             name: c.astronaut?.name ?? 'Desconocido',
             agency: c.astronaut?.agency?.name ?? '',
@@ -94,8 +94,8 @@ const ArtemisHero = () => {
           crew,
           missionUrl: launch.infoURLs?.[0]?.url ?? 'https://www.nasa.gov/missions/artemis/',
         });
-      } catch (err: any) {
-        if (err.name !== 'AbortError') setError(true);
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') setError(true);
       } finally {
         setLoading(false);
       }
