@@ -1,9 +1,12 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FlaskConical, Search, Bookmark, BarChart2, Sparkles } from 'lucide-react';
+import { FlaskConical, Search, Bookmark, BarChart2, Sparkles, Newspaper } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
+import NoticiaCard from '../components/NoticiaCard';
+import { getNoticias } from '../services/noticiasService';
 import { AREAS_CIENTIFICAS } from '../types';
 import { useAuth } from '../context/AuthContext';
+import type { Noticia } from '../types';
 
 import outerspacebackground from '../assets/outer-space-background.jpg';
 import imgArtemisIICrew from '../assets/imgArtemis2.webp';
@@ -155,6 +158,21 @@ const AreasMarquee = () => {
 
 const HomePage = () => {
   const { usuario } = useAuth();
+
+  const [noticiaEs, setNoticiaEs] = useState<Noticia[]>([]);
+  const [noticiaEn, setNoticiaEn] = useState<Noticia[]>([]);
+  const [noticiaTab, setNoticiaTab] = useState<'es' | 'en'>('es');
+  const [noticiaLoading, setNoticiaLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([getNoticias('es', 6), getNoticias('en', 6)])
+      .then(([resEs, resEn]) => {
+        setNoticiaEs(resEs.noticias.slice(0, 6));
+        setNoticiaEn(resEn.noticias.slice(0, 6));
+      })
+      .catch(() => {})
+      .finally(() => setNoticiaLoading(false));
+  }, []);
   return (
     <div className="home-page">
 
@@ -319,6 +337,55 @@ const HomePage = () => {
           </div>
         </div>
         <AreasMarquee />
+      </section>
+
+      {/* ── NOTICIAS DESTACADAS ──────────────────────────── */}
+      <section className="section noticias-home-section">
+        <div className="section-container">
+          <div className="services-header">
+            <div>
+              <p className="section-eyebrow">Actualidad científica</p>
+              <h2 className="section-title-xl">Últimas noticias</h2>
+            </div>
+            <Link to="/noticias" className="btn-outline">
+              <Newspaper size={15} /> Ver todas
+            </Link>
+          </div>
+
+          {/* Tabs ES / EN */}
+          <div className="noticias-home-tabs">
+            <button
+              className={`noticias-tab${noticiaTab === 'es' ? ' noticias-tab--active' : ''}`}
+              onClick={() => setNoticiaTab('es')}
+            >
+              🇪🇸 Español
+            </button>
+            <button
+              className={`noticias-tab${noticiaTab === 'en' ? ' noticias-tab--active' : ''}`}
+              onClick={() => setNoticiaTab('en')}
+            >
+              🇬🇧 English
+            </button>
+          </div>
+
+          {noticiaLoading ? (
+            <div className="noticias-home-loading">
+              {[...Array(3)].map((_, i) => <div key={i} className="noticia-skeleton" />)}
+            </div>
+          ) : (
+            <div className="noticias-home-grid">
+              {(noticiaTab === 'es' ? noticiaEs : noticiaEn).map((n) => (
+                <NoticiaCard key={n._id || n.url} noticia={n} />
+              ))}
+            </div>
+          )}
+
+          <div className="noticias-home-cta">
+            <Link to="/noticias" className="btn-dark">
+              <Newspaper size={16} /> Ver todas las noticias
+            </Link>
+          </div>
+        </div>
       </section>
 
       

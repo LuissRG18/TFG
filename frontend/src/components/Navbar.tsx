@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import {
   FlaskConical, Search, BookMarked, BarChart2, LogIn, LogOut, User,
-  Menu, X, History, Sparkles, GitCompare, Shield, Moon, Sun,
+  Menu, X, History, Sparkles, GitCompare, Shield, Moon, Sun, Newspaper,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -56,6 +56,9 @@ const Navbar = () => {
           </NavLink>
           <NavLink to="/comparar" className={navLinkClass}>
             <GitCompare size={16} /> Comparar
+          </NavLink>
+          <NavLink to="/noticias" className={navLinkClass}>
+            <Newspaper size={16} /> Noticias
           </NavLink>
           {usuario && (
             <>
@@ -132,6 +135,9 @@ const Navbar = () => {
           </NavLink>
           <NavLink to="/comparar" className={navLinkClass} onClick={() => setMenuOpen(false)}>
             <GitCompare size={16} /> Comparar
+          </NavLink>
+          <NavLink to="/noticias" className={navLinkClass} onClick={() => setMenuOpen(false)}>
+            <Newspaper size={16} /> Noticias
           </NavLink>
           {usuario && (
             <>

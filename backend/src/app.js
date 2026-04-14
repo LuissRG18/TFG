@@ -9,6 +9,7 @@ const authRoutes      = require('./routes/authRoutes');
 const articulosRoutes = require('./routes/articulosRoutes');
 const favoritosRoutes = require('./routes/favoritosRoutes');
 const usuariosRoutes  = require('./routes/usuariosRoutes');
+const noticiasRoutes  = require('./routes/noticiasRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -93,6 +94,7 @@ app.use('/api/auth',       authLimiter, authRoutes);
 app.use('/api/articulos',  articulosRoutes);
 app.use('/api/favoritos',  favoritosRoutes);
 app.use('/api/usuarios',   usuariosRoutes);
+app.use('/api/noticias',   noticiasRoutes);
 
 // ── Health check ─────────────────────────────
 app.get('/', (req, res) => {

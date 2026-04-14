@@ -79,6 +79,18 @@ export interface EstadisticasGlobales {
   busquedasPorFuente: { _id: string; total: number }[];
 }
 
+// ─── Noticia científica ────────────────────────────────────────────────────
+export interface Noticia {
+  _id: string;
+  titulo: string;
+  resumen: string;
+  url: string;
+  imagen?: string | null;
+  fuente: string;
+  idioma: 'es' | 'en';
+  fecha: string;
+}
+
 // ─── Áreas científicas ─────────────────────────────────────────────────────
 export const AREAS_CIENTIFICAS = [
   { id: 'cs', label: 'Informática', emoji: '💻' },

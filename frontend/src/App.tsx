@@ -21,6 +21,7 @@ import AdminPage from './pages/AdminPage';
 import RecomendacionesPage from './pages/RecomendacionesPage';
 import ComparadorPage from './pages/ComparadorPage';
 import ArtemisPage from './pages/ArtemisPage';
+import NoticiasPage from './pages/NoticiasPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/recomendados" element={<RecomendacionesPage />} />
                 <Route path="/comparar" element={<ComparadorPage />} />
                 <Route path="/artemis" element={<ArtemisPage />} />
+                <Route path="/noticias" element={<NoticiasPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/registro" element={<RegistroPage />} />
                 <Route
