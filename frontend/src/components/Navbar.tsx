@@ -35,7 +35,7 @@ const Navbar = () => {
   const isAdmin = usuario?.rol === 'admin';
 
   return (
-    <nav className={`navbar${isSolid ? ' navbar--scrolled' : ''}`}>
+    <nav className={`navbar${isSolid ? ' navbar--scrolled' : ''}${menuOpen ? ' navbar--open' : ''}`}>
       <div className="navbar-inner">
         {/* Logo */}
         <Link to="/" className="navbar-logo">
