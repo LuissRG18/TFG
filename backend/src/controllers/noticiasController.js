@@ -5,7 +5,8 @@ const FEEDS = {
   es: [
     { url: 'https://www.agenciasinc.es/rss/portada',                                                            fuente: 'SINC' },
     { url: 'https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/ciencia/portada',                  fuente: 'El País Ciencia' },
-    { url: 'https://feeds.bbci.co.uk/mundo/ciencia_y_tecnologia/rss.xml',                                       fuente: 'BBC Mundo' },
+    { url: 'https://www.nationalgeographic.com.es/rss/ciencia',                                                 fuente: 'National Geographic' },
+    { url: 'https://www.muyinteresante.es/rss',                                                                 fuente: 'Muy Interesante' },
   ],
   en: [
     { url: 'https://phys.org/rss-feed/',        fuente: 'Phys.org' },
@@ -13,9 +14,9 @@ const FEEDS = {
   ],
 };
 
-// Palabras clave científicas — si título o resumen contienen al menos una, la noticia pasa
+// Palabras clave científicas — la keyword debe aparecer en el TÍTULO para garantizar relevancia
 const SCIENCE_KEYWORDS_ES = [
-  'ciencia', 'científic', 'investigaci', 'investigador', 'descubrimiento',
+  'ciencia', 'científic', 'investigación científica', 'investigadores', 'descubrimiento',
   'experimento', 'laboratorio', 'biolog', 'quím', 'físic', 'astronom', 'genétic', 'genómic',
   'neurociencia', 'cerebro', 'vacuna', 'virus', 'bacteria', 'pandemia',
   'cambio climático', 'calentamiento global', 'emisiones de co2',
@@ -25,11 +26,12 @@ const SCIENCE_KEYWORDS_ES = [
   'misión espacial', 'nasa', 'telescopio', 'agujero negro', 'materia oscura',
   'ecología', 'biodiversidad', 'ecosistema', 'deforestación', 'energía renovable',
   'fusión nuclear', 'cuántic', 'superconductor', 'nanotecnolog',
-  'fármaco', 'ensayo clínico', 'estudio científico', 'hallazgo científico',
+  'fármaco', 'ensayo clínico', 'hallazgo', 'espacio', 'asteroide', 'exoplaneta',
+  'glaciar', 'permafrost', 'arrecife', 'microplásticos', 'antibiót',
 ];
 
 const SCIENCE_KEYWORDS_EN = [
-  'science', 'scientific', 'research', 'researcher', 'discovery',
+  'science', 'scientific', 'researchers', 'discovery',
   'experiment', 'laboratory', 'biology', 'chemistry', 'physics', 'astronomy', 'genetic',
   'genomic', 'neuroscience', 'brain', 'vaccine', 'virus', 'bacteria', 'pandemic',
   'climate change', 'global warming', 'co2 emissions',
@@ -39,35 +41,30 @@ const SCIENCE_KEYWORDS_EN = [
   'space mission', 'nasa', 'telescope', 'black hole', 'dark matter',
   'ecology', 'biodiversity', 'ecosystem', 'deforestation', 'renewable energy',
   'nuclear fusion', 'quantum', 'superconductor', 'nanotechnology',
-  'drug', 'clinical trial', 'scientific study', 'astrophysics', 'biochemistry',
-];
-
-// Términos que indican contenido político/no científico — si aparecen solos, se descarta la noticia
-const POLITICAL_BLACKLIST_ES = [
-  'elecciones', 'partido político', 'campaña electoral', 'candidato', 'diputado',
-  'senador', 'congreso de los diputados', 'senado', 'coalición', 'referéndum',
-  'presupuesto general', 'reforma laboral', 'negociación sindical', 'huelga general',
-  'relaciones exteriores', 'tratado de paz', 'conflicto armado', 'acuerdo diplomático',
-];
-
-const POLITICAL_BLACKLIST_EN = [
-  'election', 'political party', 'electoral campaign', 'candidate', 'congressman',
-  'senator', 'coalition government', 'referendum', 'general budget',
-  'labor reform', 'trade union', 'general strike', 'foreign relations',
-  'peace treaty', 'armed conflict', 'diplomatic agreement',
+  'drug trial', 'clinical trial', 'astrophysics', 'biochemistry', 'asteroid', 'exoplanet',
+  'glacier', 'coral reef', 'microplastics', 'antibiotic',
 ];
 
 function isScience(titulo, resumen, idioma) {
-  const text = `${titulo} ${resumen}`.toLowerCase();
-  const keywords = idioma === 'en' ? SCIENCE_KEYWORDS_EN : SCIENCE_KEYWORDS_ES;
-  const blacklist = idioma === 'en' ? POLITICAL_BLACKLIST_EN : POLITICAL_BLACKLIST_ES;
+  const titleLower  = titulo.toLowerCase();
+  const combined    = `${titulo} ${resumen}`.toLowerCase();
+  const keywords    = idioma === 'en' ? SCIENCE_KEYWORDS_EN : SCIENCE_KEYWORDS_ES;
 
-  const hasScience = keywords.some((kw) => text.includes(kw));
-  if (!hasScience) return false;
+  // Exige que el TÍTULO contenga al menos una keyword científica
+  // (evita que noticias políticas con menciones secundarias pasen el filtro)
+  const titleMatch = keywords.some((kw) => titleLower.includes(kw));
+  if (!titleMatch) return false;
 
-  // Si contiene algún término político Y no tiene una keyword científica fuerte, descartar
-  const hasBlacklisted = blacklist.some((bl) => text.includes(bl));
-  if (hasBlacklisted) return false;
+  // Palabras que delatan contexto político aunque aparezca alguna keyword
+  const politicalSignals = idioma === 'en'
+    ? ['election', 'campaign', 'congress', 'senate', 'political party', 'minister', 'prime minister',
+       'trade deal', 'sanctions', 'military', 'nato', 'diplomacy']
+    : ['elecciones', 'campaña electoral', 'partido político', 'diputado', 'senado', 'congreso',
+       'ministro', 'presidente del gobierno', 'reforma laboral', 'huelga', 'convenio colectivo',
+       'otan', 'diplomacia', 'aranceles', 'sanciones'];
+
+  const hasPolitical = politicalSignals.some((p) => combined.includes(p));
+  if (hasPolitical) return false;
 
   return true;
 }
