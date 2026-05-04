@@ -4514,4 +4514,26 @@ img { max-width: 100%; }
   .areas-code-grid-wrapper { padding: 1.5rem 1rem; }
 }
 
+/* ── Announcement bar — mobile ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  /* Make bar taller and hide the long status text; keep only the controls */
+  .announcement-bar { height: 40px; }
+  .announcement-bar-status { display: none; }
+  .announcement-bar-inner { justify-content: flex-end; }
+
+  /* Shift navbar down to match new bar height */
+  .navbar { top: 40px !important; }
+
+  /* Update all page-level padding-top / top offsets from 32px → 40px */
+  .page-container { padding-top: calc(60px + 40px + 2rem) !important; }
+  .hero-editorial  { padding-top: calc(60px + 40px); }
+  .buscar-page-header    { padding-top: calc(60px + 40px); }
+  .areas-page-header     { padding-top: calc(60px + 40px); }
+  .historial-page-header { padding-top: calc(60px + 40px); }
+  .recom-page-header     { padding-top: calc(60px + 40px); }
+  .perfil-page-header    { padding-top: calc(60px + 40px); }
+  .area-detail-header    { padding-top: calc(60px + 40px); }
+  .buscar-sidebar { top: calc(60px + 40px + 1rem); }
+}
+
 /* end of redesign CSS */
