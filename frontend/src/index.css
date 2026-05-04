@@ -2768,6 +2768,15 @@ img { max-width: 100%; }
   .artemis-crew-grid { grid-template-columns: 1fr; }
   .artemis-fact { flex: 1 1 100px; }
 }
+@media (max-width: 480px) {
+  .artemis-banner { height: 180px; }
+  .artemis-banner-content { padding: 1rem; gap: 0.4rem; }
+  .artemis-title { font-size: clamp(1.4rem, 7vw, 1.8rem); }
+  .artemis-subtitle { font-size: 0.85rem; }
+  .artemis-fact { flex: 1 1 50%; border-bottom: 1px solid var(--border); padding: 0.65rem 1rem; }
+  .artemis-section { padding: 1rem; }
+  .artemis-hero { margin: 0 0 1.25rem; }
+}
 
 
 .artemis-home-section {

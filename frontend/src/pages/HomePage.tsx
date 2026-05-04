@@ -152,7 +152,7 @@ const HomePage = () => {
       </div>
 
       {/* ── ARTEMIS II ──────────────────────────────────────── */}
-      <section className="section home-areas-section" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
+      <section className="section home-areas-section">
         <div className="section-container">
           <p className="section-eyebrow">CIENCIA EN DIRECTO</p>
           <h2 className="section-title-xl" style={{ marginBottom: '1.5rem' }}>Misión Artemis II</h2>
