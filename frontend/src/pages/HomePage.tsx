@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Newspaper } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import NoticiaCard from '../components/NoticiaCard';
+import ArtemisHero from '../components/ArtemisHero';
 import { getNoticias } from '../services/noticiasService';
 import { buscarArxiv } from '../services/articulosService';
 import { useAuth } from '../context/AuthContext';
@@ -149,6 +150,15 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+
+      {/* ── ARTEMIS II ──────────────────────────────────────── */}
+      <section className="section home-areas-section" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
+        <div className="section-container">
+          <p className="section-eyebrow">CIENCIA EN DIRECTO</p>
+          <h2 className="section-title-xl" style={{ marginBottom: '1.5rem' }}>Misión Artemis II</h2>
+          <ArtemisHero />
+        </div>
+      </section>
 
       {/* ── ÁREAS CIENTÍFICAS ─────────────────────────────── */}
       <section className="section home-areas-section">
