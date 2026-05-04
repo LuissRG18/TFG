@@ -20,6 +20,7 @@ export interface Articulo {
 // ─── Usuario ───────────────────────────────────────────────────────────────
 export interface Usuario {
   id: string;
+  _id?: string;
   nombre: string;
   email: string;
   rol: 'user' | 'admin' | 'usuario';

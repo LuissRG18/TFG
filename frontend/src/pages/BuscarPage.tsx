@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, Loader2, AlertCircle } from 'lucide-react';
+import { Search, Loader2, AlertCircle } from 'lucide-react';
 import ArticuloCard from '../components/ArticuloCard';
 import SearchBar from '../components/SearchBar';
 import type { Articulo } from '../types';
@@ -28,14 +28,13 @@ const BuscarPage = () => {
   const [anioDesde, setAnioDesde] = useState('');
   const [anioHasta, setAnioHasta] = useState('');
   const [minCitas, setMinCitas] = useState('');
-  const [autorFiltro, setAutorFiltro] = useState('');
+  const [autorFiltro] = useState('');
   const [orden, setOrden] = useState<Orden>('relevancia');
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [total, setTotal] = useState(0);
   const [pagina, setPagina] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [filtrosOpen, setFiltrosOpen] = useState(false);
 
   const buscar = useCallback(async () => {
     if (!query) return;
@@ -59,8 +58,6 @@ const BuscarPage = () => {
       else result = await buscarCrossRef(params);
 
       let arts = result.articulos;
-
-      // Client-side filters for fields the APIs don't natively support
       if (anioDesde) arts = arts.filter((a) => (a.anio ?? 0) >= Number(anioDesde));
       if (anioHasta) arts = arts.filter((a) => (a.anio ?? 9999) <= Number(anioHasta));
       if (minCitas) arts = arts.filter((a) => (a.citaciones ?? 0) >= Number(minCitas));
@@ -70,10 +67,9 @@ const BuscarPage = () => {
       setArticulos(arts);
       setTotal(result.total);
 
-      // Save search to historial if logged in
       if (usuario) {
         guardarBusqueda({ termino: query, fuente, area: area || undefined, resultados: arts.length })
-          .catch(() => {/* silent */});
+          .catch(() => {});
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'No se pudo conectar con la API.';
@@ -92,161 +88,125 @@ const BuscarPage = () => {
   }, [buscar]);
 
   return (
-    <div className="page-container">
-      <div className="buscar-header">
-        <SearchBar defaultValue={query} />
+    <div className="buscar-page">
+      {/* ── Header ── */}
+      <div className="buscar-page-header">
+        <div className="buscar-page-header-inner">
+          {query ? (
+            <>
+              <p className="section-eyebrow">RESULTADOS DE BÚSQUEDA</p>
+              <h1 className="buscar-page-title">Resultados para <em>"{query}"</em></h1>
+              {!loading && total > 0 && (
+                <p className="buscar-page-count">
+                  {total.toLocaleString()} artículos encontrados · ordenado por {orden}
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <p className="section-eyebrow">BUSCAR ARTÍCULOS</p>
+              <h1 className="buscar-page-title">Explorar la literatura científica</h1>
+            </>
+          )}
+          <div className="buscar-header">
+            <SearchBar defaultValue={query} />
+          </div>
+        </div>
       </div>
 
-      {/* Filtros */}
-      <div className="buscar-filters-bar">
-        {/* Fuentes */}
-        <div className="filter-group">
-          {FUENTES.map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setFuente(f.id)}
-              className={`filter-btn ${fuente === f.id ? 'active' : ''}`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-
-        <button
-          onClick={() => setFiltrosOpen(!filtrosOpen)}
-          className={`btn-outline-sm ${filtrosOpen ? 'active' : ''}`}
-        >
-          <SlidersHorizontal size={14} /> Filtros
-        </button>
-      </div>
-
-      {filtrosOpen && (
-        <div className="filtros-panel">
-          {/* Área científica */}
-          <div className="filter-section">
-            <label className="filter-label">Área científica</label>
-            <div className="filter-areas">
-              <button onClick={() => setArea('')} className={`filter-btn ${!area ? 'active' : ''}`}>Todas</button>
-              {AREAS_CIENTIFICAS.map((a) => (
-                <button key={a.id} onClick={() => setArea(a.id)} className={`filter-btn ${area === a.id ? 'active' : ''}`}>
-                  {a.emoji} {a.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Rango de años */}
-          <div className="filter-section">
-            <label className="filter-label">Rango de años</label>
-            <div className="flex gap-2 items-center flex-wrap">
-              <input
-                type="number" placeholder="Desde (ej. 2018)" value={anioDesde}
-                onChange={(e) => setAnioDesde(e.target.value)}
-                className="filter-input" min="1900" max="2100"
-              />
-              <span className="text-gray-400">â€”</span>
-              <input
-                type="number" placeholder="Hasta (ej. 2026)" value={anioHasta}
-                onChange={(e) => setAnioHasta(e.target.value)}
-                className="filter-input" min="1900" max="2100"
-              />
-            </div>
-          </div>
-
-          {/* Mínimo de citas */}
-          <div className="filter-section">
-            <label className="filter-label">Mínimo de citas</label>
-            <input
-              type="number" placeholder="ej. 10" value={minCitas}
-              onChange={(e) => setMinCitas(e.target.value)}
-              className="filter-input" min="0"
-            />
-          </div>
-
-          {/* Autor */}
-          <div className="filter-section">
-            <label className="filter-label">Autor</label>
-            <input
-              type="text" placeholder="Nombre del autor..." value={autorFiltro}
-              onChange={(e) => setAutorFiltro(e.target.value)}
-              className="filter-input"
-            />
-          </div>
-
-          {/* Orden */}
-          <div className="filter-section">
-            <label className="filter-label">Ordenar por</label>
-            <div className="filter-areas">
-              {(['relevancia', 'anio', 'citas'] as Orden[]).map((o) => (
-                <button key={o} onClick={() => setOrden(o)} className={`filter-btn ${orden === o ? 'active' : ''}`}>
-                  {o.charAt(0).toUpperCase() + o.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Resultados */}
-      {!query && (
-        <div className="empty-state">
-          <Search size={48} className="text-gray-300" />
-          <p className="text-gray-400">Introduce un término para empezar a buscar</p>
-        </div>
-      )}
-
-      {loading && (
-        <div className="loading-state">
-          <Loader2 size={32} className="animate-spin text-indigo-500" />
-          <p className="text-gray-400">Buscando artículos...</p>
-        </div>
-      )}
-
-      {error && (
-        <div className="error-banner">
-          <AlertCircle size={18} /> {error}
-        </div>
-      )}
-
-      {!loading && !error && articulos.length > 0 && (
-        <>
-          <div className="results-header">
-            <p className="results-count">
-              {total.toLocaleString()} resultados para <strong>"{query}"</strong>
-            </p>
-          </div>
-          <div className="articulos-grid">
-            {articulos.map((art) => (
-              <ArticuloCard key={`${art.fuente}-${art.id}`} articulo={art} />
+      <div className="buscar-layout">
+        {/* ── Left panel: filters ── */}
+        <aside className="buscar-sidebar">
+          <div className="sidebar-filter-group">
+            <h4 className="sidebar-filter-title">FUENTE</h4>
+            {FUENTES.map((f) => (
+              <label key={f.id} className="sidebar-radio">
+                <input type="radio" name="fuente" checked={fuente === f.id} onChange={() => setFuente(f.id)} />
+                <span>{f.label}</span>
+              </label>
             ))}
           </div>
-          {/* Paginación */}
-          <div className="pagination">
-            <button
-              onClick={() => setPagina((p) => Math.max(1, p - 1))}
-              disabled={pagina === 1}
-              className="btn-outline-sm"
-            >
-              ← Anterior
-            </button>
-            <span className="pagination-info">Página {pagina}</span>
-            <button
-              onClick={() => setPagina((p) => p + 1)}
-              disabled={articulos.length < 10}
-              className="btn-outline-sm"
-            >
-              Siguiente →
-            </button>
-          </div>
-        </>
-      )}
 
-      {!loading && !error && query && articulos.length === 0 && (
-        <div className="empty-state">
-          <Search size={48} className="text-gray-300" />
-          <p className="text-gray-400">No se encontraron resultados para "{query}"</p>
-        </div>
-      )}
+          <div className="sidebar-filter-group">
+            <h4 className="sidebar-filter-title">ÁREA CIENTÍFICA</h4>
+            <label className="sidebar-radio">
+              <input type="radio" name="area" checked={!area} onChange={() => setArea('')} />
+              <span>Todas</span>
+            </label>
+            {AREAS_CIENTIFICAS.map((a) => (
+              <label key={a.id} className="sidebar-radio">
+                <input type="radio" name="area" checked={area === a.id} onChange={() => setArea(a.id)} />
+                <span>{a.label}</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="sidebar-filter-group">
+            <h4 className="sidebar-filter-title">AÑO</h4>
+            <div className="sidebar-range">
+              <input type="number" placeholder="Desde" value={anioDesde} onChange={(e) => setAnioDesde(e.target.value)} className="sidebar-range-input" min="1900" max="2100" />
+              <span>—</span>
+              <input type="number" placeholder="Hasta" value={anioHasta} onChange={(e) => setAnioHasta(e.target.value)} className="sidebar-range-input" min="1900" max="2100" />
+            </div>
+          </div>
+
+          <div className="sidebar-filter-group">
+            <h4 className="sidebar-filter-title">MÍNIMO DE CITAS</h4>
+            <input type="number" placeholder="ej. 10" value={minCitas} onChange={(e) => setMinCitas(e.target.value)} className="sidebar-range-input full" min="0" />
+          </div>
+
+          <div className="sidebar-filter-group">
+            <h4 className="sidebar-filter-title">ORDENAR POR</h4>
+            {(['relevancia', 'anio', 'citas'] as Orden[]).map((o) => (
+              <label key={o} className="sidebar-radio">
+                <input type="radio" name="orden" checked={orden === o} onChange={() => setOrden(o)} />
+                <span>{o.charAt(0).toUpperCase() + o.slice(1)}</span>
+              </label>
+            ))}
+          </div>
+        </aside>
+
+        {/* ── Right: results ── */}
+        <main className="buscar-results">
+          {!query && (
+            <div className="empty-state">
+              <Search size={48} className="text-gray-300" />
+              <p className="text-gray-400">Introduce un término para empezar a buscar</p>
+            </div>
+          )}
+
+          {loading && (
+            <div className="loading-state">
+              <Loader2 size={32} className="animate-spin text-indigo-500" />
+              <p className="text-gray-400">Buscando artículos…</p>
+            </div>
+          )}
+
+          {error && <div className="error-banner"><AlertCircle size={18} /> {error}</div>}
+
+          {!loading && !error && articulos.length > 0 && (
+            <>
+              <div className="journal-list">
+                {articulos.map((art) => (
+                  <ArticuloCard key={`${art.fuente}-${art.id}`} articulo={art} variant="journal" />
+                ))}
+              </div>
+              <div className="pagination">
+                <button onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={pagina === 1} className="btn-outline-sm">← Anterior</button>
+                <span className="pagination-info">Página {pagina}</span>
+                <button onClick={() => setPagina((p) => p + 1)} disabled={articulos.length < 10} className="btn-outline-sm">Siguiente →</button>
+              </div>
+            </>
+          )}
+
+          {!loading && !error && query && articulos.length === 0 && (
+            <div className="empty-state">
+              <Search size={48} className="text-gray-300" />
+              <p className="text-gray-400">No se encontraron resultados para "{query}"</p>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 };

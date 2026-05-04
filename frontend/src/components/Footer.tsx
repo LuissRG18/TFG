@@ -1,4 +1,4 @@
-import { FlaskConical, Github, Twitter, Mail, MapPin } from 'lucide-react';
+import { Github, Twitter, Mail, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => (
@@ -8,9 +8,9 @@ const Footer = () => (
       {/* Brand */}
       <div className="footer-brand">
         <div className="footer-logo">
-          <FlaskConical size={22} />
-          <span>Sci<span className="footer-logo-accent">Lens</span></span>
-        </div>
+          <span className="navbar-logo-icon" style={{ width: 28, height: 28, fontSize: '0.85rem' }}></span>
+          <span><span className="footer-logo-accent">Sci</span>Lens</span>
+        </div> 
         <p className="footer-tagline">
           Descubre, comprende y guarda artículos científicos de acceso abierto desde cualquier lugar.
         </p>

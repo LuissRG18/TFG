@@ -5,6 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
+import AnnouncementBar from './components/AnnouncementBar';
 
 import HomePage from './pages/HomePage';
 import BuscarPage from './pages/BuscarPage';
@@ -36,6 +37,7 @@ function App() {
         <BrowserRouter>
           <ScrollToTop />
           <div className="app-wrapper">
+            <AnnouncementBar />
             <Navbar />
             <main className="main-content">
               <Routes>

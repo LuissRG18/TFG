@@ -1,58 +1,48 @@
 import { Link } from 'react-router-dom';
 import { AREAS_CIENTIFICAS } from '../types';
 
-import imgInformatica from '../assets/imgInformatica.jpg.jpg';
-import imgMedicina from '../assets/imgMedicina.jpg.jpg';
-import imgFisica from '../assets/imgFisica-jpg.png';
-import imgBiologia from '../assets/imgBiologia.jpg.png';
-import imgMatematicas from '../assets/imgMatematicas.jpg.png';
-import imgQuimica from '../assets/imgQuimica.jpg.png';
-import imgEconomia from '../assets/imgEconomia.jpg';
-import imgPsicologia from '../assets/imgPsicologia.jpg';
-import imgIngenieria from '../assets/imgIngenieria.jpg';
-import imgAstronomia from '../assets/imgAstronomía.jpg';
-import imgMedioAmbiente from '../assets/imgMedioAmbiente.jpg';
-import imgNeurociencia from '../assets/imgNeurociencia.jpg';
-
-const AREA_IMAGES: Record<string, string> = {
-  cs: imgInformatica,
-  medicine: imgMedicina,
-  physics: imgFisica,
-  biology: imgBiologia,
-  mathematics: imgMatematicas,
-  chemistry: imgQuimica,
-  economics: imgEconomia,
-  psychology: imgPsicologia,
-  engineering: imgIngenieria,
-  astronomy: imgAstronomia,
-  environmental: imgMedioAmbiente,
-  neuroscience: imgNeurociencia,
+const AREA_META: Record<string, { code: string; desc: string; count: string }> = {
+  cs:            { code: 'CS',   desc: 'Inteligencia artificial, algoritmos, redes y sistemas', count: '2.4M+' },
+  medicine:      { code: 'MED',  desc: 'Clínica, farmacología, bioinformática y salud pública', count: '3.1M+' },
+  physics:       { code: 'PHY',  desc: 'Física teórica, cuántica, materiales y partículas', count: '1.8M+' },
+  biology:       { code: 'BIO',  desc: 'Genómica, ecología, biología celular y molecular', count: '2.0M+' },
+  mathematics:   { code: 'MATH', desc: 'Álgebra, análisis, geometría y estadística', count: '900K+' },
+  chemistry:     { code: 'CHEM', desc: 'Síntesis, catálisis, química computacional y materiales', count: '1.2M+' },
+  economics:     { code: 'ECON', desc: 'Macroeconomía, finanzas, economía conductual y política', count: '700K+' },
+  psychology:    { code: 'PSY',  desc: 'Cognición, comportamiento, neuropsicología y clínica', count: '850K+' },
+  engineering:   { code: 'ENG',  desc: 'Ingeniería eléctrica, civil, mecánica y robótica', count: '1.5M+' },
+  astronomy:     { code: 'ASTR', desc: 'Cosmología, exoplanetas, astrofísica y observación', count: '600K+' },
+  environmental: { code: 'ENV',  desc: 'Cambio climático, sostenibilidad y ecología ambiental', count: '750K+' },
+  neuroscience:  { code: 'NEURO',desc: 'Conectómica, neuroimagen, cognición y neurología', count: '950K+' },
 };
 
 const AreasPage = () => (
-  <div className="page-container">
-    <div className="page-header">
-      <h1 className="page-title">Explorar por área científica</h1>
-      <p className="page-subtitle">
-        Elige una disciplina y descubre los últimos avances de la investigación mundial.
-      </p>
+  <div className="areas-page">
+    <div className="areas-page-header">
+      <div className="areas-page-header-inner">
+        <p className="section-eyebrow">EXPLORAR POR DISCIPLINA</p>
+        <h1 className="areas-page-title">Áreas científicas</h1>
+        <p className="areas-page-sub">
+          Elige una disciplina y descubre los últimos avances de la investigación mundial.
+        </p>
+      </div>
     </div>
 
-    <div className="areas-grid">
-      {AREAS_CIENTIFICAS.map((area) => (
-        <Link key={area.id} to={`/areas/${area.id}`} className="area-card">
-          <div className="area-card-cover">
-            {AREA_IMAGES[area.id]
-              ? <img src={AREA_IMAGES[area.id]} alt={area.label} className="area-card-img" />
-              : <div className="area-card-cover-fallback"><span className="area-emoji">{area.emoji}</span></div>
-            }
-          </div>
-          <div className="area-card-body">
-            <span className="area-label">{area.label}</span>
-            <span className="area-explore">Explorar artículos →</span>
-          </div>
-        </Link>
-      ))}
+    <div className="areas-code-grid-wrapper">
+      <div className="areas-code-grid">
+        {AREAS_CIENTIFICAS.map((area) => {
+          const meta = AREA_META[area.id] ?? { code: area.id.toUpperCase(), desc: '', count: '' };
+          return (
+            <Link key={area.id} to={`/areas/${area.id}`} className="area-code-item">
+              <span className="area-code-badge">{meta.code}</span>
+              <strong className="area-code-name">{area.label}</strong>
+              <p className="area-code-desc">{meta.desc}</p>
+              <span className="area-code-count">{meta.count} artículos</span>
+              <span className="area-code-arrow">→</span>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   </div>
 );

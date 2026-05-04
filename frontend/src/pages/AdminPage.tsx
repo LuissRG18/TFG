@@ -46,7 +46,7 @@ const AdminPage = () => {
     setProcesando(id);
     try {
       const res = await cambiarEstadoUsuario(id);
-      setUsuarios((prev) => prev.map((u) => u.id === id || (u as any)._id === id
+      setUsuarios((prev) => prev.map((u) => u.id === id || u._id === id
         ? { ...u, activo: res.usuario.activo }
         : u
       ));
@@ -62,7 +62,7 @@ const AdminPage = () => {
     setProcesando(id);
     try {
       await eliminarUsuarioAdmin(id);
-      setUsuarios((prev) => prev.filter((u) => u.id !== id && (u as any)._id !== id));
+      setUsuarios((prev) => prev.filter((u) => u.id !== id && u._id !== id));
     } catch {
       setError('No se pudo eliminar el usuario.');
     } finally {
@@ -203,7 +203,7 @@ const AdminPage = () => {
               </thead>
               <tbody>
                 {usuariosFiltrados.map((u) => {
-                  const uid = (u as any)._id || u.id;
+                  const uid = u._id || u.id;
                   return (
                     <tr key={uid}>
                       <td className="font-semibold">{u.nombre}</td>

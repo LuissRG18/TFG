@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { History, Loader2, Trash2, Search, RefreshCw } from 'lucide-react';
+import { Loader2, Trash2, RefreshCw } from 'lucide-react';
 import type { BusquedaHistorial } from '../types';
 import { obtenerHistorial, eliminarBusqueda } from '../services/favoritosService';
 
@@ -54,92 +54,79 @@ const HistorialPage = () => {
   };
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <div className="flex items-center gap-3">
-          <History size={28} className="text-indigo-500" />
-          <h1 className="page-title">Historial de Búsquedas</h1>
+    <div className="historial-page">
+      <div className="historial-page-header">
+        <div className="historial-page-header-inner">
+          <p className="section-eyebrow">TU ACTIVIDAD RECIENTE</p>
+          <h1 className="historial-page-title">Historial de búsquedas</h1>
+          <p className="historial-page-sub">Consulta y repite tus búsquedas anteriores</p>
         </div>
-        <p className="page-subtitle">Tus últimas búsquedas realizadas</p>
       </div>
 
-      {loading && (
-        <div className="loading-state">
-          <Loader2 size={32} className="animate-spin text-indigo-500" />
-        </div>
-      )}
-
-      {error && <div className="error-banner">{error}</div>}
-
-      {!loading && busquedas.length === 0 && (
-        <div className="empty-state">
-          <History size={48} className="text-gray-300" />
-          <p className="text-gray-400">Aún no has realizado ninguna búsqueda.</p>
-        </div>
-      )}
-
-      {!loading && busquedas.length > 0 && (
-        <>
-          <div className="historial-list">
-            {busquedas.map((b) => (
-              <div key={b._id} className="historial-item">
-                <div className="historial-item-info">
-                  <Search size={16} className="text-indigo-400 flex-shrink-0" />
-                  <div>
-                    <span className="historial-termino">"{b.termino}"</span>
-                    <div className="historial-meta">
-                      <span className="badge badge-default">{FUENTE_LABELS[b.fuente] || b.fuente}</span>
-                      {b.area && <span className="tag">{b.area}</span>}
-                      <span className="text-gray-400 text-xs">
-                        {b.resultados} resultados · {new Date(b.createdAt).toLocaleDateString('es-ES')}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <button
-                    onClick={() => handleRepetir(b)}
-                    className="btn-outline-sm"
-                    title="Repetir búsqueda"
-                  >
-                    <RefreshCw size={13} /> Repetir
-                  </button>
-                  <button
-                    onClick={() => handleEliminar(b._id)}
-                    disabled={eliminando === b._id}
-                    className="btn-danger-sm"
-                    title="Eliminar del historial"
-                  >
-                    <Trash2 size={13} />
-                  </button>
-                </div>
-              </div>
-            ))}
+      <div className="historial-page-content">
+        {loading && (
+          <div className="loading-state">
+            <Loader2 size={32} className="animate-spin" />
           </div>
+        )}
 
-          {totalPaginas > 1 && (
-            <div className="pagination">
-              <button
-                onClick={() => setPagina((p) => Math.max(1, p - 1))}
-                disabled={pagina === 1}
-                className="btn-outline-sm"
-              >
-                ← Anterior
-              </button>
-              <span className="pagination-info">Página {pagina} / {totalPaginas}</span>
-              <button
-                onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
-                disabled={pagina >= totalPaginas}
-                className="btn-outline-sm"
-              >
-                Siguiente →
-              </button>
+        {error && <div className="error-banner">{error}</div>}
+
+        {!loading && busquedas.length === 0 && (
+          <div className="empty-state">
+            <p>Aún no has realizado ninguna búsqueda.</p>
+          </div>
+        )}
+
+        {!loading && busquedas.length > 0 && (
+          <>
+            <div className="historial-table-wrapper">
+              <table className="historial-table">
+                <thead>
+                  <tr>
+                    <th>TÉRMINO</th>
+                    <th>FUENTE</th>
+                    <th>ÁREA</th>
+                    <th>RESULTADOS</th>
+                    <th>FECHA</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {busquedas.map((b) => (
+                    <tr key={b._id}>
+                      <td className="historial-termino">"{b.termino}"</td>
+                      <td><span className="historial-badge">{FUENTE_LABELS[b.fuente] || b.fuente}</span></td>
+                      <td>{b.area ? <span className="historial-area">{b.area}</span> : <span className="historial-none">—</span>}</td>
+                      <td className="historial-num">{b.resultados.toLocaleString()}</td>
+                      <td className="historial-date">{new Date(b.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                      <td className="historial-actions">
+                        <button onClick={() => handleRepetir(b)} className="historial-action-btn" title="Repetir">
+                          <RefreshCw size={14} /> Repetir
+                        </button>
+                        <button onClick={() => handleEliminar(b._id)} disabled={eliminando === b._id} className="historial-action-btn danger" title="Eliminar">
+                          <Trash2 size={14} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          )}
-        </>
-      )}
+
+            {totalPaginas > 1 && (
+              <div className="pagination">
+                <button onClick={() => setPagina((p) => Math.max(1, p - 1))} disabled={pagina === 1} className="btn-outline-sm">← Anterior</button>
+                <span className="pagination-info">Página {pagina} / {totalPaginas}</span>
+                <button onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))} disabled={pagina >= totalPaginas} className="btn-outline-sm">Siguiente →</button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
 export default HistorialPage;
+

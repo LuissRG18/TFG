@@ -1,394 +1,193 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FlaskConical, Search, Bookmark, BarChart2, Sparkles, Newspaper } from 'lucide-react';
+import { Newspaper } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import NoticiaCard from '../components/NoticiaCard';
 import { getNoticias } from '../services/noticiasService';
-import { AREAS_CIENTIFICAS } from '../types';
+import { buscarArxiv } from '../services/articulosService';
 import { useAuth } from '../context/AuthContext';
-import type { Noticia } from '../types';
+import type { Noticia, Articulo } from '../types';
 
-import outerspacebackground from '../assets/outer-space-background.jpg';
-import imgArtemisIICrew from '../assets/imgArtemis2.webp';
-import imgInformatica from '../assets/imgInformatica.jpg.jpg';
-import imgMedicina from '../assets/imgMedicina.jpg.jpg';
-import imgFisica from '../assets/imgFisica-jpg.png';
-import imgBiologia from '../assets/imgBiologia.jpg.png';
-import imgMatematicas from '../assets/imgMatematicas.jpg.png';
-import imgQuimica from '../assets/imgQuimica.jpg.png';
-import imgEconomia from '../assets/imgEconomia.jpg';
-import imgPsicologia from '../assets/imgPsicologia.jpg';
-import imgIngenieria from '../assets/imgIngenieria.jpg';
-import imgAstronomia from '../assets/imgAstronomía.jpg';
-import imgMedioAmbiente from '../assets/imgMedioAmbiente.jpg';
-import imgNeurociencia from '../assets/imgNeurociencia.jpg';
-import logodescilens from '../assets/Logo de SciLens.png';
-
-const AREA_IMAGES: Record<string, string> = {
-  cs: imgInformatica,
-  medicine: imgMedicina,
-  physics: imgFisica,
-  biology: imgBiologia,
-  mathematics: imgMatematicas,
-  chemistry: imgQuimica,
-  economics: imgEconomia,
-  psychology: imgPsicologia,
-  engineering: imgIngenieria,
-  astronomy: imgAstronomia,
-  environmental: imgMedioAmbiente,
-  neuroscience: imgNeurociencia,
-};
+// Areas grid data matching the design
+const AREAS = [
+  { code: 'CS', id: 'cs',           label: 'Informática',   desc: 'IA, sistemas, lenguajes y computación teórica.', count: '314.520' },
+  { code: 'PH', id: 'physics',      label: 'Física',        desc: 'Partículas, materia condensada, cosmología.',    count: '289.103' },
+  { code: 'MA', id: 'mathematics',  label: 'Matemáticas',   desc: 'Álgebra, análisis, topología, combinatoria.',   count: '198.741' },
+  { code: 'BI', id: 'biology',      label: 'Biología',      desc: 'Genética, ecología, biología molecular.',       count: '176.288' },
+  { code: 'ME', id: 'medicine',     label: 'Medicina',      desc: 'Clínica, salud pública, farmacología.',         count: '421.970' },
+  { code: 'CH', id: 'chemistry',    label: 'Química',       desc: 'Orgánica, materiales, fisicoquímica.',          count: '152.044' },
+  { code: 'EC', id: 'economics',    label: 'Economía',      desc: 'Microeconomía, finanzas, econometría.',         count: '88.319' },
+  { code: 'PS', id: 'psychology',   label: 'Psicología',    desc: 'Cognición, social, neuropsicología.',           count: '104.752' },
+  { code: 'EN', id: 'engineering',  label: 'Ingeniería',    desc: 'Mecánica, eléctrica, civil, software.',         count: '231.144' },
+  { code: 'AS', id: 'astronomy',    label: 'Astronomía',    desc: 'Estrellas, exoplanetas, astrofísica.',          count: '147.610' },
+  { code: 'EV', id: 'environmental',label: 'Ambiental',     desc: 'Clima, sostenibilidad, biodiversidad.',         count: '92.205' },
+  { code: 'NE', id: 'neuroscience', label: 'Neurociencia',  desc: 'Cerebro, sistemas neuronales, cognición.',      count: '76.833' },
+];
 
 const TRENDING = [
   'inteligencia artificial', 'cambio climático', 'física cuántica',
   'CRISPR', 'machine learning', 'neurociencia',
 ];
 
-const SERVICES = [
-  {
-    icon: <Search size={26} color="#fff" />,
-    title: 'Busca & Explora',
-    desc: 'Accede a millones de artículos científicos de arXiv y CrossRef en una sola búsqueda unificada.',
-    link: '/buscar',
-  },
-  {
-    icon: <FlaskConical size={26} color="#fff" />,
-    title: 'Modo Divulgativo',
-    desc: 'Lee los abstracts en un lenguaje más accesible sin perder el rigor científico del artículo original.',
-    link: '/buscar',
-  },
-  {
-    icon: <Bookmark size={26} color="#fff" />,
-    title: 'Tus Favoritos',
-    desc: 'Guarda los artículos que más te interesan, organízalos con etiquetas y añade notas personalizadas.',
-    link: '/favoritos',
-  },
-  {
-    icon: <BarChart2 size={26} color="#fff" />,
-    title: 'Estadísticas',
-    desc: 'Visualiza tu actividad científica con gráficos interactivos por área temática, año y fuente de datos.',
-    link: '/estadisticas',
-  },
-];
-
-
-
-const AreasMarquee = () => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const animRef = useRef<number>(0);
-  const pausedRef = useRef(false);
-  const isDragging = useRef(false);
-  const dragStartX = useRef(0);
-  const dragScrollLeft = useRef(0);
-
-  useEffect(() => {
-    const wrapper = wrapperRef.current;
-    const track = trackRef.current;
-    if (!wrapper || !track) return;
-    const tick = () => {
-      if (!pausedRef.current) {
-        wrapper.scrollLeft += 0.7;
-        if (wrapper.scrollLeft >= track.scrollWidth / 2) {
-          wrapper.scrollLeft = 0;
-        }
-      }
-      animRef.current = requestAnimationFrame(tick);
-    };
-    animRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(animRef.current);
-  }, []);
-
-  const doubled = [...AREAS_CIENTIFICAS, ...AREAS_CIENTIFICAS];
-
-  return (
-    <div className="areas-marquee-outer">
-      <div
-        className="areas-marquee-wrapper"
-        ref={wrapperRef}
-        onMouseEnter={() => { pausedRef.current = true; }}
-        onMouseLeave={() => {
-          pausedRef.current = false;
-          isDragging.current = false;
-          wrapperRef.current?.classList.remove('is-dragging');
-        }}
-        onMouseDown={(e) => {
-          isDragging.current = true;
-          pausedRef.current = true;
-          dragStartX.current = e.clientX;
-          dragScrollLeft.current = wrapperRef.current?.scrollLeft ?? 0;
-          wrapperRef.current?.classList.add('is-dragging');
-        }}
-        onMouseMove={(e) => {
-          if (!isDragging.current || !wrapperRef.current) return;
-          e.preventDefault();
-          const dx = e.clientX - dragStartX.current;
-          wrapperRef.current.scrollLeft = dragScrollLeft.current - dx;
-        }}
-        onMouseUp={() => {
-          isDragging.current = false;
-          pausedRef.current = false;
-          wrapperRef.current?.classList.remove('is-dragging');
-        }}
-        onTouchStart={() => { pausedRef.current = true; }}
-        onTouchEnd={() => { pausedRef.current = false; }}
-      >
-        <div className="areas-marquee-track" ref={trackRef}>
-          {doubled.map((area, i) => (
-            <a
-              key={`${area.id}-${i}`}
-              href={`/areas/${area.id}`}
-              className="area-card"
-              onClick={(e) => { if (isDragging.current) e.preventDefault(); }}
-            >
-              <div className="area-card-cover">
-                <img src={AREA_IMAGES[area.id]} alt={area.label} className="area-card-img" />
-              </div>
-              <div className="area-card-body">
-                <span className="area-label">{area.label}</span>
-                <span className="area-explore">Explorar artículos →</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const HomePage = () => {
   const { usuario } = useAuth();
-
-  const [noticiaEs, setNoticiaEs] = useState<Noticia[]>([]);
-  const [noticiaEn, setNoticiaEn] = useState<Noticia[]>([]);
-  const [noticiaTab, setNoticiaTab] = useState<'es' | 'en'>('es');
-  const [noticiaLoading, setNoticiaLoading] = useState(true);
+  const [noticias, setNoticias] = useState<Noticia[]>([]);
+  const [articuloDia, setArticuloDia] = useState<Articulo | null>(null);
 
   useEffect(() => {
-    Promise.all([getNoticias('es', 6), getNoticias('en', 6)])
-      .then(([resEs, resEn]) => {
-        setNoticiaEs(resEs.noticias.slice(0, 6));
-        setNoticiaEn(resEn.noticias.slice(0, 6));
-      })
-      .catch(() => {})
-      .finally(() => setNoticiaLoading(false));
+    getNoticias('es', 3)
+      .then((res) => setNoticias(res.noticias.slice(0, 3)))
+      .catch(() => {});
+
+    buscarArxiv({ q: 'foundation models scientific reasoning', limite: 1 })
+      .then((res) => { if (res.articulos.length) setArticuloDia(res.articulos[0]); })
+      .catch(() => {});
   }, []);
+
   return (
     <div className="home-page">
 
-      {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="hero" style={{ backgroundImage: `url(${outerspacebackground})` }}>
-        <div className="hero-bg" />
-        <div className="hero-content">
-          <div className="hero-badge">
-            <FlaskConical size={14} />
-            Explorador científico open-access
-          </div>
-          <h1 className="hero-title">
-            Descubre la ciencia<br />
-            <span className="gradient-text">que cambia el mundo</span>
-          </h1>
-          <p className="hero-subtitle">
-            Busca, comprende y guarda artículos científicos reales. Millones de papers
-            de arXiv y CrossRef al alcance de todos.
-          </p>
-          <div className="hero-search">
-            <SearchBar size="lg" placeholder="¿Qué quieres explorar hoy?" />
-          </div>
-          <div className="hero-trending">
-            <span className="trending-label">Tendencias:</span>
-            {TRENDING.map((t) => (
-              <Link key={t} to={`/buscar?q=${encodeURIComponent(t)}`} className="trending-tag">
-                {t}
-              </Link>
-            ))}
-          </div>
-        </div>
-        <div className="hero-icons">
-          {([<Search size={28} />, <Sparkles size={28} />, <Bookmark size={28} />, <BarChart2 size={28} />] as React.ReactNode[]).map((icon, i) => (
-            <div key={i} className={`hero-icon-bubble hero-icon-bubble-${i}`}>
-              {icon}
+      {/* ── HERO EDITORIAL ────────────────────────────────── */}
+      <section className="hero-editorial">
+        <div className="hero-editorial-inner">
+          {/* Left column */}
+          <div className="hero-editorial-left">
+            <p className="hero-editorial-eyebrow">
+              CIENCIA ABIERTA · VOL. 1 · EDICIÓN 2026
+            </p>
+            <h1 className="hero-editorial-title">
+              Una sola interfaz para <em>toda</em> la literatura científica.
+            </h1>
+            <p className="hero-editorial-sub">
+              Centraliza, lee y organiza artículos académicos de arXiv y CrossRef con
+              etiquetas, colecciones, comparador y exportación en APA, MLA, BibTeX y RIS.
+            </p>
+
+            {/* Search */}
+            <div className="hero-editorial-search">
+              <SearchBar size="lg" placeholder="Buscar por título, autor, DOI o palabra clave…" />
             </div>
-          ))}
+
+            {/* Source pills */}
+            <div className="hero-source-pills">
+              <span className="source-pill source-pill--active">Todas las fuentes</span>
+              <span className="source-pill">arXiv</span>
+              <span className="source-pill">CrossRef</span>
+              <Link to="/buscar" className="source-pill source-pill--link">+ Filtros avanzados</Link>
+            </div>
+
+            {/* Trending */}
+            <div className="hero-trending-light">
+              <span className="trending-label-light">Tendencias:</span>
+              {TRENDING.map((t) => (
+                <Link key={t} to={`/buscar?q=${encodeURIComponent(t)}`} className="trending-tag-light">
+                  {t}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Right column — Artículo del día */}
+          <div className="hero-editorial-right">
+            <div className="articulo-dia-card">
+              <p className="articulo-dia-eyebrow">ARTÍCULO DEL DÍA</p>
+              {articuloDia ? (
+                <>
+                  <h3 className="articulo-dia-title">{articuloDia.titulo}</h3>
+                  <p className="articulo-dia-authors">
+                    {articuloDia.autores.slice(0, 3).join(', ')}
+                    {articuloDia.autores.length > 3 ? ', et al.' : ''}
+                    {articuloDia.anio ? ` · ${articuloDia.anio}` : ''}
+                  </p>
+                  {articuloDia.abstract && (
+                    <blockquote className="articulo-dia-abstract">
+                      "{articuloDia.abstract.substring(0, 220)}…"
+                    </blockquote>
+                  )}
+                  <div className="articulo-dia-tags">
+                    {articuloDia.citaciones != null && (
+                      <span className="articulo-dia-tag">{articuloDia.citaciones} citas</span>
+                    )}
+                    <span className="articulo-dia-tag">arXiv</span>
+                    <span className="articulo-dia-tag">open access</span>
+                  </div>
+                  <Link to={`/articulo/${articuloDia.fuente}/${articuloDia.id}`} className="articulo-dia-link">
+                    Leer artículo completo →
+                  </Link>
+                </>
+              ) : (
+                <div className="articulo-dia-loading">
+                  <div className="skel-line" style={{ width: '100%', marginBottom: '0.5rem' }} />
+                  <div className="skel-line" style={{ width: '75%', marginBottom: '1rem' }} />
+                  <div className="skel-line" style={{ width: '100%', marginBottom: '0.3rem' }} />
+                  <div className="skel-line" style={{ width: '90%' }} />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ── STATS STRIP ──────────────────────────────────── */}
-      <div className="stats-strip">
-        <div className="stats-strip-inner">
-          <div>
-            <div className="stat-strip-number">10<span>M+</span></div>
-            <div className="stat-strip-label">Artículos indexados</div>
+      <div className="stats-strip-editorial">
+        <div className="stats-strip-editorial-inner">
+          <div className="stat-editorial">
+            <span className="stat-editorial-label">ARTÍCULOS ACCESIBLES</span>
+            <span className="stat-editorial-value">2.4M<sup>+</sup></span>
           </div>
-          <div>
-            <div className="stat-strip-number">12</div>
-            <div className="stat-strip-label">Áreas científicas</div>
+          <div className="stat-editorial">
+            <span className="stat-editorial-label">ÁREAS CIENTÍFICAS</span>
+            <span className="stat-editorial-value">12</span>
           </div>
-          <div>
-            <div className="stat-strip-number">3</div>
-            <div className="stat-strip-label">Fuentes de datos</div>
+          <div className="stat-editorial">
+            <span className="stat-editorial-label">FUENTES INTEGRADAS</span>
+            <span className="stat-editorial-value">2</span>
+          </div>
+          <div className="stat-editorial">
+            <span className="stat-editorial-label">FORMATOS DE CITA</span>
+            <span className="stat-editorial-value">4</span>
           </div>
         </div>
       </div>
-        
-        {/* ── SOBRE SCILENS ────────────────────────────────── */}
-      <section className="about-section">
-        <div className="about-container">
-          <div className="about-image-wrapper">
-            <img src={logodescilens} alt="Sobre SciLens" />
-          </div>
-          <div className="about-content">
-            <p className="section-eyebrow">Sobre SciLens</p>
-            <h2 className="section-title-xl">Más sobre nuestra plataforma</h2>
-            <p className="about-text">
-              SciLens nació con la misión de aglomerar el acceso al conocimiento científico.
-              Conectamos a millones de artículos de arXiv y CrossRef, y los
-              hacemos accesibles para estudiantes, investigadores y cualquier persona con curiosidad.
-            </p>
-            <p className="about-text">
-              Con herramientas de búsqueda avanzada, comparación de papers, recomendaciones
-              personalizadas y visualización de estadísticas, te ayudamos a navegar el vasto océano
-              del conocimiento con facilidad y precisión.
-            </p>
-            <Link to="/registro" className="btn-dark" style={{ marginTop: '0.5rem', width: 'fit-content' }}>
-              Comenzar ahora
-            </Link>
-          </div>
-        </div>
-      </section>
 
-      {/* ── SERVICIOS ────────────────────────────────────── */}
-      <section className="section services-section">
+      {/* ── ÁREAS CIENTÍFICAS ─────────────────────────────── */}
+      <section className="section home-areas-section">
         <div className="section-container">
-          <p className="section-eyebrow">Qué ofrecemos</p>
-          <div className="services-header">
-            <h2 className="section-title-xl">Nuestros servicios</h2>
-            {/* <Link to="/buscar" className="btn-outline">Ver todo</Link> */}
+          <div className="home-areas-header">
+            <h2 className="section-title-xl">Áreas científicas</h2>
+            <Link to="/areas" className="home-areas-link">Ver las 12 disciplinas →</Link>
           </div>
-          <div className="services-grid">
-            {SERVICES.map((s) => (
-              <div key={s.title} className="service-card">
-                <div className="service-card-icon">{s.icon}</div>
-                <div className="service-card-body">
-                  <h3 className="service-card-title">{s.title}</h3>
-                  <p className="service-card-desc">{s.desc}</p>
-                </div>
-                {/* <div className="service-card-footer">
-                  <Link to={s.link} className="btn-dark-sm">Comenzar</Link>
-                </div> */}
-              </div>
+          <hr className="home-areas-divider" />
+          <div className="home-areas-grid">
+            {AREAS.map((area) => (
+              <Link key={area.id} to={`/areas/${area.id}`} className="home-area-item">
+                <p className="home-area-code">{area.code} · <span>{area.label.toUpperCase()}</span></p>
+                <h3 className="home-area-name">{area.label}</h3>
+                <p className="home-area-desc">{area.desc}</p>
+                <p className="home-area-count">{area.count} artículos &nbsp;<span className="home-area-arrow">→</span></p>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── ARTEMIS II ───────────────────────────────────── */}
-      <section
-        className="artemis-home-section"
-        style={{ backgroundImage: `url(${imgArtemisIICrew})` }}
-      >
-        <div className="artemis-home-overlay" />
-        <div className="artemis-home-content">
-          <div className="artemis-home-left">
-            <span className="artemis-home-eyebrow">Misión activa · NASA</span>
-            <h2 className="artemis-home-title">Artemis II</h2>
-            <p className="artemis-home-desc">
-              Por primera vez en más de 50 años, cuatro astronautas viajarán al espacio profundo
-              a bordo de la cápsula Orion. Reid Wiseman, Victor Glover, Christina Koch y
-              Jeremy Hansen rodearán la Luna en una órbita libre, abriendo el camino
-              al regreso humano permanente a nuestro satélite natural.
-            </p>
-            <div className="artemis-home-actions">
-              <Link to="/artemis" className="artemis-home-btn-primary">
-                Descubrir la misión
-              </Link>
-              <Link to="/areas/astronomy" className="artemis-home-btn-ghost">
-                Artículos de astronomía
-              </Link>
-              <a
-                href="https://www.nasa.gov/missions/artemis/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="artemis-home-btn-ghost"
-              >
-                NASA.gov ↗
-              </a>
-            </div>
-          </div>
-          <ul className="artemis-home-facts">
-            <li><span>Destino</span>Órbita lunar distante</li>
-            <li><span>Vehículo</span>Orion · SLS Block 1</li>
-            <li><span>Duración</span>~10 días</li>
-            <li><span>Tripulación</span>4 astronautas (NASA / CSA)</li>
-          </ul>
-        </div>
-        <p className="artemis-home-credit">Imagen: NASA — Dominio público</p>
-      </section>
-
-      {/* ── ÁREAS ───────────────────────────────────────── */}
-      <section className="section areas-section">
-        <div className="section-container">
-          <div className="services-header">
-            <div>
-              <p className="section-eyebrow">Conocimiento especializado</p>
-              <h2 className="section-title-xl">Explora por área</h2>
-            </div>
-            <Link to="/areas" className="btn-outline">Ver todas</Link>
-          </div>
-        </div>
-        <AreasMarquee />
-      </section>
-
       {/* ── NOTICIAS DESTACADAS ──────────────────────────── */}
-      <section className="section noticias-home-section">
-        <div className="section-container">
-          <div className="services-header">
-            <div>
-              <p className="section-eyebrow">Actualidad científica</p>
-              <h2 className="section-title-xl">Últimas noticias</h2>
-            </div>
-            <Link to="/noticias" className="btn-outline">
-              <Newspaper size={15} /> Ver todas
-            </Link>
-          </div>
-
-          {/* Tabs ES / EN */}
-          <div className="noticias-home-tabs">
-            <button
-              className={`noticias-tab${noticiaTab === 'es' ? ' noticias-tab--active' : ''}`}
-              onClick={() => setNoticiaTab('es')}
-            >
-              🇪🇸 Español
-            </button>
-            <button
-              className={`noticias-tab${noticiaTab === 'en' ? ' noticias-tab--active' : ''}`}
-              onClick={() => setNoticiaTab('en')}
-            >
-              🇬🇧 English
-            </button>
-          </div>
-
-          {noticiaLoading ? (
-            <div className="noticias-home-loading">
-              {[...Array(3)].map((_, i) => <div key={i} className="noticia-skeleton" />)}
-            </div>
-          ) : (
-            <div className="noticias-home-grid">
-              {(noticiaTab === 'es' ? noticiaEs : noticiaEn).map((n) => (
+      {noticias.length > 0 && (
+        <section className="section home-news-section">
+          <div className="section-container">
+            <div className="home-news-grid">
+              {noticias.map((n) => (
                 <NoticiaCard key={n._id || n.url} noticia={n} />
               ))}
             </div>
-          )}
-
-          <div className="noticias-home-cta">
-            <Link to="/noticias" className="btn-dark">
-              <Newspaper size={16} /> Ver todas las noticias
-            </Link>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+              <Link to="/noticias" className="btn-outline">
+                <Newspaper size={15} /> Ver todas las noticias
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
-
-      
+        </section>
+      )}
 
       {/* ── CTA FINAL ────────────────────────────────────── */}
       {!usuario && (
@@ -412,4 +211,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-

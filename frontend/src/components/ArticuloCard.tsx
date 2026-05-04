@@ -16,6 +16,8 @@ interface Props {
   /** If provided, card shows a checkbox for comparison selection */
   onSelectCompare?: (art: Articulo, selected: boolean) => void;
   isSelectedForCompare?: boolean;
+  /** 'journal' = compact list row; default = card */
+  variant?: 'journal';
 }
 
 const BADGE_COLORS: Record<string, string> = {
@@ -28,7 +30,7 @@ const FUENTE_LABEL: Record<string, string> = {
   crossref: 'CrossRef',
 };
 
-const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare, isSelectedForCompare }: Props) => {
+const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare, isSelectedForCompare, variant }: Props) => {
   const { usuario } = useAuth();
   const navigate = useNavigate();
 
@@ -99,6 +101,50 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
   const abstractTexto = mostraDivulgativo && articulo.abstractDivulgativo
     ? articulo.abstractDivulgativo
     : articulo.abstract;
+
+  // ── Journal variant (compact list row) ──────────────────────────────────
+  if (variant === 'journal') {
+    return (
+      <article className="articulo-card-journal">
+        <div className="articulo-card-journal-top">
+          <Link
+            to={`/articulo/${articulo.fuente}/${encodeURIComponent(articulo.id)}`}
+            className="articulo-card-journal-title"
+          >
+            {articulo.titulo}
+          </Link>
+          {usuario && (
+            <button onClick={handleFavorito} disabled={loadingFav} className="btn-link" title={guardado ? 'Quitar favorito' : 'Guardar'}>
+              {guardado ? <BookmarkCheck size={15} className="text-amber-500" /> : <Bookmark size={15} />}
+            </button>
+          )}
+        </div>
+        <div className="articulo-card-journal-meta">
+          <span className={`badge ${BADGE_COLORS[articulo.fuente] || 'badge-default'}`}>
+            {FUENTE_LABEL[articulo.fuente] || articulo.fuente}
+          </span>
+          {articulo.autores.length > 0 && (
+            <span>{articulo.autores.slice(0, 3).join(', ')}{articulo.autores.length > 3 ? ' et al.' : ''}</span>
+          )}
+          {articulo.anio && <span>{articulo.anio}</span>}
+          {articulo.citaciones !== undefined && articulo.citaciones > 0 && (
+            <span>{articulo.citaciones} citas</span>
+          )}
+          {articulo.revista && <span>{articulo.revista}</span>}
+        </div>
+        {articulo.abstract && (
+          <p className="articulo-card-journal-abstract">{articulo.abstract}</p>
+        )}
+        {articulo.palabrasClave.length > 0 && (
+          <div className="articulo-card-journal-tags">
+            {articulo.palabrasClave.slice(0, 4).map((kw, i) => (
+              <span key={`${kw}-${i}`} className="articulo-card-journal-tag">{kw}</span>
+            ))}
+          </div>
+        )}
+      </article>
+    );
+  }
 
   return (
     <article

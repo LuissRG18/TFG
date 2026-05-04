@@ -1,116 +1,116 @@
-import { useEffect, useState, useCallback } from 'react';
-import { Sparkles, Loader2, RefreshCw } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import ArticuloCard from '../components/ArticuloCard';
 import type { Articulo } from '../types';
 import { AREAS_CIENTIFICAS } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { buscarArxiv } from '../services/articulosService';
 
-// English search terms for each area (arXiv is in English)
 const AREA_QUERIES_EN: Record<string, string> = {
-  cs: 'computer science',
-  physics: 'physics',
-  mathematics: 'mathematics',
-  biology: 'biology',
-  medicine: 'medicine',
-  chemistry: 'chemistry',
-  economics: 'economics',
-  psychology: 'psychology',
-  engineering: 'engineering',
-  astronomy: 'astronomy',
-  environmental: 'environmental science',
-  neuroscience: 'neuroscience',
+  cs: 'computer science', physics: 'physics', mathematics: 'mathematics',
+  biology: 'biology', medicine: 'medicine', chemistry: 'chemistry',
+  economics: 'economics', psychology: 'psychology', engineering: 'engineering',
+  astronomy: 'astronomy', environmental: 'environmental science', neuroscience: 'neuroscience',
 };
+
+const AREA_CODES: Record<string, string> = {
+  cs: 'CS', medicine: 'MED', physics: 'PHY', biology: 'BIO', mathematics: 'MATH',
+  chemistry: 'CHEM', economics: 'ECON', psychology: 'PSY', engineering: 'ENG',
+  astronomy: 'ASTR', environmental: 'ENV', neuroscience: 'NEURO',
+};
+
+interface AreaGroup {
+  areaId: string;
+  label: string;
+  articulos: Articulo[];
+  loading: boolean;
+}
 
 const RecomendacionesPage = () => {
   const { usuario } = useAuth();
-  const [articulos, setArticulos] = useState<Articulo[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [areaActiva, setAreaActiva] = useState<string>('');
+  const [groups, setGroups] = useState<AreaGroup[]>([]);
+  const [initialized, setInitialized] = useState(false);
+  const [globalError, setGlobalError] = useState('');
 
   const areasUsuario = usuario?.areasInteres ?? [];
-
-  // Determine which area to fetch for
-  const areaEfectiva = areaActiva || areasUsuario[0] || 'cs';
-
-  const cargar = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const query = AREA_QUERIES_EN[areaEfectiva] ?? areaEfectiva;
-      const res = await buscarArxiv({ q: query, area: areaEfectiva, limite: 8 });
-      setArticulos(res.articulos);
-    } catch {
-      setError('No se pudieron cargar las recomendaciones.');
-    } finally {
-      setLoading(false);
-    }
-  }, [areaEfectiva]);
-
-  useEffect(() => { cargar(); }, [cargar]);
-
-  const areasDisponibles = areasUsuario.length > 0
+  const areasEfectivas = areasUsuario.length > 0
     ? AREAS_CIENTIFICAS.filter((a) => areasUsuario.includes(a.id))
-    : AREAS_CIENTIFICAS.slice(0, 6);
+    : AREAS_CIENTIFICAS.slice(0, 4);
+
+  useEffect(() => {
+    if (initialized) return;
+    setInitialized(true);
+
+    // Initialize groups with loading state
+    const initial: AreaGroup[] = areasEfectivas.map((a) => ({
+      areaId: a.id, label: a.label, articulos: [], loading: true,
+    }));
+    setGroups(initial);
+
+    // Fetch each area independently
+    areasEfectivas.forEach((area) => {
+      const query = AREA_QUERIES_EN[area.id] ?? area.id;
+      buscarArxiv({ q: query, area: area.id, limite: 3 })
+        .then((res) => {
+          setGroups((prev) =>
+            prev.map((g) => g.areaId === area.id ? { ...g, articulos: res.articulos, loading: false } : g)
+          );
+        })
+        .catch(() => {
+          setGroups((prev) =>
+            prev.map((g) => g.areaId === area.id ? { ...g, loading: false } : g)
+          );
+          setGlobalError('Algunas áreas no se pudieron cargar.');
+        });
+    });
+  }, []);
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <div className="flex items-center gap-3">
-          <Sparkles size={28} className="text-amber-400" />
-          <h1 className="page-title">Recomendaciones</h1>
+    <div className="recom-page">
+      <div className="recom-page-header">
+        <div className="recom-page-header-inner">
+          <p className="section-eyebrow">PARA TI</p>
+          <h1 className="recom-page-title">Recomendaciones</h1>
+          <p className="recom-page-sub">
+            Artículos recientes basados en {areasUsuario.length > 0 ? 'tus áreas de interés' : 'áreas populares'}
+          </p>
         </div>
-        <p className="page-subtitle">
-          Artículos recientes basados en {areasUsuario.length > 0 ? 'tus áreas de interés' : 'áreas populares'}
-        </p>
       </div>
 
-      {/* Area selector */}
-      <div className="buscar-filters-bar mb-4">
-        {areasDisponibles.map((a) => (
-          <button
-            key={a.id}
-            onClick={() => setAreaActiva(a.id)}
-            className={`filter-btn ${areaEfectiva === a.id ? 'active' : ''}`}
-          >
-            {a.emoji} {a.label}
-          </button>
+      <div className="recom-page-content">
+        {globalError && <div className="error-banner" style={{ marginBottom: '1rem' }}>{globalError}</div>}
+
+        {!usuario && (
+          <div className="recom-tip-banner">
+            <strong>Consejo:</strong> Configura tus áreas de interés en tu{' '}
+            <Link to="/perfil">perfil</Link> para recibir recomendaciones personalizadas.
+          </div>
+        )}
+
+        {groups.map((group) => (
+          <section key={group.areaId} className="recom-group">
+            <div className="recom-group-header">
+              <span className="recom-group-code">{AREA_CODES[group.areaId] ?? group.areaId.toUpperCase()}</span>
+              <h2 className="recom-group-name">{group.label}</h2>
+              {!group.loading && <span className="recom-group-count">{group.articulos.length} artículos</span>}
+              <Link to={`/areas/${group.areaId}`} className="recom-group-link">Ver todas →</Link>
+            </div>
+
+            {group.loading ? (
+              <div className="recom-group-loading"><Loader2 size={20} className="animate-spin" /></div>
+            ) : group.articulos.length > 0 ? (
+              <div className="recom-group-cards">
+                {group.articulos.map((art) => (
+                  <ArticuloCard key={`${art.fuente}-${art.id}`} articulo={art} />
+                ))}
+              </div>
+            ) : (
+              <p className="recom-group-empty">No se encontraron artículos para esta área.</p>
+            )}
+          </section>
         ))}
-        <button onClick={cargar} className="btn-outline-sm ml-auto" title="Actualizar">
-          <RefreshCw size={13} /> Actualizar
-        </button>
       </div>
-
-      {loading && (
-        <div className="loading-state">
-          <Loader2 size={32} className="animate-spin text-indigo-500" />
-          <p className="text-gray-400">Cargando recomendaciones...</p>
-        </div>
-      )}
-
-      {error && <div className="error-banner">{error}</div>}
-
-      {!loading && !error && articulos.length === 0 && (
-        <div className="empty-state">
-          <Sparkles size={48} className="text-gray-300" />
-          <p className="text-gray-400">No se encontraron artículos para esta área.</p>
-        </div>
-      )}
-
-      {!loading && articulos.length > 0 && (
-        <div className="articulos-grid">
-          {articulos.map((art) => (
-            <ArticuloCard key={`${art.fuente}-${art.id}`} articulo={art} />
-          ))}
-        </div>
-      )}
-
-      {!usuario && (
-        <div className="info-banner mt-6">
-          💡 <strong>Tip:</strong> Configura tus áreas de interés en tu perfil para recibir recomendaciones personalizadas.
-        </div>
-      )}
     </div>
   );
 };
