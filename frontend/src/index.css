@@ -4459,6 +4459,15 @@ img { max-width: 100%; }
   .home-news-grid { grid-template-columns: 1fr 1fr; }
   .recom-group-cards { grid-template-columns: 1fr 1fr; }
   .perfil-layout { grid-template-columns: 1fr; }
+  /* Correct nth-child borders for 3-column grid */
+  .home-area-item:nth-child(4n) { border-right: 1px solid var(--border); }
+  .home-area-item:nth-child(3n) { border-right: none; }
+  .home-area-item:nth-child(n+9) { border-bottom: 1px solid var(--border); }
+  .home-area-item:nth-child(n+10) { border-bottom: none; }
+  .area-code-item:nth-child(4n) { border-right: 1px solid var(--border); }
+  .area-code-item:nth-child(3n) { border-right: none; }
+  .area-code-item:nth-child(n+9) { border-bottom: 1px solid var(--border); }
+  .area-code-item:nth-child(n+10) { border-bottom: none; }
 }
 @media (max-width: 768px) {
   .buscar-layout { grid-template-columns: 1fr; }
@@ -4473,11 +4482,36 @@ img { max-width: 100%; }
   .areas-code-grid-wrapper { padding-left: 1rem; padding-right: 1rem; }
   .buscar-layout, .historial-page-content, .recom-page-content, .perfil-layout,
   .area-detail-content { padding-left: 1rem; padding-right: 1rem; }
+  /* Correct nth-child borders for 2-column grid */
+  .home-area-item:nth-child(3n) { border-right: 1px solid var(--border); }
+  .home-area-item:nth-child(2n) { border-right: none; }
+  .home-area-item:nth-child(n+10) { border-bottom: 1px solid var(--border); }
+  .home-area-item:nth-child(n+11) { border-bottom: none; }
+  .area-code-item:nth-child(3n) { border-right: 1px solid var(--border); }
+  .area-code-item:nth-child(2n) { border-right: none; }
+  .area-code-item:nth-child(n+10) { border-bottom: 1px solid var(--border); }
+  .area-code-item:nth-child(n+11) { border-bottom: none; }
+  /* Section padding reductions */
+  .hero-editorial-inner { padding: 2.5rem 1rem 2rem; }
+  .home-areas-section { padding: 2.5rem 1rem; }
+  .home-news-section { padding: 2.5rem 1rem; }
+  .home-cta-dark { padding: 3.5rem 1rem; }
+  .area-detail-source-inner { padding: 0 1rem; }
+  /* Prevent announcement bar status text from overflowing */
+  .announcement-bar-status { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
 }
 @media (max-width: 480px) {
   .home-areas-grid { grid-template-columns: 1fr 1fr; }
   .areas-code-grid { grid-template-columns: 1fr 1fr; }
   .stats-strip-editorial-inner { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  /* Further reduce padding on very small screens */
+  .hero-editorial-inner { padding: 1.75rem 0.85rem 1.5rem; }
+  .home-areas-section { padding: 2rem 0.85rem; }
+  .home-news-section { padding: 2rem 0.85rem; }
+  .home-cta-dark { padding: 3rem 0.85rem; }
+  .stats-strip-editorial-inner { padding: 1.5rem 0.85rem; }
+  .area-detail-source-inner { padding: 0 0.85rem; }
+  .areas-code-grid-wrapper { padding: 1.5rem 1rem; }
 }
 
 /* end of redesign CSS */
