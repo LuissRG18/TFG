@@ -2263,7 +2263,7 @@ img { max-width: 100%; }
 [data-theme="dark"] .admin-table tr:hover td { background: #1e293b; }
 
 /* ── Perfil page ─────────────────────────────────────── */
-.perfil-page { max-width: 800px; }
+.perfil-page { width: 100%; }
 .perfil-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
@@ -4274,14 +4274,15 @@ img { max-width: 100%; }
 /* ═══════════════════════════════════════════════════════════════════════════
    PERFIL PAGE
    ═══════════════════════════════════════════════════════════════════════════ */
-.perfil-page { min-height: 100vh; background: #fff; }
+.perfil-page { min-height: 100vh; background: #fff; width: 100%; }
 [data-theme="dark"] .perfil-page { background: var(--bg); }
 .perfil-page-header {
   background: var(--oxford);
   padding-top: calc(60px + 32px);
+  width: 100%;
 }
 .perfil-page-header-inner {
-  max-width: 1280px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 2.5rem 2rem 2rem;
 }
@@ -4292,7 +4293,7 @@ img { max-width: 100%; }
   color: #fff;
 }
 .perfil-layout {
-  max-width: 1280px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 2.5rem 2rem;
   display: grid;
@@ -4467,7 +4468,7 @@ img { max-width: 100%; }
   .stats-strip-editorial-inner { grid-template-columns: repeat(2, 1fr); }
   .home-news-grid { grid-template-columns: 1fr 1fr; }
   .recom-group-cards { grid-template-columns: 1fr 1fr; }
-  .perfil-layout { grid-template-columns: 1fr; }
+  .perfil-layout { grid-template-columns: 1fr; max-width: 600px; }
   /* Correct nth-child borders for 3-column grid */
   .home-area-item:nth-child(4n) { border-right: 1px solid var(--border); }
   .home-area-item:nth-child(3n) { border-right: none; }
@@ -4491,6 +4492,7 @@ img { max-width: 100%; }
   .areas-code-grid-wrapper { padding-left: 1rem; padding-right: 1rem; }
   .buscar-layout, .historial-page-content, .recom-page-content, .perfil-layout,
   .area-detail-content { padding-left: 1rem; padding-right: 1rem; }
+  .perfil-layout { max-width: 100%; }
   /* Correct nth-child borders for 2-column grid */
   .home-area-item:nth-child(3n) { border-right: 1px solid var(--border); }
   .home-area-item:nth-child(2n) { border-right: none; }
