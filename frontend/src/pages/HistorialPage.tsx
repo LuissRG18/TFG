@@ -23,8 +23,22 @@ const HistorialPage = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await obtenerHistorial({ pagina: p, limite: 20 });
-      setBusquedas(res.busquedas);
+      const res = await obtenerHistorial({ pagina: p, limite: 50 });
+      // Deduplicate by termino+fuente, keep most recent
+      const seen = new Map<string, BusquedaHistorial & { count: number }>();
+      for (const b of res.busquedas) {
+        const key = `${b.termino.toLowerCase()}__${b.fuente}`;
+        if (!seen.has(key)) {
+          seen.set(key, { ...b, count: 1 });
+        } else {
+          seen.get(key)!.count++;
+          // keep the one with more results, or latest date
+          const existing = seen.get(key)!;
+          if (b.resultados > existing.resultados) seen.set(key, { ...b, count: existing.count + 1 });
+          else existing.count++;
+        }
+      }
+      setBusquedas(Array.from(seen.values()) as BusquedaHistorial[]);
       setTotalPaginas(res.totalPaginas || 1);
     } catch {
       setError('No se pudo cargar el historial.');
@@ -86,7 +100,6 @@ const HistorialPage = () => {
                   <tr>
                     <th>TÉRMINO</th>
                     <th>FUENTE</th>
-                    <th>ÁREA</th>
                     <th>RESULTADOS</th>
                     <th>FECHA</th>
                     <th></th>
@@ -97,7 +110,6 @@ const HistorialPage = () => {
                     <tr key={b._id}>
                       <td className="historial-termino">"{b.termino}"</td>
                       <td><span className="historial-badge">{FUENTE_LABELS[b.fuente] || b.fuente}</span></td>
-                      <td>{b.area ? <span className="historial-area">{b.area}</span> : <span className="historial-none">—</span>}</td>
                       <td className="historial-num">{b.resultados.toLocaleString()}</td>
                       <td className="historial-date">{new Date(b.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                       <td className="historial-actions">

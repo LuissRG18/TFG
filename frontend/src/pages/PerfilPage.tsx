@@ -159,18 +159,13 @@ const PerfilPage = () => {
             <h2 className="perfil-section-title">Preferencias</h2>
             <div className="form-group">
               <label className="form-label">Tema</label>
-              <select className="form-input">
-                <option value="light">Claro</option>
-                <option value="dark">Oscuro</option>
-                <option value="system">Sistema</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Idioma de noticias</label>
-              <select className="form-input">
-                <option value="es">Español</option>
-                <option value="en">English</option>
-              </select>
+              <div className="select-wrapper">
+                <select className="form-input form-select">
+                  <option value="light">Claro</option>
+                  <option value="dark">Oscuro</option>
+                  <option value="system">Sistema</option>
+                </select>
+              </div>
             </div>
           </div>
 

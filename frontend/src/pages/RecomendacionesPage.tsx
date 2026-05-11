@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import ArticuloCard from '../components/ArticuloCard';
@@ -30,17 +30,21 @@ interface AreaGroup {
 const RecomendacionesPage = () => {
   const { usuario } = useAuth();
   const [groups, setGroups] = useState<AreaGroup[]>([]);
-  const [initialized, setInitialized] = useState(false);
   const [globalError, setGlobalError] = useState('');
+  const hasFetched = useRef(false);
 
   const areasUsuario = usuario?.areasInteres ?? [];
-  const areasEfectivas = areasUsuario.length > 0
-    ? AREAS_CIENTIFICAS.filter((a) => areasUsuario.includes(a.id))
-    : AREAS_CIENTIFICAS.slice(0, 4);
+  const areasEfectivas = useMemo(
+    () => areasUsuario.length > 0
+      ? AREAS_CIENTIFICAS.filter((a) => areasUsuario.includes(a.id))
+      : AREAS_CIENTIFICAS.slice(0, 4),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(areasUsuario)]
+  );
 
   useEffect(() => {
-    if (initialized) return;
-    setInitialized(true);
+    if (hasFetched.current) return;
+    hasFetched.current = true;
 
     // Initialize groups with loading state
     const initial: AreaGroup[] = areasEfectivas.map((a) => ({
@@ -64,7 +68,7 @@ const RecomendacionesPage = () => {
           setGlobalError('Algunas áreas no se pudieron cargar.');
         });
     });
-  }, []);
+  }, [areasEfectivas]);
 
   return (
     <div className="recom-page">

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { GitCompare, X, Loader2, Search } from 'lucide-react';
+import { X, Loader2, Search, Plus, ListChecks, BarChart2 } from 'lucide-react';
 import { buscarArxiv, buscarCrossRef } from '../services/articulosService';
 import type { Articulo } from '../types';
 
@@ -41,15 +41,17 @@ const ComparadorPage = () => {
   const estaSeleccionado = (art: Articulo) => seleccionados.some((a) => a.id === art.id);
 
   return (
-    <div className="page-container" style={{ maxWidth: '1100px' }}>
-      <div className="page-header">
-        <div className="flex items-center gap-3">
-          <GitCompare size={28} className="text-sky-500" />
-          <h1 className="page-title">Comparador de Artículos</h1>
+    <div className="comparador-page">
+      {/* ── Hero ── */}
+      <div className="inner-page-hero">
+        <div className="inner-page-hero-inner">
+          <p className="section-eyebrow">HERRAMIENTAS</p>
+          <h1 className="inner-page-hero-title">Comparador de Artículos</h1>
+          <p className="inner-page-hero-subtitle">Selecciona hasta {MAX_COMPARE} artículos para comparar</p>
         </div>
-        <p className="page-subtitle">Selecciona hasta {MAX_COMPARE} artículos para comparar</p>
       </div>
 
+      <div className="inner-page-content">
       {/* Búsqueda */}
       <form onSubmit={buscar} className="comparador-search-row">
         <div className="buscar-filters-bar" style={{ marginBottom: 0 }}>
@@ -70,6 +72,69 @@ const ComparadorPage = () => {
 
       {loading && <div className="loading-state"><Loader2 size={28} className="animate-spin text-indigo-500" /></div>}
       {error && <div className="error-banner">{error}</div>}
+
+      {/* Empty state — no search done yet */}
+      {!loading && resultados.length === 0 && seleccionados.length === 0 && (
+        <div className="comparador-empty">
+          {/* Step-by-step instructions */}
+          <div className="comparador-steps">
+            <div className="comparador-step">
+              <div className="comparador-step-icon"><Search size={20} /></div>
+              <div>
+                <p className="comparador-step-num">1</p>
+                <p className="comparador-step-label">Busca un artículo</p>
+              </div>
+            </div>
+            <div className="comparador-step-arrow">→</div>
+            <div className="comparador-step">
+              <div className="comparador-step-icon"><ListChecks size={20} /></div>
+              <div>
+                <p className="comparador-step-num">2</p>
+                <p className="comparador-step-label">Añádelo al comparador</p>
+              </div>
+            </div>
+            <div className="comparador-step-arrow">→</div>
+            <div className="comparador-step">
+              <div className="comparador-step-icon"><BarChart2 size={20} /></div>
+              <div>
+                <p className="comparador-step-num">3</p>
+                <p className="comparador-step-label">Compara los resultados</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 3 visual slots */}
+          <div className="comparador-slots">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="comparador-slot">
+                <Plus size={28} className="comparador-slot-plus" />
+                <span className="comparador-slot-label">Artículo {n}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Greyed-out table preview */}
+          <div className="comparador-preview">
+            <p className="comparador-preview-label">Vista previa de la comparativa</p>
+            <div className="comparador-preview-table">
+              <div className="comparador-preview-header">
+                <span className="comparador-preview-field">Campo</span>
+                <span className="comparador-preview-col">Artículo 1</span>
+                <span className="comparador-preview-col">Artículo 2</span>
+                <span className="comparador-preview-col">Artículo 3</span>
+              </div>
+              {['Año', 'Autores', 'Revista', 'Citas', 'Palabras clave'].map((f) => (
+                <div key={f} className="comparador-preview-row">
+                  <span className="comparador-preview-field">{f}</span>
+                  <span className="comparador-preview-col comparador-preview-blur">—</span>
+                  <span className="comparador-preview-col comparador-preview-blur">—</span>
+                  <span className="comparador-preview-col comparador-preview-blur">—</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Selector de artículos */}
       {resultados.length > 0 && (
@@ -180,6 +245,7 @@ const ComparadorPage = () => {
       {seleccionados.length === 1 && (
         <div className="info-banner mt-4">Selecciona al menos 2 artículos para ver la comparativa.</div>
       )}
+      </div>
     </div>
   );
 };

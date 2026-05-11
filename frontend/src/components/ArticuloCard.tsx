@@ -2,7 +2,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ExternalLink, FileText, Bookmark, BookmarkCheck,
-  ChevronDown, ChevronUp, Sparkles, Download, Share2, Copy, CheckCheck,
+  ChevronDown, ChevronUp, Sparkles, Download, Share2, Copy, CheckCheck, MoreHorizontal,
 } from 'lucide-react';
 import type { Articulo } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -30,6 +30,25 @@ const FUENTE_LABEL: Record<string, string> = {
   crossref: 'CrossRef',
 };
 
+// arXiv category codes → full readable names
+const ARXIV_CAT: Record<string, string> = {
+  'cs.AI': 'Artificial Intelligence', 'cs.CL': 'Computation and Language',
+  'cs.CV': 'Computer Vision', 'cs.CR': 'Cryptography and Security',
+  'cs.DS': 'Data Structures and Algorithms', 'cs.HC': 'Human-Computer Interaction',
+  'cs.IR': 'Information Retrieval', 'cs.IT': 'Information Theory',
+  'cs.LG': 'Machine Learning', 'cs.LO': 'Logic in Computer Science',
+  'cs.NI': 'Networking and Internet Architecture', 'cs.RO': 'Robotics',
+  'cs.SE': 'Software Engineering', 'cs.SY': 'Systems and Control',
+  'math.AG': 'Algebraic Geometry', 'math.CO': 'Combinatorics',
+  'math.NA': 'Numerical Analysis', 'math.OC': 'Optimization and Control',
+  'math.PR': 'Probability', 'math.ST': 'Statistics Theory',
+  'physics.ao-ph': 'Atmospheric and Oceanic Physics',
+  'quant-ph': 'Quantum Physics', 'cond-mat': 'Condensed Matter',
+  'hep-th': 'High Energy Physics - Theory', 'astro-ph': 'Astrophysics',
+  'q-bio': 'Quantitative Biology', 'econ.GN': 'General Economics',
+  'stat.ML': 'Machine Learning (Statistics)',
+};
+
 const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare, isSelectedForCompare, variant }: Props) => {
   const { usuario } = useAuth();
   const navigate = useNavigate();
@@ -43,7 +62,7 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
   const [guardado, setGuardado] = useState(!!favoritoId);
   const [favId, setFavId] = useState(favoritoId);
   const [loadingFav, setLoadingFav] = useState(false);
-  const [showExport, setShowExport] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const handleFavorito = async () => {
@@ -138,7 +157,11 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
         {articulo.palabrasClave.length > 0 && (
           <div className="articulo-card-journal-tags">
             {articulo.palabrasClave.slice(0, 4).map((kw, i) => (
-              <span key={`${kw}-${i}`} className="articulo-card-journal-tag">{kw}</span>
+              <span
+                key={`${kw}-${i}`}
+                className="articulo-card-journal-tag"
+                title={ARXIV_CAT[kw] ?? kw}
+              >{ARXIV_CAT[kw] ? kw : kw}</span>
             ))}
           </div>
         )}
@@ -220,7 +243,13 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
         {articulo.palabrasClave.length > 0 && (
           <div className="articulo-tags">
             {articulo.palabrasClave.slice(0, 5).map((kw, i) => (
-              <span key={`${kw}-${i}`} className="tag">{kw}</span>
+              <span
+                key={`${kw}-${i}`}
+                className="tag"
+                title={ARXIV_CAT[kw] ?? undefined}
+              >
+                {ARXIV_CAT[kw] ?? kw}
+              </span>
             ))}
           </div>
         )}
@@ -230,37 +259,6 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
           <a href={articulo.urlOriginal} target="_blank" rel="noreferrer" className="btn-link">
             <ExternalLink size={14} /> Ver artículo
           </a>
-          {articulo.urlPdf && (
-            <a href={articulo.urlPdf} target="_blank" rel="noreferrer" className="btn-link">
-              <FileText size={14} /> PDF
-            </a>
-          )}
-
-          {/* Citar APA */}
-          <button onClick={handleCopyAPA} className="btn-link" title="Copiar cita APA">
-            {copied ? <CheckCheck size={14} className="text-emerald-500" /> : <Copy size={14} />}
-            {copied ? 'Copiado' : 'Citar APA'}
-          </button>
-
-          {/* Compartir */}
-          <button onClick={handleShare} className="btn-link" title="Compartir">
-            <Share2 size={14} /> Compartir
-          </button>
-
-          {/* Exportar referencias */}
-          <div className="export-dropdown-wrapper">
-            <button onClick={() => setShowExport(!showExport)} className="btn-link" title="Exportar referencia">
-              <Download size={14} /> Exportar
-            </button>
-            {showExport && (
-              <div className="export-dropdown">
-                <button onClick={() => handleExport('bibtex')} className="export-option">BibTeX (.bib)</button>
-                <button onClick={() => handleExport('ris')} className="export-option">RIS (.ris)</button>
-                <button onClick={() => handleExport('apa')} className="export-option">APA (.txt)</button>
-                <button onClick={() => handleExport('mla')} className="export-option">MLA (.txt)</button>
-              </div>
-            )}
-          </div>
 
           {usuario && (
             <button
@@ -273,6 +271,46 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
               {guardado ? 'Guardado' : 'Guardar'}
             </button>
           )}
+
+          {/* More actions */}
+          <div className="card-more-wrapper">
+            <button
+              onClick={() => setShowMore(!showMore)}
+              className="btn-link card-more-btn"
+              title="Más acciones"
+            >
+              <MoreHorizontal size={16} />
+            </button>
+            {showMore && (
+              <div className="card-more-menu">
+                {articulo.urlPdf && (
+                  <a href={articulo.urlPdf} target="_blank" rel="noreferrer" className="card-more-option">
+                    <FileText size={13} /> PDF
+                  </a>
+                )}
+                <button onClick={handleCopyAPA} className="card-more-option">
+                  {copied ? <CheckCheck size={13} className="text-emerald-500" /> : <Copy size={13} />}
+                  {copied ? 'Copiado' : 'Citar APA'}
+                </button>
+                <button onClick={handleShare} className="card-more-option">
+                  <Share2 size={13} /> Compartir
+                </button>
+                <div className="card-more-divider" />
+                <button onClick={() => { handleExport('bibtex'); setShowMore(false); }} className="card-more-option">
+                  <Download size={13} /> BibTeX (.bib)
+                </button>
+                <button onClick={() => { handleExport('ris'); setShowMore(false); }} className="card-more-option">
+                  <Download size={13} /> RIS (.ris)
+                </button>
+                <button onClick={() => { handleExport('apa'); setShowMore(false); }} className="card-more-option">
+                  <Download size={13} /> APA (.txt)
+                </button>
+                <button onClick={() => { handleExport('mla'); setShowMore(false); }} className="card-more-option">
+                  <Download size={13} /> MLA (.txt)
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </article>

@@ -119,26 +119,35 @@ const BuscarPage = () => {
         <aside className="buscar-sidebar">
           <div className="sidebar-filter-group">
             <h4 className="sidebar-filter-title">FUENTE</h4>
-            {FUENTES.map((f) => (
-              <label key={f.id} className="sidebar-radio">
-                <input type="radio" name="fuente" checked={fuente === f.id} onChange={() => setFuente(f.id)} />
-                <span>{f.label}</span>
-              </label>
-            ))}
+            <div className="sidebar-pills">
+              {FUENTES.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => setFuente(f.id)}
+                  className={`sidebar-pill${fuente === f.id ? ' active' : ''}`}
+                >{f.label}</button>
+              ))}
+            </div>
           </div>
 
           <div className="sidebar-filter-group">
             <h4 className="sidebar-filter-title">ÁREA CIENTÍFICA</h4>
-            <label className="sidebar-radio">
-              <input type="radio" name="area" checked={!area} onChange={() => setArea('')} />
-              <span>Todas</span>
-            </label>
-            {AREAS_CIENTIFICAS.map((a) => (
-              <label key={a.id} className="sidebar-radio">
-                <input type="radio" name="area" checked={area === a.id} onChange={() => setArea(a.id)} />
-                <span>{a.label}</span>
-              </label>
-            ))}
+            <div className="sidebar-pills sidebar-pills--wrap">
+              <button
+                type="button"
+                onClick={() => setArea('')}
+                className={`sidebar-pill${!area ? ' active' : ''}`}
+              >Todas</button>
+              {AREAS_CIENTIFICAS.map((a) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => setArea(a.id)}
+                  className={`sidebar-pill${area === a.id ? ' active' : ''}`}
+                >{a.label}</button>
+              ))}
+            </div>
           </div>
 
           <div className="sidebar-filter-group">
@@ -157,12 +166,16 @@ const BuscarPage = () => {
 
           <div className="sidebar-filter-group">
             <h4 className="sidebar-filter-title">ORDENAR POR</h4>
-            {(['relevancia', 'anio', 'citas'] as Orden[]).map((o) => (
-              <label key={o} className="sidebar-radio">
-                <input type="radio" name="orden" checked={orden === o} onChange={() => setOrden(o)} />
-                <span>{o.charAt(0).toUpperCase() + o.slice(1)}</span>
-              </label>
-            ))}
+            <div className="sidebar-pills">
+              {(['relevancia', 'anio', 'citas'] as Orden[]).map((o) => (
+                <button
+                  key={o}
+                  type="button"
+                  onClick={() => setOrden(o)}
+                  className={`sidebar-pill${orden === o ? ' active' : ''}`}
+                >{o.charAt(0).toUpperCase() + o.slice(1)}</button>
+              ))}
+            </div>
           </div>
         </aside>
 

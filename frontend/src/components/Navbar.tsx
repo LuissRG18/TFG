@@ -34,8 +34,16 @@ const Navbar = () => {
       <div className="navbar-inner">
         {/* Logo */}
         <Link to="/" className="navbar-logo">
-          <span className="navbar-logo-icon">S</span>
-          <span>SciLens</span>
+          <svg className="navbar-logo-svg" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="16" cy="16" r="16" fill="#1c3353"/>
+            <line x1="1" y1="16" x2="5" y2="16" stroke="rgba(255,255,255,0.38)" strokeWidth="1" strokeDasharray="1.5 1.5"/>
+            <line x1="27" y1="16" x2="31" y2="16" stroke="rgba(255,255,255,0.38)" strokeWidth="1" strokeDasharray="1.5 1.5"/>
+            <path d="M5,16 Q16,7.5 27,16 Q16,24.5 5,16 Z" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinejoin="round"/>
+            <circle cx="16" cy="16" r="4.5" fill="#e67e22"/>
+          </svg>
+          <span className="navbar-logo-text">
+            <span className="logo-sci">Sci</span><span className="logo-lens">Lens</span>
+          </span>
         </Link>
 
         {/* Desktop links */}

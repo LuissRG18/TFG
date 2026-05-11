@@ -1,4 +1,5 @@
 ﻿import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { BookMarked, Loader2, Trash2, StickyNote, Tag, Clock, FolderOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Favorito } from '../types';
 import { obtenerFavoritos, eliminarFavorito, actualizarFavorito, obtenerColecciones } from '../services/favoritosService';
@@ -63,15 +64,17 @@ const FavoritosPage = () => {
   };
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <div className="flex items-center gap-3">
-          <BookMarked size={28} className="text-indigo-500" />
-          <h1 className="page-title">Mis Favoritos</h1>
+    <div className="favoritos-page">
+      {/* ── Hero ── */}
+      <div className="inner-page-hero">
+        <div className="inner-page-hero-inner">
+          <p className="section-eyebrow">MIS ARTÍCULOS</p>
+          <h1 className="inner-page-hero-title">Mis Favoritos</h1>
+          <p className="inner-page-hero-subtitle">{total} artículo(s) guardado(s)</p>
         </div>
-        <p className="page-subtitle">{total} artículo(s) guardado(s)</p>
       </div>
 
+      <div className="inner-page-content">
       {/* Filtros */}
       <div className="buscar-filters-bar mb-4 flex-wrap">
         <button onClick={() => { setFiltroLeer(undefined); setFiltroColeccion(''); }} className={`filter-btn ${filtroLeer === undefined && !filtroColeccion ? 'active' : ''}`}>
@@ -96,10 +99,17 @@ const FavoritosPage = () => {
       {error && <div className="error-banner">{error}</div>}
 
       {!loading && favoritos.length === 0 && (
-        <div className="empty-state">
-          <BookMarked size={48} className="text-gray-300" />
-          <p className="text-gray-400">Aún no tienes favoritos guardados.</p>
-        </div>
+            <div className="empty-state empty-state--cta">
+              <BookMarked size={48} className="empty-state-icon" />
+              <p className="empty-state-title">Aún no tienes favoritos guardados</p>
+              <p className="empty-state-desc">
+                Guarda artículos desde la búsqueda o las recomendaciones para acceder rápidamente a ellos.
+              </p>
+              <div className="empty-state-actions">
+                <Link to="/buscar" className="btn-primary">Ir a Buscar</Link>
+                <Link to="/recomendados" className="btn-secondary">Ver Recomendados</Link>
+              </div>
+            </div>
       )}
 
       <div className="articulos-list">
@@ -152,6 +162,7 @@ const FavoritosPage = () => {
           </button>
         </div>
       )}
+      </div>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ExternalLink, Rocket, Users, Clock, Globe } from 'lucide-react';
+import crewImg from '../assets/artemisiicrewposterorig-notext-01.webp';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface CrewMember {
@@ -51,8 +52,7 @@ const NASA_ARTEMIS_NEWS = [
 ];
 
 // ── Image credit: NASA (public domain) ────────────────────────────────────
-const ARTEMIS_IMAGE =
-  'https://www.nasa.gov/wp-content/uploads/2023/09/artemis-ii-crew-1061.jpg';
+const ARTEMIS_IMAGE = crewImg;
 
 // ── Component ──────────────────────────────────────────────────────────────
 const ArtemisHero = () => {
@@ -123,7 +123,7 @@ const ArtemisHero = () => {
           alt="Tripulación Artemis II — Crédito: NASA (dominio público)"
           className="artemis-banner-img"
           loading="lazy"
-          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0'; }}
         />
         <div className="artemis-banner-overlay" />
         <div className="artemis-banner-content">

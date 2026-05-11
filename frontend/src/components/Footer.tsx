@@ -8,8 +8,16 @@ const Footer = () => (
       {/* Brand */}
       <div className="footer-brand">
         <div className="footer-logo">
-          <span className="navbar-logo-icon" style={{ width: 28, height: 28, fontSize: '0.85rem' }}></span>
-          <span><span className="footer-logo-accent">Sci</span>Lens</span>
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="footer-logo-svg" aria-hidden="true">
+            <circle cx="16" cy="16" r="16" fill="#1c3353"/>
+            <line x1="1" y1="16" x2="5" y2="16" stroke="rgba(255,255,255,0.38)" strokeWidth="1" strokeDasharray="1.5 1.5"/>
+            <line x1="27" y1="16" x2="31" y2="16" stroke="rgba(255,255,255,0.38)" strokeWidth="1" strokeDasharray="1.5 1.5"/>
+            <path d="M5,16 Q16,7.5 27,16 Q16,24.5 5,16 Z" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinejoin="round"/>
+            <circle cx="16" cy="16" r="4.5" fill="#e67e22"/>
+          </svg>
+          <span className="footer-logo-text">
+            <span className="footer-logo-sci">Sci</span><span className="footer-logo-lens">Lens</span>
+          </span>
         </div> 
         <p className="footer-tagline">
           Descubre, comprende y guarda artículos científicos de acceso abierto desde cualquier lugar.

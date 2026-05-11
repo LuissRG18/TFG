@@ -15,7 +15,8 @@ ChartJS.register(
 );
 
 const CHART_COLORS = [
-  '#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#84cc16'
+  '#e67e22', '#1c3353', 'rgba(230,126,34,0.75)', 'rgba(28,51,83,0.75)',
+  'rgba(230,126,34,0.5)', 'rgba(28,51,83,0.5)', '#f39c12', '#2c4a6e',
 ];
 
 const EstadisticasPage = () => {
@@ -38,14 +39,31 @@ const EstadisticasPage = () => {
   }, []);
 
   if (loading) return (
-    <div className="loading-state">
-      <Loader2 size={36} className="animate-spin text-indigo-500" />
+    <div className="estadisticas-page">
+      <div className="inner-page-hero">
+        <div className="inner-page-hero-inner">
+          <p className="section-eyebrow">TU ACTIVIDAD</p>
+          <h1 className="inner-page-hero-title">Mis Estadísticas</h1>
+          <p className="inner-page-hero-subtitle">Visualiza tus hábitos de lectura científica</p>
+        </div>
+      </div>
+      <div className="inner-page-content loading-state">
+        <Loader2 size={36} className="animate-spin" />
+      </div>
     </div>
   );
 
   if (error || !stats) return (
-    <div className="page-container">
-      <div className="error-banner">{error || 'Error al cargar estadísticas.'}</div>
+    <div className="estadisticas-page">
+      <div className="inner-page-hero">
+        <div className="inner-page-hero-inner">
+          <p className="section-eyebrow">TU ACTIVIDAD</p>
+          <h1 className="inner-page-hero-title">Mis Estadísticas</h1>
+        </div>
+      </div>
+      <div className="inner-page-content">
+        <div className="error-banner">{error || 'Error al cargar estadísticas.'}</div>
+      </div>
     </div>
   );
 
@@ -76,27 +94,27 @@ const EstadisticasPage = () => {
       {
         label: 'Artículos guardados',
         data: rawValues,
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99,102,241,0.18)',
+        borderColor: '#e67e22',
+        backgroundColor: 'rgba(230,126,34,0.12)',
         fill: true,
         tension: 0.4,
         pointRadius: 5,
         pointHoverRadius: 9,
-        pointBackgroundColor: '#6366f1',
+        pointBackgroundColor: '#e67e22',
         pointBorderColor: '#fff',
         pointBorderWidth: 2,
       },
       {
         label: 'Tendencia (media móvil)',
         data: movingAvg,
-        borderColor: '#10b981',
+        borderColor: '#1c3353',
         backgroundColor: 'transparent',
         borderDash: [6, 4],
         fill: false,
         tension: 0.4,
         pointRadius: 0,
         pointHoverRadius: 5,
-        pointHoverBackgroundColor: '#10b981',
+        pointHoverBackgroundColor: '#1c3353',
       },
     ],
   };
@@ -142,7 +160,7 @@ const EstadisticasPage = () => {
       y: {
         beginAtZero: true,
         ticks: { stepSize: 10 },
-        grid: { color: 'rgba(99,102,241,0.08)' },
+        grid: { color: 'rgba(28,51,83,0.08)' },
       },
       x: {
         grid: { display: false },
@@ -156,15 +174,17 @@ const EstadisticasPage = () => {
   };
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <div className="flex items-center gap-3">
-          <BarChart2 size={28} className="text-indigo-500" />
-          <h1 className="page-title">Mis Estadísticas</h1>
+    <div className="estadisticas-page">
+      {/* ── Hero ── */}
+      <div className="inner-page-hero">
+        <div className="inner-page-hero-inner">
+          <p className="section-eyebrow">TU ACTIVIDAD</p>
+          <h1 className="inner-page-hero-title">Mis Estadísticas</h1>
+          <p className="inner-page-hero-subtitle">Visualiza tus hábitos de lectura científica</p>
         </div>
-        <p className="page-subtitle">Visualiza tus hábitos de lectura científica</p>
       </div>
 
+      <div className="inner-page-content">
       {/* KPIs */}
       <div className="stats-kpis">
         <div className="kpi-card">
@@ -218,6 +238,7 @@ const EstadisticasPage = () => {
           <p className="text-gray-400">Guarda artículos en favoritos para ver tus estadísticas.</p>
         </div>
       )}
+      </div>
     </div>
   );
 };
