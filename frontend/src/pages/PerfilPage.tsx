@@ -52,14 +52,14 @@ const PerfilPage = () => {
 
   const handlePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pwNueva !== pwConfirm) { setErrorPw('Las contraseÃ±as no coinciden.'); return; }
+    if (pwNueva !== pwConfirm) { setErrorPw('Las contraseñas no coinciden.'); return; }
     setLoadingPw(true); setErrorPw(''); setOkPw('');
     try {
       await cambiarPasswordRequest(pwActual, pwNueva);
-      setOkPw('ContraseÃ±a cambiada correctamente.');
+      setOkPw('Contraseña cambiada correctamente.');
       setPwActual(''); setPwNueva(''); setPwConfirm('');
     } catch {
-      setErrorPw('La contraseÃ±a actual no es correcta.');
+      setErrorPw('La contraseña actual no es correcta.');
     } finally {
       setLoadingPw(false);
     }
@@ -79,7 +79,7 @@ const PerfilPage = () => {
       </div>
 
       <div className="perfil-layout">
-        {/* â”€â”€ LEFT column â”€â”€ */}
+       
         <div className="perfil-left">
           {/* Avatar */}
           <div className="perfil-avatar-section">
@@ -92,7 +92,7 @@ const PerfilPage = () => {
 
           {/* Personal info form */}
           <div className="perfil-card">
-            <h2 className="perfil-section-title">InformaciÃ³n personal</h2>
+            <h2 className="perfil-section-title">Información personal</h2>
             {okPerfil && <div className="success-banner"><CheckCircle2 size={15} /> {okPerfil}</div>}
             {errorPerfil && <div className="error-banner"><AlertCircle size={15} /> {errorPerfil}</div>}
             <form onSubmit={handlePerfil} className="auth-form">
@@ -112,7 +112,7 @@ const PerfilPage = () => {
 
           {/* Interest areas */}
           <div className="perfil-card">
-            <h2 className="perfil-section-title">Ãreas de interÃ©s</h2>
+            <h2 className="perfil-section-title">Áreas de interés</h2>
             <div className="perfil-areas-grid">
               {AREAS_CIENTIFICAS.map((a) => (
                 <button
@@ -132,24 +132,24 @@ const PerfilPage = () => {
         <div className="perfil-right">
           {/* Change password */}
           <div className="perfil-card">
-            <h2 className="perfil-section-title">ðŸ”’ Cambiar contraseÃ±a</h2>
+            <h2 className="perfil-section-title">🔒 Cambiar contraseña</h2>
             {okPw && <div className="success-banner"><CheckCircle2 size={15} /> {okPw}</div>}
             {errorPw && <div className="error-banner"><AlertCircle size={15} /> {errorPw}</div>}
             <form onSubmit={handlePassword} className="auth-form">
               <div className="form-group">
-                <label className="form-label">ContraseÃ±a actual</label>
+                <label className="form-label">Contraseña actual</label>
                 <input type="password" value={pwActual} onChange={(e) => setPwActual(e.target.value)} required className="form-input" />
               </div>
               <div className="form-group">
-                <label className="form-label">Nueva contraseÃ±a</label>
+                <label className="form-label">Nueva contraseña</label>
                 <input type="password" value={pwNueva} onChange={(e) => setPwNueva(e.target.value)} required minLength={6} className="form-input" />
               </div>
               <div className="form-group">
-                <label className="form-label">Confirmar nueva contraseÃ±a</label>
+                <label className="form-label">Confirmar nueva contraseña</label>
                 <input type="password" value={pwConfirm} onChange={(e) => setPwConfirm(e.target.value)} required className="form-input" />
               </div>
               <button type="submit" disabled={loadingPw} className="btn-primary">
-                {loadingPw ? <Loader2 size={16} className="animate-spin" /> : 'Cambiar contraseÃ±a'}
+                {loadingPw ? <Loader2 size={16} className="animate-spin" /> : 'Cambiar contraseña'}
               </button>
             </form>
           </div>
@@ -157,13 +157,6 @@ const PerfilPage = () => {
           {/* Preferences */}
           <div className="perfil-card">
             <h2 className="perfil-section-title">Preferencias</h2>
-            <div className="form-group">
-              <label className="form-label">Idioma de la interfaz</label>
-              <select className="form-input">
-                <option value="es">EspaÃ±ol</option>
-                <option value="en">English</option>
-              </select>
-            </div>
             <div className="form-group">
               <label className="form-label">Tema</label>
               <select className="form-input">
@@ -175,7 +168,7 @@ const PerfilPage = () => {
             <div className="form-group">
               <label className="form-label">Idioma de noticias</label>
               <select className="form-input">
-                <option value="es">EspaÃ±ol</option>
+                <option value="es">Español</option>
                 <option value="en">English</option>
               </select>
             </div>
@@ -184,11 +177,11 @@ const PerfilPage = () => {
           {/* Danger zone */}
           <div className="perfil-card perfil-danger-zone">
             <h2 className="perfil-section-title danger">Zona peligrosa</h2>
-            <p className="perfil-danger-desc">Estas acciones son irreversibles. Procede con precauciÃ³n.</p>
+            <p className="perfil-danger-desc">Estas acciones son irreversibles. Procede con precaución.</p>
             <div className="perfil-danger-actions">
-              <button onClick={handleLogout} className="btn-danger-outline">Cerrar sesiÃ³n</button>
+              <button onClick={handleLogout} className="btn-danger-outline">Cerrar sesión</button>
               <button className="btn-danger" onClick={() => {
-                if (window.confirm('Â¿Seguro que quieres eliminar tu cuenta? Esta acciÃ³n no se puede deshacer.')) {
+                if (window.confirm('¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) {
                   // TODO: implement account deletion
                 }
               }}>Eliminar cuenta</button>
