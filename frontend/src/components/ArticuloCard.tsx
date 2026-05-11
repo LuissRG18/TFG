@@ -114,7 +114,7 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
     } else {
       downloadText(formatMLA(articulo), `${safeTitle}_MLA.txt`, 'text/plain');
     }
-    setShowExport(false);
+    setShowMore(false);
   };
 
   const abstractTexto = mostraDivulgativo && articulo.abstractDivulgativo

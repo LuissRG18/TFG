@@ -46,7 +46,7 @@ const NoticiaCard = ({ noticia, compact = false }: Props) => {
       ) : (
         <div className="noticia-card-img-wrap">
           <img
-            src={noticia.imagen}
+            src={noticia.imagen ?? undefined}
             alt={noticia.titulo}
             className="noticia-card-img"
             loading="lazy"
