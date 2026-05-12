@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ExternalLink, Rocket, Users, Clock, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ExternalLink, Rocket, Users, Clock, Globe, ArrowRight } from 'lucide-react';
 import crewImg from '../assets/artemisiicrewposterorig-notext-01.webp';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -135,16 +136,21 @@ const ArtemisHero = () => {
             La primera misión tripulada al espacio profundo en más de 50 años.
             Cuatro astronautas orbitarán la Luna a bordo de la cápsula Orion.
           </p>
-          {mission?.missionUrl && (
-            <a
-              href={mission.missionUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="artemis-cta"
-            >
-              Ver misión oficial <ExternalLink size={14} />
-            </a>
-          )}
+          <div className="artemis-cta-row">
+            <Link to="/artemis" className="artemis-cta">
+              Explorar la misión <ArrowRight size={14} />
+            </Link>
+            {mission?.missionUrl && (
+              <a
+                href={mission.missionUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="artemis-cta artemis-cta--ghost"
+              >
+                Ver misión oficial <ExternalLink size={14} />
+              </a>
+            )}
+          </div>
         </div>
       </div>
 

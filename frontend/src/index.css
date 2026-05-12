@@ -2649,6 +2649,19 @@ img { max-width: 100%; }
   transition: background 0.2s;
 }
 .artemis-cta:hover { background: rgba(255,255,255,0.85); }
+.artemis-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+.artemis-cta-row .artemis-cta { margin-top: 0; }
+.artemis-cta--ghost {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.6);
+}
+.artemis-cta--ghost:hover { background: rgba(255,255,255,0.12); }
 
 /* Facts strip */
 .artemis-facts {
