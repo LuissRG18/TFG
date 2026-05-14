@@ -2595,7 +2595,7 @@ img { max-width: 100%; }
 /* Banner */
 .artemis-banner {
   position: relative;
-  height: 320px;
+  height: 460px;
   overflow: hidden;
   background: #0a0a1a;
 }
@@ -2844,7 +2844,7 @@ img { max-width: 100%; }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .artemis-banner { height: 220px; }
+  .artemis-banner { height: 340px; }
   .artemis-banner-content { padding: 1.25rem; }
   .artemis-body { grid-template-columns: 1fr; }
   .artemis-section { border-right: none; border-top: 1px solid var(--border); }
@@ -2855,7 +2855,7 @@ img { max-width: 100%; }
   .artemis-fact:last-child { border-bottom: none; }
 }
 @media (max-width: 480px) {
-  .artemis-banner { height: 180px; }
+  .artemis-banner { height: 280px; }
   .artemis-banner-content { padding: 1rem; gap: 0.4rem; }
   .artemis-title { font-size: clamp(1.4rem, 7vw, 1.8rem); }
   .artemis-subtitle { font-size: 0.85rem; }
