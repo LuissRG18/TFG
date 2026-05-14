@@ -2525,6 +2525,14 @@ img { max-width: 100%; }
 [data-theme="dark"] .filter-btn.active { background: rgba(14,165,233,0.15); color: var(--accent); border-color: rgba(14,165,233,0.4); }
 [data-theme="dark"] .btn-divulgativo { background: rgba(124,58,237,0.15); border-color: rgba(167,139,250,0.3); color: #a78bfa; }
 [data-theme="dark"] .btn-divulgativo:hover { background: rgba(124,58,237,0.25); }
+[data-theme="dark"] .btn-outline {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.25);
+}
+[data-theme="dark"] .btn-outline:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.4);
+}
 
 /* ── Badges ── */
 [data-theme="dark"] .badge-arxiv { background: rgba(146,64,14,0.2); color: #fbbf24; border-color: rgba(251,191,36,0.25); }
