@@ -3482,18 +3482,42 @@ img { max-width: 100%; }
 }
 .ann-lang-btn:hover, .ann-lang-btn.active { color: #fff; }
 .ann-sep { color: #4a5568; margin: 0 0.1rem; }
-.ann-mode-btn {
-  background: none;
-  border: 1px solid #2d3748;
-  color: #b0bec5;
-  font-size: 0.7rem;
+/* Theme toggle in navbar — adapts to navbar state (transparent / scrolled / dark) */
+.navbar-theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255,255,255,0.85);
   cursor: pointer;
-  padding: 0.1rem 0.5rem;
-  border-radius: 3px;
-  margin-left: 0.5rem;
-  transition: border-color 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-.ann-mode-btn:hover { border-color: #718096; color: #fff; }
+.navbar-theme-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+.navbar--scrolled .navbar-theme-btn {
+  color: var(--text-muted);
+  border-color: var(--border-mid);
+}
+.navbar--scrolled .navbar-theme-btn:hover {
+  color: var(--oxford);
+  background: var(--bg-soft);
+  border-color: var(--oxford);
+}
+[data-theme="dark"] .navbar--scrolled .navbar-theme-btn {
+  color: #94a3b8;
+  border-color: rgba(255,255,255,0.15);
+}
+[data-theme="dark"] .navbar--scrolled .navbar-theme-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(14,165,233,0.12);
+}
 
 /* ── Navbar adjustments for announcement bar ──────────────────────────── */
 .navbar { top: 32px !important; }

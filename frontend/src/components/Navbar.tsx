@@ -1,10 +1,12 @@
 ﻿import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, LogOut, User } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { Menu, X, LogOut, User, Sun, Moon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const Navbar = () => {
   const { usuario, logout } = useAuth();
+  const { darkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === '/';
@@ -68,6 +70,14 @@ const Navbar = () => {
 
         {/* Auth */}
         <div className="navbar-auth">
+          <button
+            onClick={toggleDarkMode}
+            className="navbar-theme-btn"
+            aria-label={darkMode ? 'Activar modo claro' : 'Activar modo oscuro'}
+            title={darkMode ? 'Modo claro' : 'Modo oscuro'}
+          >
+            {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
           {usuario ? (
             <div className="flex items-center gap-2">
               <NavLink to="/perfil" className={navLinkClass}>
@@ -123,6 +133,12 @@ const Navbar = () => {
               <Link to="/registro" className={navLinkClass({ isActive: false })} onClick={() => setMenuOpen(false)}>Crear cuenta</Link>
             </>
           )}
+          <button
+            onClick={() => { toggleDarkMode(); setMenuOpen(false); }}
+            className={navLinkClass({ isActive: false })}
+          >
+            {darkMode ? <><Sun size={15} /> Modo claro</> : <><Moon size={15} /> Modo oscuro</>}
+          </button>
           {usuario && (
             <button onClick={() => { handleLogout(); setMenuOpen(false); }} className="flex items-center gap-1.5 px-3 py-2 text-sm text-red-500">
               <LogOut size={15} /> Cerrar sesión
