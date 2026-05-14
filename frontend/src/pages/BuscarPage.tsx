@@ -5,16 +5,17 @@ import ArticuloCard from '../components/ArticuloCard';
 import SearchBar from '../components/SearchBar';
 import type { Articulo } from '../types';
 import { AREAS_CIENTIFICAS } from '../types';
-import { buscarArxiv, buscarCrossRef } from '../services/articulosService';
+import { buscarArxiv, buscarCrossRef, buscarOpenAlex } from '../services/articulosService';
 import { guardarBusqueda } from '../services/favoritosService';
 import { useAuth } from '../context/AuthContext';
 
-type Fuente = 'arxiv' | 'crossref';
+type Fuente = 'arxiv' | 'crossref' | 'openalex';
 type Orden = 'relevancia' | 'anio' | 'citas';
 
 const FUENTES: { id: Fuente; label: string }[] = [
   { id: 'arxiv', label: 'arXiv' },
   { id: 'crossref', label: 'CrossRef' },
+  { id: 'openalex', label: 'OpenAlex' },
 ];
 
 const BuscarPage = () => {
@@ -55,6 +56,7 @@ const BuscarPage = () => {
       };
       let result;
       if (fuente === 'arxiv') result = await buscarArxiv(params);
+      else if (fuente === 'openalex') result = await buscarOpenAlex(params);
       else result = await buscarCrossRef(params);
 
       let arts = result.articulos;

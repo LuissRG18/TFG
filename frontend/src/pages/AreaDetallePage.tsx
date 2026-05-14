@@ -4,7 +4,7 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import { AREAS_CIENTIFICAS } from '../types';
 import type { Articulo } from '../types';
 import ArticuloCard from '../components/ArticuloCard';
-import { buscarArxiv, buscarCrossRef } from '../services/articulosService';
+import { buscarArxiv, buscarCrossRef, buscarOpenAlex } from '../services/articulosService';
 
 const AREA_QUERIES: Record<string, string> = {
   cs: 'computer science',
@@ -36,11 +36,12 @@ const AREA_META: Record<string, { code: string; desc: string; count: string }> =
   neuroscience:  { code: 'NEURO', desc: 'NEUROCIENCIA · NEUROSCIENCE', count: '950K+' },
 };
 
-type Fuente = 'arxiv' | 'crossref';
+type Fuente = 'arxiv' | 'crossref' | 'openalex';
 
 const FUENTES: { id: Fuente; label: string }[] = [
   { id: 'arxiv', label: 'arXiv' },
   { id: 'crossref', label: 'CrossRef' },
+  { id: 'openalex', label: 'OpenAlex' },
 ];
 
 const AreaDetallePage = () => {
@@ -64,6 +65,7 @@ const AreaDetallePage = () => {
       const params = { q: AREA_QUERIES[areaId] ?? areaId, area: areaId, pagina, limite };
       let result;
       if (fuente === 'arxiv') result = await buscarArxiv(params);
+      else if (fuente === 'openalex') result = await buscarOpenAlex(params);
       else result = await buscarCrossRef(params);
       setArticulos(result.articulos);
       setTotal(result.total);

@@ -34,6 +34,16 @@ export const buscarCrossRef = async (params: BusquedaParams): Promise<ResultadoB
   return data;
 };
 
+export const buscarOpenAlex = async (params: BusquedaParams): Promise<ResultadoBusqueda> => {
+  const { data } = await api.get('/articulos/openalex/buscar', { params });
+  return data;
+};
+
+export const obtenerOpenAlexPorId = async (id: string): Promise<{ ok: boolean; articulo: Articulo }> => {
+  const { data } = await api.get(`/articulos/openalex/${encodeURIComponent(id)}`);
+  return data;
+};
+
 export const obtenerEstadisticas = async () => {
   const { data } = await api.get('/articulos/estadisticas');
   return data;

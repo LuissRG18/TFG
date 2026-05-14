@@ -23,11 +23,13 @@ interface Props {
 const BADGE_COLORS: Record<string, string> = {
   arxiv: 'badge-arxiv',
   crossref: 'badge-crossref',
+  openalex: 'badge-openalex',
 };
 
 const FUENTE_LABEL: Record<string, string> = {
   arxiv: 'arXiv',
   crossref: 'CrossRef',
+  openalex: 'OpenAlex',
 };
 
 // arXiv category codes → full readable names

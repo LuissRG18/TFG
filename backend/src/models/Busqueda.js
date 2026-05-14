@@ -14,7 +14,7 @@ const busquedaSchema = new mongoose.Schema(
     },
     fuente: {
       type: String,
-      enum: ['arxiv', 'crossref', 'todas'],
+      enum: ['arxiv', 'crossref', 'openalex', 'todas'],
       default: 'todas',
     },
     area: {

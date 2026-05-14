@@ -8,13 +8,13 @@
 
 ### 1.1 Descripción del Proyecto
 
-SciLens es una plataforma web de acceso abierto al conocimiento científico cuyo objetivo principal es centralizar la búsqueda, visualización y gestión de artículos académicos procedentes de múltiples fuentes como **arXiv** y **CrossRef** en una única interfaz moderna, segura e intuitiva.
+SciLens es una plataforma web de acceso abierto al conocimiento científico cuyo objetivo principal es centralizar la búsqueda, visualización y gestión de artículos académicos procedentes de múltiples fuentes como **arXiv**, **CrossRef** y **OpenAlex** en una única interfaz moderna, segura e intuitiva.
 
 La motivación del proyecto surge de la dispersión del conocimiento científico en múltiples repositorios con interfaces dispares, formatos distintos y barreras de acceso inconsistentes. SciLens propone una capa unificada sobre estas fuentes que facilita tanto el acceso casual al conocimiento científico como la gestión sistemática de literatura académica para usuarios con necesidades más avanzadas.
 
 El sistema implementa las siguientes funcionalidades principales:
 
-- **Búsqueda unificada** en arXiv y CrossRef con filtros por área científica, fuente y paginación
+- **Búsqueda unificada** en arXiv, CrossRef y OpenAlex con filtros por área científica, fuente y paginación
 - **Visualización detallada** de artículos con abstract, autores, año, palabras clave y enlaces al PDF y fuente original
 - **Modo de lectura divulgativa** mediante resúmenes simplificados (`abstractDivulgativo`) editables por el propio usuario
 - **Comparador de artículos** para contrastar hasta tres artículos en paralelo (título, autores, año, fuente, abstract, palabras clave)
@@ -47,7 +47,7 @@ El proyecto es técnicamente viable utilizando tecnologías modernas ampliamente
 | Iconografía | Lucide React | 0.577.x |
 | Despliegue | Vercel | Serverless Node.js + CDN estático |
 
-Las APIs externas utilizadas (arXiv Atom/XML y CrossRef REST) son públicas y no requieren autenticación, lo que elimina cualquier dependencia de claves de terceros para las funcionalidades de búsqueda.
+Las APIs externas utilizadas (arXiv Atom/XML, CrossRef REST y OpenAlex REST) son públicas y no requieren autenticación, lo que elimina cualquier dependencia de claves de terceros para las funcionalidades de búsqueda. OpenAlex admite un parámetro opcional `mailto` para acceder al "polite pool" (mayores cuotas), configurable mediante la variable de entorno `OPENALEX_EMAIL`.
 
 La infraestructura se basa íntegramente en planes gratuitos: Vercel para frontend y backend serverless, MongoDB Atlas M0 para base de datos, y APIs académicas públicas sin cuota. Esto garantiza que el proyecto sea reproducible y evaluable sin coste económico.
 
@@ -110,8 +110,9 @@ La aplicación sigue una arquitectura **cliente-servidor completamente desacopla
 │   MongoDB Atlas (M0)    │  │   APIs Externas              │
 │   Users · Favoritos     │  │   arXiv (Atom/XML)           │
 │   Búsquedas · Noticias  │  │   CrossRef (REST/JSON)       │
-└─────────────────────────┘  │   RSS Feeds (Noticias)       │
-                              └─────────────────────────────┘
+└─────────────────────────┘  │   OpenAlex (REST/JSON)       │
+                             │   RSS Feeds (Noticias)       │
+                             └─────────────────────────────┘
 ```
 
 **Backend:** API REST desarrollada con Node.js y Express 5 siguiendo el patrón MVC. Gestiona autenticación, lógica de negocio y acceso a base de datos mediante Mongoose. La configuración de conexión a MongoDB incluye caché de conexión (`global.mongoose`) para reutilizar la conexión entre invocaciones serverless y evitar el agotamiento del pool de conexiones.
@@ -142,8 +143,8 @@ El hook `pre('save')` hashea la contraseña con bcryptjs (10 rondas de salt) ún
 | Campo | Tipo | Notas |
 |---|---|---|
 | `usuario` | ObjectId (ref User) | Clave foránea |
-| `articuloId` | String | ID externo (arXiv ID o DOI CrossRef) |
-| `fuente` | String | `enum: ['arxiv', 'crossref', 'otro']` |
+| `articuloId` | String | ID externo (arXiv ID, DOI CrossRef o Work ID de OpenAlex) |
+| `fuente` | String | `enum: ['arxiv', 'crossref', 'openalex', 'otro']` |
 | `titulo`, `autores`, `anio`, `abstract` | — | Copia local del artículo en el momento del guardado |
 | `abstractDivulgativo` | String | Resumen simplificado editable por el usuario |
 | `area`, `palabrasClave`, `urlOriginal`, `urlPdf`, `revista` | — | Metadatos del artículo |
@@ -160,7 +161,7 @@ El hook `pre('save')` hashea la contraseña con bcryptjs (10 rondas de salt) ún
 |---|---|---|
 | `usuario` | ObjectId (ref User) | — |
 | `termino` | String | Término de búsqueda |
-| `fuente` | String | `enum: ['arxiv', 'crossref', 'todas']` |
+| `fuente` | String | `enum: ['arxiv', 'crossref', 'openalex', 'todas']` |
 | `area` | String | Filtro de área aplicado |
 | `resultados` | Number | Número de resultados obtenidos |
 
@@ -231,7 +232,7 @@ backend/src/
 │   └── Noticia.js       # Noticias con TTL index (1 hora)
 ├── controllers/
 │   ├── authController.js       # registro, login, obtenerPerfil, actualizarPerfil, cambiarPassword, subirAvatar
-│   ├── articulosController.js  # buscarArxiv, obtenerArxivPorId, buscarCrossRef, buscarSemanticScholar, obtenerEstadisticas
+│   ├── articulosController.js  # buscarArxiv, obtenerArxivPorId, buscarCrossRef, buscarOpenAlex, obtenerOpenAlexPorId, obtenerEstadisticas
 │   ├── favoritosController.js  # CRUD favoritos + guardarBusqueda + obtenerBusquedas + obtenerColecciones
 │   ├── usuariosController.js   # Admin: listar, obtener, cambiarEstado, eliminar, estadisticasGlobales
 │   └── noticiasController.js   # fetchAndCache (RSS), obtenerNoticias
@@ -263,6 +264,8 @@ El fichero `app.js` configura, en orden:
 **arXiv (Atom/XML):** Se construye la URL de consulta a `https://export.arxiv.org/api/query` con los parámetros `search_query` (con soporte de filtro por categoría mediante `ARXIV_CAT_MAP`), `start`, `max_results`, `sortBy=relevance` y `sortOrder=descending`. La respuesta XML se parsea con expresiones regulares para extraer los campos de cada `<entry>`. El mapeado de áreas internas a prefijos de categoría de arXiv (`cs`, `math`, `q-bio`, `astro-ph`, `eess`, etc.) se realiza en el servidor.
 
 **CrossRef (REST/JSON):** Se consulta `https://api.crossref.org/works` con los parámetros `query`, `query.author`, `offset`, `rows` y `sort=relevance`. La respuesta JSON se normaliza al mismo formato interno que los artículos de arXiv (`id`, `fuente`, `titulo`, `autores`, `anio`, `abstract`, `palabrasClave`, `urlOriginal`, `urlPdf`, `revista`, `citaciones`).
+
+**OpenAlex (REST/JSON):** Se consulta `https://api.openalex.org/works` con los parámetros `search`, `page`, `per-page`, `filter` (combina `concepts.id`, `publication_year:>=`, `publication_year:<=` y `cited_by_count:>=`) y `sort` opcional (`publication_year:desc` o `cited_by_count:desc`). El mapeado de áreas internas a *concept IDs* de OpenAlex (nivel-0: `C41008148` para Computer science, `C71924100` para Medicine, etc.) se realiza en el servidor mediante `OPENALEX_CONCEPT_MAP`. El abstract se devuelve como índice invertido (`abstract_inverted_index: { palabra: [posiciones] }`) y se reconstruye en el backend antes de enviarse al frontend. La URL del PDF se obtiene priorizando `best_oa_location.pdf_url`, después `primary_location.pdf_url` y por último `open_access.oa_url` cuando el artículo es open-access, lo que permite exponer el botón de PDF directamente en la tarjeta para la mayoría de resultados. La variable de entorno opcional `OPENALEX_EMAIL` añade el parámetro `mailto` para acceder al *polite pool* de OpenAlex con cuotas más generosas.
 
 **RSS Feeds (Noticias):** El controlador `noticiasController.js` procesa feeds de 6 fuentes (SINC, El País Ciencia, National Geographic, Muy Interesante, Phys.org, Nature) en español e inglés mediante `rss-parser`. Las noticias se filtran por relevancia científica exigiendo que el título contenga al menos una de ~50 palabras clave científicas y descartando señales de contenido político. Las imágenes se extraen de múltiples namespaces RSS (`media:content`, `media:thumbnail`, `enclosure`, `<img>` en el contenido). Los resultados se cachean en MongoDB con TTL de 1 hora para evitar llamadas repetidas a las fuentes externas.
 
@@ -305,7 +308,7 @@ frontend/src/
 ├── services/
 │   ├── api.ts               # Instancia Axios con baseURL, timeout e interceptores JWT/401
 │   ├── authService.ts       # loginRequest, registroRequest, obtenerPerfil, actualizarPerfil, etc.
-│   ├── articulosService.ts  # buscarArxiv, buscarCrossRef, obtenerArxivPorId, obtenerEstadisticas
+│   ├── articulosService.ts  # buscarArxiv, buscarCrossRef, buscarOpenAlex, obtenerArxivPorId, obtenerOpenAlexPorId, obtenerEstadisticas
 │   ├── favoritosService.ts  # CRUD favoritos, checkFavorito, historial, colecciones
 │   └── noticiasService.ts   # obtenerNoticias
 ├── types/
@@ -341,7 +344,7 @@ La descarga se realiza mediante la API `Blob` + creación de enlace temporal sin
 La página `EstadisticasPage` muestra tres gráficas interactivas con Chart.js:
 - **Gráfico de línea** con artículos guardados por año (2015–actual) y línea de tendencia de media móvil de 3 años
 - **Gráfico de barras** con distribución por área científica
-- **Gráfico de tarta** con distribución por fuente (arXiv / CrossRef)
+- **Gráfico de tarta** con distribución por fuente (arXiv / CrossRef / OpenAlex)
 
 #### Panel de Administración
 
@@ -439,6 +442,7 @@ Todas las rutas se redirigen a `app.js`, que actúa como función serverless ún
 | `JWT_SECRET` | Secreto para firmar y verificar tokens JWT |
 | `JWT_EXPIRES_IN` | Tiempo de expiración del token (default `7d`) |
 | `FRONTEND_URL` | URL(s) permitidas en CORS (separadas por coma) |
+| `OPENALEX_EMAIL` | (Opcional) Email para el *polite pool* de OpenAlex (mayores cuotas de rate-limit) |
 | `VITE_API_URL` | URL base de la API (variable de entorno de Vite en el frontend) |
 
 Ninguna de estas variables se incluye en el repositorio de código fuente. Se configuran exclusivamente desde el panel de Vercel.
@@ -471,7 +475,7 @@ Entre los aspectos más destacados de la implementación cabe señalar:
 
 - La parseo manual del formato Atom/XML de arXiv (sin librería dedicada) requirió un manejo cuidadoso de expresiones regulares para extraer campos con formato irregular
 - La adaptación del backend a entornos serverless (sin estado persistente entre invocaciones) obligó a repensar la gestión de la conexión a MongoDB y el rate limiting (desactivado el store distribuido con `validate: false`)
-- La coordinación entre el sistema de tipos TypeScript y las respuestas dinámicas de dos APIs externas con formatos distintos exigió un trabajo de normalización cuidadoso en los controladores
+- La coordinación entre el sistema de tipos TypeScript y las respuestas dinámicas de tres APIs externas con formatos distintos (XML de arXiv, JSON plano de CrossRef y JSON con índice invertido de OpenAlex) exigió un trabajo de normalización cuidadoso en los controladores
 
 ### Posibles mejoras futuras
 
@@ -561,6 +565,8 @@ Entre los aspectos más destacados de la implementación cabe señalar:
 | `GET` | `/articulos/arxiv/buscar` | Público | Buscar en arXiv (`?q=&area=&pagina=&limite=`) |
 | `GET` | `/articulos/arxiv/:id` | Público | Obtener artículo arXiv por ID |
 | `GET` | `/articulos/crossref/buscar` | Público | Buscar en CrossRef (`?q=&autor=&pagina=&limite=`) |
+| `GET` | `/articulos/openalex/buscar` | Público | Buscar en OpenAlex (`?q=&area=&pagina=&limite=&anioDesde=&anioHasta=&minCitas=&orden=`) |
+| `GET` | `/articulos/openalex/:id` | Público | Obtener artículo OpenAlex por Work ID (`W…`) o DOI |
 | `GET` | `/articulos/estadisticas` | Privado (JWT) | Estadísticas personales de favoritos |
 
 **GET `/articulos/arxiv/buscar?q=machine+learning&area=cs&pagina=1&limite=5`**
@@ -686,7 +692,7 @@ El endpoint sirve noticias desde caché MongoDB. Si la caché ha expirado (TTL 1
     "totalFavoritos": 318,
     "totalBusquedas": 1204,
     "usuariosPorMes": [{ "_id": "2026-03", "total": 7 }],
-    "favoritosPorFuente": [{ "_id": "arxiv", "total": 215 }, { "_id": "crossref", "total": 103 }],
+    "favoritosPorFuente": [{ "_id": "arxiv", "total": 215 }, { "_id": "crossref", "total": 103 }, { "_id": "openalex", "total": 87 }],
     "busquedasPorFuente": [{ "_id": "todas", "total": 620 }]
   }
 }

@@ -83,7 +83,7 @@ const LoginPage = () => {
             "La ciencia avanza encogiendo los hombros de gigantes."
           </blockquote>
           <p className="auth-panel-desc">
-            Centraliza arXiv, CrossRef y noticias científicas en una sola interfaz diseñada para investigar, comparar y recordar.
+            Centraliza arXiv, CrossRef, OpenAlex y noticias científicas en una sola interfaz diseñada para investigar, comparar y recordar.
           </p>
           <div className="auth-panel-stats">
             <div><span className="auth-stat-number">2.4M+</span><span className="auth-stat-label">Artículos</span></div>

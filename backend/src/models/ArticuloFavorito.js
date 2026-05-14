@@ -14,7 +14,7 @@ const articuloFavoritoSchema = new mongoose.Schema(
     },
     fuente: {
       type: String,
-      enum: ['arxiv', 'crossref', 'otro'],
+      enum: ['arxiv', 'crossref', 'openalex', 'otro'],
       required: [true, 'La fuente del artículo es obligatoria'],
     },
     titulo: {

@@ -9,7 +9,7 @@ const AnnouncementBar = () => {
       <div className="announcement-bar-inner">
         <span className="announcement-bar-status">
           <span className="announcement-dot" />
-          Sincronizado con <strong>arXiv</strong> y <strong>CrossRef</strong>
+          Sincronizado con <strong>arXiv</strong>, <strong>CrossRef</strong> y <strong>OpenAlex</strong>
           &nbsp;·&nbsp;última actualización hace 11 min
         </span>
         <div className="announcement-bar-actions">

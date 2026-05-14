@@ -105,7 +105,7 @@ const HomePage = () => {
               Una sola interfaz para <em>toda</em> la literatura científica.
             </h1>
             <p className="hero-editorial-sub">
-              Centraliza, lee y organiza artículos académicos de arXiv y CrossRef con
+              Centraliza, lee y organiza artículos académicos de arXiv, CrossRef y OpenAlex con
               etiquetas, colecciones, comparador y exportación en APA, MLA, BibTeX y RIS.
             </p>
 
@@ -119,6 +119,7 @@ const HomePage = () => {
               <span className="source-pill source-pill--active">Todas las fuentes</span>
               <span className="source-pill">arXiv</span>
               <span className="source-pill">CrossRef</span>
+              <span className="source-pill">OpenAlex</span>
               <Link to="/buscar" className="source-pill source-pill--link">+ Filtros avanzados</Link>
             </div>
 
@@ -187,7 +188,7 @@ const HomePage = () => {
           </div>
           <div className="stat-editorial">
             <span className="stat-editorial-label">FUENTES INTEGRADAS</span>
-            <StatCounter target={2} duration={800} className="stat-editorial-value" />
+            <StatCounter target={3} duration={800} className="stat-editorial-value" />
           </div>
           <div className="stat-editorial">
             <span className="stat-editorial-label">FORMATOS DE CITA</span>

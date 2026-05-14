@@ -210,6 +210,145 @@ const buscarCrossRef = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────
+// OPENALEX
+// ─────────────────────────────────────────────
+
+// Mapeo de áreas internas a concept IDs de OpenAlex (nivel-0)
+const OPENALEX_CONCEPT_MAP = {
+  cs: 'C41008148',
+  physics: 'C121332964',
+  mathematics: 'C33923547',
+  biology: 'C86803240',
+  medicine: 'C71924100',
+  chemistry: 'C185592680',
+  economics: 'C162324750',
+  psychology: 'C15744967',
+  engineering: 'C127413603',
+  // astronomy / environmental / neuroscience: caen a búsqueda por texto
+};
+
+// OpenAlex devuelve el abstract como índice invertido { palabra: [posiciones] }
+const reconstruirAbstract = (idx) => {
+  if (!idx || typeof idx !== 'object') return '';
+  const palabras = [];
+  for (const [palabra, posiciones] of Object.entries(idx)) {
+    for (const pos of posiciones) palabras[pos] = palabra;
+  }
+  return palabras.filter(Boolean).join(' ');
+};
+
+const mapOpenAlexWork = (item) => {
+  const id = (item.id || '').replace('https://openalex.org/', '');
+  const titulo = item.title || item.display_name || '';
+  const autores = (item.authorships || [])
+    .map((a) => a.author?.display_name)
+    .filter(Boolean);
+  const anio = item.publication_year || null;
+  const abstract = reconstruirAbstract(item.abstract_inverted_index);
+  const palabrasClave = (item.concepts || [])
+    .filter((c) => (c.level ?? 0) >= 1)
+    .slice(0, 8)
+    .map((c) => c.display_name)
+    .filter(Boolean);
+  const revista = item.primary_location?.source?.display_name
+    || item.host_venue?.display_name
+    || '';
+  const urlPdf = item.best_oa_location?.pdf_url
+    || item.primary_location?.pdf_url
+    || (item.open_access?.is_oa ? item.open_access?.oa_url : '')
+    || '';
+  const doi = item.doi ? item.doi.replace('https://doi.org/', '') : '';
+  const urlOriginal = doi
+    ? `https://doi.org/${doi}`
+    : (item.primary_location?.landing_page_url || `https://openalex.org/${id}`);
+  return {
+    id,
+    fuente: 'openalex',
+    titulo,
+    autores,
+    anio,
+    abstract,
+    palabrasClave,
+    urlOriginal,
+    urlPdf,
+    revista,
+    citaciones: item.cited_by_count || 0,
+  };
+};
+
+// @desc    Buscar artículos en OpenAlex
+// @route   GET /api/articulos/openalex/buscar?q=...&area=...&pagina=1&limite=10
+// @access  Público
+const buscarOpenAlex = async (req, res) => {
+  try {
+    const { q, area, pagina = 1, limite = 10, anioDesde, anioHasta, minCitas, orden } = req.query;
+
+    if (!q) {
+      return res.status(400).json({ ok: false, mensaje: 'El término de búsqueda es obligatorio.' });
+    }
+
+    const filters = [];
+    const conceptId = area ? OPENALEX_CONCEPT_MAP[area] : null;
+    if (conceptId) filters.push(`concepts.id:${conceptId}`);
+    if (anioDesde) filters.push(`publication_year:>=${parseInt(anioDesde, 10)}`);
+    if (anioHasta) filters.push(`publication_year:<=${parseInt(anioHasta, 10)}`);
+    if (minCitas) filters.push(`cited_by_count:>=${parseInt(minCitas, 10)}`);
+
+    const params = new URLSearchParams({
+      search: q,
+      page: String(pagina),
+      'per-page': String(limite),
+    });
+    if (filters.length) params.append('filter', filters.join(','));
+    if (orden === 'anio') params.set('sort', 'publication_year:desc');
+    else if (orden === 'citas') params.set('sort', 'cited_by_count:desc');
+    if (process.env.OPENALEX_EMAIL) params.set('mailto', process.env.OPENALEX_EMAIL);
+
+    const url = `https://api.openalex.org/works?${params}`;
+    const respuesta = await axios.get(url, { timeout: 10000 });
+    const datos = respuesta.data;
+
+    const articulos = (datos.results || []).map(mapOpenAlexWork);
+
+    res.json({
+      ok: true,
+      total: datos.meta?.count ?? articulos.length,
+      articulos,
+    });
+  } catch (error) {
+    res.status(500).json({ ok: false, mensaje: 'Error al buscar en OpenAlex.', error: error.message });
+  }
+};
+
+// @desc    Obtener un artículo de OpenAlex por su ID (W…) o por DOI
+// @route   GET /api/articulos/openalex/:id
+// @access  Público
+const obtenerOpenAlexPorId = async (req, res) => {
+  try {
+    const rawId = decodeURIComponent(req.params.id);
+    let identificador = rawId.replace('https://openalex.org/', '');
+    if (rawId.startsWith('10.') || rawId.toLowerCase().startsWith('doi:')) {
+      identificador = `doi:${rawId.replace(/^doi:/i, '')}`;
+    }
+
+    const params = new URLSearchParams();
+    if (process.env.OPENALEX_EMAIL) params.set('mailto', process.env.OPENALEX_EMAIL);
+    const qs = params.toString();
+    const url = `https://api.openalex.org/works/${encodeURIComponent(identificador)}${qs ? `?${qs}` : ''}`;
+
+    const respuesta = await axios.get(url, { timeout: 10000 });
+    const articulo = mapOpenAlexWork(respuesta.data);
+
+    res.json({ ok: true, articulo });
+  } catch (error) {
+    if (error.response?.status === 404) {
+      return res.status(404).json({ ok: false, mensaje: 'Artículo no encontrado.' });
+    }
+    res.status(500).json({ ok: false, mensaje: 'Error al obtener el artículo de OpenAlex.', error: error.message });
+  }
+};
+
+// ─────────────────────────────────────────────
 // ESTADÍSTICAS
 // ─────────────────────────────────────────────
 
@@ -258,6 +397,8 @@ module.exports = {
   obtenerArxivPorId,
   buscarArxiv,
   buscarCrossRef,
+  buscarOpenAlex,
+  obtenerOpenAlexPorId,
   obtenerEstadisticas,
 };
 

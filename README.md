@@ -1,12 +1,12 @@
 # SciLens — Explorador de Artículos Científicos de Acceso Abierto
 
-Proyecto Full-Stack desarrollado como Trabajo de Fin de Grado (TFG). SciLens es una plataforma que centraliza el acceso a publicaciones científicas de múltiples fuentes académicas (**arXiv** y **CrossRef**), permitiendo buscarlas, compararlas, guardarlas y analizarlas desde una única interfaz moderna.
+Proyecto Full-Stack desarrollado como Trabajo de Fin de Grado (TFG). SciLens es una plataforma que centraliza el acceso a publicaciones científicas de múltiples fuentes académicas (**arXiv**, **CrossRef** y **OpenAlex**), permitiendo buscarlas, compararlas, guardarlas y analizarlas desde una única interfaz moderna.
 
 ---
 
 ## Características Destacadas
 
-- **Búsqueda Unificada** en arXiv y CrossRef desde una sola interfaz
+- **Búsqueda Unificada** en arXiv, CrossRef y OpenAlex desde una sola interfaz
 - **Filtros Avanzados** por fuente, área temática, rango de años, mínimo de citas y autor
 - **Detalle de Artículo** con abstract completo, modo divulgativo y exportación de citas
 - **Comparador** de hasta 3 artículos en tabla lado a lado
@@ -71,7 +71,7 @@ npm run dev                 # http://localhost:5173
 **Descripción Funcional:**
 Sistema full-stack que permite a los usuarios:
 
-- Buscar artículos científicos en arXiv y CrossRef simultáneamente
+- Buscar artículos científicos en arXiv, CrossRef y OpenAlex simultáneamente
 - Filtrar resultados por fuente, área temática, año, citas mínimas y autor
 - Ver el detalle completo de cada artículo con abstract y referencias
 - Activar el modo divulgativo para leer un resumen en lenguaje accesible
@@ -201,6 +201,7 @@ JWT_SECRET=tu_clave_secreta_muy_segura
 JWT_EXPIRES_IN=7d
 FRONTEND_URL=http://localhost:5173,http://localhost:4173
 NODE_ENV=development
+OPENALEX_EMAIL=tu_email@ejemplo.com
 ```
 
 | Variable | Descripción | Ejemplo |
@@ -211,6 +212,7 @@ NODE_ENV=development
 | `JWT_EXPIRES_IN` | Tiempo de expiración del token | `7d` |
 | `FRONTEND_URL` | Orígenes permitidos por CORS (separados por coma) | `http://localhost:5173,http://localhost:4173` |
 | `NODE_ENV` | Entorno de ejecución | `development` |
+| `OPENALEX_EMAIL` | (Opcional) Email para el "polite pool" de OpenAlex (mayores cuotas) | `tu_email@ejemplo.com` |
 
 ### Frontend — `frontend/.env`
 
@@ -335,6 +337,8 @@ TFG/
 | `GET` | `/articulos/arxiv/buscar` | Público | Buscar en arXiv (`?q=&area=&pagina=&limite=`) |
 | `GET` | `/articulos/arxiv/:id` | Público | Detalle de artículo arXiv |
 | `GET` | `/articulos/crossref/buscar` | Público | Buscar en CrossRef (`?q=&autor=&pagina=&limite=`) |
+| `GET` | `/articulos/openalex/buscar` | Público | Buscar en OpenAlex (`?q=&area=&pagina=&limite=&anioDesde=&anioHasta=&minCitas=&orden=`) |
+| `GET` | `/articulos/openalex/:id` | Público | Detalle de artículo OpenAlex (acepta `W…` o DOI) |
 | `GET` | `/articulos/estadisticas` | Privado | Estadísticas personales de favoritos |
 
 ### Favoritos e Historial — `/api/favoritos`
@@ -420,8 +424,8 @@ TFG/
 | Campo | Tipo | Notas |
 |---|---|---|
 | `usuario` | ObjectId → User | Requerido |
-| `articuloId` | String | ID externo (arXiv ID, DOI, paperId) |
-| `fuente` | String enum | `arxiv` \| `crossref` \| `otro` |
+| `articuloId` | String | ID externo (arXiv ID, DOI de CrossRef o Work ID de OpenAlex) |
+| `fuente` | String enum | `arxiv` \| `crossref` \| `openalex` \| `otro` |
 | `titulo` | String | Requerido |
 | `autores` | [String] | |
 | `anio` | Number | |
@@ -444,7 +448,7 @@ TFG/
 |---|---|---|
 | `usuario` | ObjectId → User | Requerido |
 | `termino` | String | Requerido |
-| `fuente` | String enum | `arxiv` \| `crossref` \| `todas` |
+| `fuente` | String enum | `arxiv` \| `crossref` \| `openalex` \| `todas` |
 | `area` | String | |
 | `resultados` | Number | Por defecto `0` |
 | `createdAt` | Date | Automático (timestamps) |
@@ -457,6 +461,7 @@ TFG/
 |---|---|---|---|
 | arXiv | `https://export.arxiv.org/api/query` | Ninguna | Feed XML, parseado con regex |
 | CrossRef | `https://api.crossref.org/works` | Ninguna | REST/JSON |
+| OpenAlex | `https://api.openalex.org/works` | Ninguna (`mailto` opcional vía `OPENALEX_EMAIL`) | REST/JSON; abstract en índice invertido y campo `open_access.oa_url` con el PDF |
 
 
 ---
@@ -470,6 +475,7 @@ TFG/
 - [x] Subida de avatares con Multer
 - [x] Integración con arXiv (XML feed)
 - [x] Integración con CrossRef (REST)
+- [x] Integración con OpenAlex (REST, con PDF open-access directo)
 - [x] CRUD de favoritos con filtros y paginación
 - [x] Historial de búsquedas
 - [x] Estadísticas personales y globales

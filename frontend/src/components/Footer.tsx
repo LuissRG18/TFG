@@ -64,6 +64,7 @@ const Footer = () => (
         <ul className="footer-links">
           <li><a href="https://arxiv.org" target="_blank" rel="noreferrer">arXiv</a></li>
           <li><a href="https://www.crossref.org" target="_blank" rel="noreferrer">CrossRef</a></li>
+          <li><a href="https://openalex.org" target="_blank" rel="noreferrer">OpenAlex</a></li>
         </ul>
         <div className="footer-contact">
           <span><MapPin size={13} /> Valencia, España</span>

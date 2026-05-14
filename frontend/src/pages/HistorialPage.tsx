@@ -7,6 +7,7 @@ import { obtenerHistorial, eliminarBusqueda } from '../services/favoritosService
 const FUENTE_LABELS: Record<string, string> = {
   arxiv: 'arXiv',
   crossref: 'CrossRef',
+  openalex: 'OpenAlex',
   todas: 'Todas',
 };
 

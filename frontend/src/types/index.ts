@@ -1,7 +1,7 @@
 // ─── Artículo científico ───────────────────────────────────────────────────
 export interface Articulo {
   id: string;
-  fuente: 'arxiv' | 'crossref';
+  fuente: 'arxiv' | 'crossref' | 'openalex';
   titulo: string;
   autores: string[];
   anio: number | null;

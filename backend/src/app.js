@@ -114,6 +114,8 @@ app.get('/api/health', (req, res) => {
       'PUT    /api/auth/cambiar-password',
       'GET    /api/articulos/arxiv/buscar?q=...',
       'GET    /api/articulos/crossref/buscar?q=...',
+      'GET    /api/articulos/openalex/buscar?q=...',
+      'GET    /api/articulos/openalex/:id',
       'GET    /api/articulos/estadisticas  (privado)',
       'GET    /api/favoritos               (privado)',
       'POST   /api/favoritos               (privado)',

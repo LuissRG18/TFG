@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X, Loader2, Search, Plus, ListChecks, BarChart2 } from 'lucide-react';
-import { buscarArxiv, buscarCrossRef } from '../services/articulosService';
+import { buscarArxiv, buscarCrossRef, buscarOpenAlex } from '../services/articulosService';
 import type { Articulo } from '../types';
 
 const MAX_COMPARE = 3;
@@ -11,7 +11,7 @@ const ComparadorPage = () => {
   const [seleccionados, setSeleccionados] = useState<Articulo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [fuente, setFuente] = useState<'arxiv' | 'crossref'>('arxiv');
+  const [fuente, setFuente] = useState<'arxiv' | 'crossref' | 'openalex'>('arxiv');
 
   const buscar = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +19,9 @@ const ComparadorPage = () => {
     setLoading(true);
     setError('');
     try {
-      const fn = fuente === 'arxiv' ? buscarArxiv : buscarCrossRef;
+      const fn = fuente === 'arxiv' ? buscarArxiv
+        : fuente === 'openalex' ? buscarOpenAlex
+        : buscarCrossRef;
       const res = await fn({ q: query, limite: 10 });
       setResultados(res.articulos);
     } catch {
@@ -57,6 +59,7 @@ const ComparadorPage = () => {
         <div className="buscar-filters-bar" style={{ marginBottom: 0 }}>
           <button type="button" onClick={() => setFuente('arxiv')} className={`filter-btn ${fuente === 'arxiv' ? 'active' : ''}`}>arXiv</button>
           <button type="button" onClick={() => setFuente('crossref')} className={`filter-btn ${fuente === 'crossref' ? 'active' : ''}`}>CrossRef</button>
+          <button type="button" onClick={() => setFuente('openalex')} className={`filter-btn ${fuente === 'openalex' ? 'active' : ''}`}>OpenAlex</button>
         </div>
         <div className="search-bar page-container" style={{ padding: 0, maxWidth: '100%' }}>
           <Search size={16} className="search-icon" />

@@ -968,6 +968,7 @@ img { max-width: 100%; }
 }
 .badge-arxiv { background: var(--amber-light); color: #92400e; border: 1px solid rgba(217,122,31,0.3); }
 .badge-crossref { background: var(--blue-bright-light); color: #003d99; border: 1px solid rgba(0,102,255,0.25); }
+.badge-openalex { background: #ede9fe; color: #5b21b6; border: 1px solid rgba(124,58,237,0.3); }
 .badge-default { background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border); }
 .badge-year { background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border); }
 
@@ -1002,6 +1003,9 @@ img { max-width: 100%; }
 }
 .cover-crossref {
   background: var(--blue-bright);
+}
+.cover-openalex {
+  background: #7c3aed;
 }
 .cover-default {
   background: var(--oxford);
@@ -2525,6 +2529,7 @@ img { max-width: 100%; }
 /* ── Badges ── */
 [data-theme="dark"] .badge-arxiv { background: rgba(146,64,14,0.2); color: #fbbf24; border-color: rgba(251,191,36,0.25); }
 [data-theme="dark"] .badge-crossref { background: rgba(22,101,52,0.2); color: #4ade80; border-color: rgba(74,222,128,0.25); }
+[data-theme="dark"] .badge-openalex { background: rgba(91,33,182,0.22); color: #c4b5fd; border-color: rgba(196,181,253,0.3); }
 [data-theme="dark"] .badge-default,
 [data-theme="dark"] .badge-year { background: #1e293b; color: var(--text-muted); border-color: var(--border); }
 

@@ -5,7 +5,13 @@ import {
   ArrowLeft, Loader2, AlertCircle, Sparkles, Users, Calendar, BookOpen, Quote
 } from 'lucide-react';
 import type { Articulo } from '../types';
-import { obtenerArxivPorId, buscarCrossRef } from '../services/articulosService';
+import { obtenerArxivPorId, buscarCrossRef, obtenerOpenAlexPorId } from '../services/articulosService';
+
+const FUENTE_LABEL: Record<string, string> = {
+  arxiv: 'arXiv',
+  crossref: 'CrossRef',
+  openalex: 'OpenAlex',
+};
 import { agregarFavorito, eliminarFavorito, checkFavorito } from '../services/favoritosService';
 import { useAuth } from '../context/AuthContext';
 
@@ -33,6 +39,9 @@ const ArticuloPage = () => {
         } else if (fuente === 'crossref') {
           const res = await buscarCrossRef({ q: decodeURIComponent(id), limite: 1 });
           setArticulo(res.articulos[0] || null);
+        } else if (fuente === 'openalex') {
+          const res = await obtenerOpenAlexPorId(decodeURIComponent(id));
+          setArticulo(res.articulo || null);
         }
       } catch {
         setError('No se pudo cargar el artículo.');
@@ -99,7 +108,7 @@ const ArticuloPage = () => {
       <div className="articulo-detail-card">
         {/* Badges */}
         <div className="flex flex-wrap gap-2 mb-3">
-          <span className={`badge badge-${fuente}`}>{fuente === 'arxiv' ? 'arXiv' : 'CrossRef'}</span>
+          <span className={`badge badge-${fuente}`}>{FUENTE_LABEL[fuente ?? ''] ?? fuente}</span>
           {articulo.anio && <span className="badge badge-year"><Calendar size={12} /> {articulo.anio}</span>}
           {articulo.revista && <span className="badge badge-default"><BookOpen size={12} /> {articulo.revista}</span>}
         </div>
