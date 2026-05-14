@@ -4215,7 +4215,11 @@ img { max-width: 100%; }
   padding: 0 2rem;
   display: flex;
   gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+.area-detail-source-inner::-webkit-scrollbar { display: none; }
+.source-tab { flex-shrink: 0; }
 .source-tab {
   padding: 0.9rem 1.25rem;
   font-size: 0.85rem;
