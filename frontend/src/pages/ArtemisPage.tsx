@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Rocket, Users, FlaskConical, Star, Globe, ExternalLink, ChevronRight } from 'lucide-react';
+import PageHead from '../components/PageHead';
 
 import imgArtemis2 from '../assets/imgArtemis2.webp';
 import imgCrew from '../assets/artemisiicrewposterorig-notext-01.webp';
@@ -93,6 +94,10 @@ const SPECS = [
 // ── Component ──────────────────────────────────────────────────────────────
 const ArtemisPage = () => (
   <div className="artemis-page">
+    <PageHead
+      titulo="Misión Artemis II"
+      descripcion="La misión Artemis II de la NASA: tripulación, objetivos científicos y regreso humano a la órbita lunar tras más de 50 años."
+    />
 
     {/* ── HERO ── */}
     <div

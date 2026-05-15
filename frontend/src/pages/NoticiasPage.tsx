@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Newspaper, Globe, Search, RefreshCw } from 'lucide-react';
 import { getNoticias } from '../services/noticiasService';
 import NoticiaCard from '../components/NoticiaCard';
+import PageHead from '../components/PageHead';
 import type { Noticia } from '../types';
 
 type Idioma = 'es' | 'en';
@@ -45,6 +46,10 @@ const NoticiasPage = () => {
 
   return (
     <div className="noticias-page">
+      <PageHead
+        titulo="Noticias científicas"
+        descripcion="Últimas noticias de ciencia agregadas de SINC, El País Ciencia, BBC Mundo, Phys.org y Nature en español e inglés."
+      />
       {/* ── Header ─────────────────────────────── */}
       <div className="noticias-header">
         <div className="noticias-header-inner">

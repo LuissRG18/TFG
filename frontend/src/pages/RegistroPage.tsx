@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import PageHead from '../components/PageHead';
 
 const RegistroPage = () => {
   const { registro } = useAuth();
@@ -33,12 +34,16 @@ const RegistroPage = () => {
 
   return (
     <div className="auth-page auth-page--split">
+      <PageHead
+        titulo="Crear cuenta"
+        descripcion="Crea tu cuenta gratuita en SciLens para guardar favoritos, hacer seguimiento de tus búsquedas y recibir recomendaciones personalizadas."
+      />
       {/* Left: form */}
       <div className="auth-split-form">
         <div className="auth-card">
           <p className="section-eyebrow">Únete a SciLens</p>
           <h1 className="auth-title">Crea tu cuenta gratuita</h1>
-          <p className="auth-subtitle">Empieza a explorar, guardar y comparar artículos científicos hoy mismo.</p>
+          <p className="auth-subtitle">Empieza a explorar, guardar y organizar artículos científicos hoy mismo.</p>
 
           {error && (
             <div className="error-banner">
@@ -48,9 +53,12 @@ const RegistroPage = () => {
 
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
-              <label className="form-label">Nombre</label>
+              <label htmlFor="reg-nombre" className="form-label">Nombre</label>
               <input
+                id="reg-nombre"
+                name="nombre"
                 type="text"
+                autoComplete="name"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 required
@@ -59,9 +67,12 @@ const RegistroPage = () => {
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Email</label>
+              <label htmlFor="reg-email" className="form-label">Email</label>
               <input
+                id="reg-email"
+                name="email"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -70,9 +81,12 @@ const RegistroPage = () => {
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Contraseña</label>
+              <label htmlFor="reg-password" className="form-label">Contraseña</label>
               <input
+                id="reg-password"
+                name="password"
                 type="password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -82,9 +96,12 @@ const RegistroPage = () => {
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Confirmar contraseña</label>
+              <label htmlFor="reg-password2" className="form-label">Confirmar contraseña</label>
               <input
+                id="reg-password2"
+                name="password2"
                 type="password"
+                autoComplete="new-password"
                 value={password2}
                 onChange={(e) => setPassword2(e.target.value)}
                 required
@@ -115,7 +132,7 @@ const RegistroPage = () => {
             <li>✓ Acceso a más de 2.4 millones de artículos en abierto</li>
             <li>✓ Artemis, tu asistente de IA integrado</li>
             <li>✓ Favoritos, historial y estadísticas personales</li>
-            <li>✓ Comparador de papers y exportación de citas</li>
+            <li>✓ Exportación de citas en APA, MLA, BibTeX y RIS</li>
           </ul>
         </div>
       </div>

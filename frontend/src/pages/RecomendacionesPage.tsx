@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import ArticuloCard from '../components/ArticuloCard';
+import PageHead from '../components/PageHead';
 import type { Articulo } from '../types';
 import { AREAS_CIENTIFICAS } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -72,6 +73,10 @@ const RecomendacionesPage = () => {
 
   return (
     <div className="recom-page">
+      <PageHead
+        titulo="Recomendados"
+        descripcion="Artículos científicos recomendados según tus áreas de interés."
+      />
       <div className="recom-page-header">
         <div className="recom-page-header-inner">
           <p className="section-eyebrow">PARA TI</p>

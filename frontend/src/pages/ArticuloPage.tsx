@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import type { Articulo } from '../types';
 import { obtenerArxivPorId, buscarCrossRef, obtenerOpenAlexPorId } from '../services/articulosService';
+import PageHead from '../components/PageHead';
 
 const FUENTE_LABEL: Record<string, string> = {
   arxiv: 'arXiv',
@@ -101,6 +102,10 @@ const ArticuloPage = () => {
 
   return (
     <div className="page-container articulo-page">
+      <PageHead
+        titulo={articulo.titulo}
+        descripcion={(articulo.abstract || `Artículo de ${FUENTE_LABEL[articulo.fuente] ?? articulo.fuente}`).slice(0, 155)}
+      />
       <button onClick={() => navigate(-1)} className="btn-link mb-4 inline-flex">
         <ArrowLeft size={14} /> Volver
       </button>

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /perfil
+Disallow: /favoritos
+Disallow: /historial
+Disallow: /estadisticas
+
+Sitemap: https://frontend-eta-nine-95.vercel.app/sitemap.xml

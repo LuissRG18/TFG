@@ -4,6 +4,7 @@ import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { actualizarPerfilRequest, cambiarPasswordRequest } from '../services/authService';
 import { AREAS_CIENTIFICAS } from '../types';
+import PageHead from '../components/PageHead';
 
 const PerfilPage = () => {
   const { usuario, logout } = useAuth();
@@ -71,6 +72,7 @@ const PerfilPage = () => {
 
   return (
     <div className="perfil-page">
+      <PageHead titulo="Mi perfil" noIndex />
       <div className="perfil-page-header">
         <div className="perfil-page-header-inner">
           <p className="section-eyebrow">CUENTA</p>

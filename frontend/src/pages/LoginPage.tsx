@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import PageHead from '../components/PageHead';
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -27,6 +28,10 @@ const LoginPage = () => {
 
   return (
     <div className="auth-page auth-page--split">
+      <PageHead
+        titulo="Iniciar sesión"
+        descripcion="Accede a tu cuenta de SciLens para gestionar favoritos, historial de búsquedas, estadísticas y recomendaciones personalizadas."
+      />
       {/* Left: form */}
       <div className="auth-split-form">
         <div className="auth-card">
@@ -42,9 +47,12 @@ const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
-              <label className="form-label">Email</label>
+              <label htmlFor="login-email" className="form-label">Email</label>
               <input
+                id="login-email"
+                name="email"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -53,9 +61,12 @@ const LoginPage = () => {
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Contraseña</label>
+              <label htmlFor="login-password" className="form-label">Contraseña</label>
               <input
+                id="login-password"
+                name="password"
                 type="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Cpu, Stethoscope, Atom, Dna, Calculator, FlaskConical, TrendingUp, Brain, Wrench, Telescope, Leaf, Activity } from 'lucide-react';
+import PageHead from '../components/PageHead';
 import { AREAS_CIENTIFICAS } from '../types';
 
 const AREA_META: Record<string, { code: string; desc: string; count: string; accent: string; Icon: React.FC<{ size?: number }> }> = {
@@ -19,6 +20,10 @@ const AREA_META: Record<string, { code: string; desc: string; count: string; acc
 
 const AreasPage = () => (
   <div className="areas-page">
+    <PageHead
+      titulo="Áreas científicas"
+      descripcion="Explora artículos científicos organizados por 12 disciplinas: informática, medicina, física, biología, matemáticas, química, economía, psicología, ingeniería, astronomía, medio ambiente y neurociencia."
+    />
     <div className="areas-page-header">
       <div className="areas-page-header-inner">
         <p className="section-eyebrow">EXPLORAR POR DISCIPLINA</p>

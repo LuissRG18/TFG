@@ -42,7 +42,6 @@ const Footer = () => (
           <li><Link to="/buscar">Buscar artículos</Link></li>
           <li><Link to="/areas">Áreas científicas</Link></li>
           <li><Link to="/recomendados">Recomendados</Link></li>
-          <li><Link to="/comparar">Comparar papers</Link></li>
         </ul>
       </div>
 

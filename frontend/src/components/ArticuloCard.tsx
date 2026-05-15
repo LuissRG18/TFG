@@ -13,9 +13,6 @@ interface Props {
   articulo: Articulo;
   favoritoId?: string;
   onFavoritoChange?: () => void;
-  /** If provided, card shows a checkbox for comparison selection */
-  onSelectCompare?: (art: Articulo, selected: boolean) => void;
-  isSelectedForCompare?: boolean;
   /** 'journal' = compact list row; default = card */
   variant?: 'journal';
 }
@@ -51,7 +48,7 @@ const ARXIV_CAT: Record<string, string> = {
   'stat.ML': 'Machine Learning (Statistics)',
 };
 
-const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare, isSelectedForCompare, variant }: Props) => {
+const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, variant }: Props) => {
   const { usuario } = useAuth();
   const navigate = useNavigate();
 
@@ -173,22 +170,13 @@ const ArticuloCard = ({ articulo, favoritoId, onFavoritoChange, onSelectCompare,
 
   return (
     <article
-      className={`articulo-card ${isSelectedForCompare ? 'articulo-card--selected' : ''}`}
+      className="articulo-card"
       onClick={handleCardClick}
       style={{ cursor: 'pointer' }}
     >
       {/* Visual cover band */}
       <div className={`articulo-card-cover cover-${articulo.fuente}`}>
         <div className="articulo-card-header">
-          {onSelectCompare && (
-            <input
-              type="checkbox"
-              checked={!!isSelectedForCompare}
-              onChange={(e) => onSelectCompare(articulo, e.target.checked)}
-              className="mr-2"
-              title="Seleccionar para comparar"
-            />
-          )}
           <span className={`badge ${BADGE_COLORS[articulo.fuente] || 'badge-default'}`}>
             {FUENTE_LABEL[articulo.fuente] || articulo.fuente}
           </span>

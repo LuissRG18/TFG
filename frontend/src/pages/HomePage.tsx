@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Newspaper, Cpu, Atom, Calculator, Dna, Stethoscope, FlaskConical, TrendingUp, Brain, Wrench, Telescope, Leaf, Activity } from 'lucide-react';
+import PageHead from '../components/PageHead';
 import SearchBar from '../components/SearchBar';
 import NoticiaCard from '../components/NoticiaCard';
 import ArtemisHero from '../components/ArtemisHero';
@@ -92,6 +93,10 @@ const HomePage = () => {
 
   return (
     <div className="home-page">
+      <PageHead
+        titulo="Inicio"
+        descripcion="SciLens centraliza el acceso a más de 2 millones de artículos científicos de arXiv, CrossRef y OpenAlex en una sola interfaz para buscar, guardar y organizar literatura académica."
+      />
 
       {/* ── HERO EDITORIAL ────────────────────────────────── */}
       <section className="hero-editorial" style={{ backgroundImage: `url(${outerSpaceBg})` }}>
@@ -106,7 +111,7 @@ const HomePage = () => {
             </h1>
             <p className="hero-editorial-sub">
               Centraliza, lee y organiza artículos académicos de arXiv, CrossRef y OpenAlex con
-              etiquetas, colecciones, comparador y exportación en APA, MLA, BibTeX y RIS.
+              etiquetas, colecciones y exportación en APA, MLA, BibTeX y RIS.
             </p>
 
             {/* Search */}

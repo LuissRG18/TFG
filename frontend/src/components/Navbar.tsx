@@ -54,7 +54,6 @@ const Navbar = () => {
           <NavLink to="/buscar" className={navLinkClass}>Buscar</NavLink>
           <NavLink to="/areas" className={navLinkClass}>Áreas</NavLink>
           <NavLink to="/noticias" className={navLinkClass}>Noticias</NavLink>
-          <NavLink to="/comparar" className={navLinkClass}>Comparador</NavLink>
           {usuario && (
             <>
               <NavLink to="/recomendados" className={navLinkClass}>Recomendados</NavLink>
@@ -112,7 +111,6 @@ const Navbar = () => {
           <NavLink to="/buscar" className={navLinkClass} onClick={() => setMenuOpen(false)}>Buscar</NavLink>
           <NavLink to="/areas" className={navLinkClass} onClick={() => setMenuOpen(false)}>Áreas</NavLink>
           <NavLink to="/noticias" className={navLinkClass} onClick={() => setMenuOpen(false)}>Noticias</NavLink>
-          <NavLink to="/comparar" className={navLinkClass} onClick={() => setMenuOpen(false)}>Comparador</NavLink>
           {usuario && (
             <>
               <NavLink to="/recomendados" className={navLinkClass} onClick={() => setMenuOpen(false)}>Recomendados</NavLink>

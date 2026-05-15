@@ -4,6 +4,7 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import { AREAS_CIENTIFICAS } from '../types';
 import type { Articulo } from '../types';
 import ArticuloCard from '../components/ArticuloCard';
+import PageHead from '../components/PageHead';
 import { buscarArxiv, buscarCrossRef, buscarOpenAlex } from '../services/articulosService';
 
 const AREA_QUERIES: Record<string, string> = {
@@ -90,6 +91,10 @@ const AreaDetallePage = () => {
 
   return (
     <div className="area-detail-page">
+      <PageHead
+        titulo={area.label}
+        descripcion={`Artículos científicos sobre ${area.label.toLowerCase()} en arXiv, CrossRef y OpenAlex.`}
+      />
       {/*Header*/}
       <div className="area-detail-header">
         <div className="area-detail-header-inner">

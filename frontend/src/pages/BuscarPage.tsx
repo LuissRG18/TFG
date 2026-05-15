@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Search, Loader2, AlertCircle } from 'lucide-react';
 import ArticuloCard from '../components/ArticuloCard';
 import SearchBar from '../components/SearchBar';
+import PageHead from '../components/PageHead';
 import type { Articulo } from '../types';
 import { AREAS_CIENTIFICAS } from '../types';
 import { buscarArxiv, buscarCrossRef, buscarOpenAlex } from '../services/articulosService';
@@ -91,6 +92,10 @@ const BuscarPage = () => {
 
   return (
     <div className="buscar-page">
+      <PageHead
+        titulo={query ? `Buscar: ${query}` : 'Buscar artículos'}
+        descripcion="Buscador unificado de artículos científicos en arXiv, CrossRef y OpenAlex con filtros por área, año, autor y citas mínimas."
+      />
       {/* ── Header ── */}
       <div className="buscar-page-header">
         <div className="buscar-page-header-inner">

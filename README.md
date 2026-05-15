@@ -1,6 +1,6 @@
 # SciLens — Explorador de Artículos Científicos de Acceso Abierto
 
-Proyecto Full-Stack desarrollado como Trabajo de Fin de Grado (TFG). SciLens es una plataforma que centraliza el acceso a publicaciones científicas de múltiples fuentes académicas (**arXiv**, **CrossRef** y **OpenAlex**), permitiendo buscarlas, compararlas, guardarlas y analizarlas desde una única interfaz moderna.
+Proyecto Full-Stack desarrollado como Trabajo de Fin de Grado (TFG). SciLens es una plataforma que centraliza el acceso a publicaciones científicas de múltiples fuentes académicas (**arXiv**, **CrossRef** y **OpenAlex**), permitiendo buscarlas, guardarlas y analizarlas desde una única interfaz moderna.
 
 ---
 
@@ -9,7 +9,6 @@ Proyecto Full-Stack desarrollado como Trabajo de Fin de Grado (TFG). SciLens es 
 - **Búsqueda Unificada** en arXiv, CrossRef y OpenAlex desde una sola interfaz
 - **Filtros Avanzados** por fuente, área temática, rango de años, mínimo de citas y autor
 - **Detalle de Artículo** con abstract completo, modo divulgativo y exportación de citas
-- **Comparador** de hasta 3 artículos en tabla lado a lado
 - **Favoritos** con notas, etiquetas, flag "leer más tarde" y colecciones personalizadas
 - **Historial de Búsquedas** paginado con eliminación individual
 - **Estadísticas Personales** con gráficos por año, área y fuente (Chart.js)
@@ -76,7 +75,6 @@ Sistema full-stack que permite a los usuarios:
 - Ver el detalle completo de cada artículo con abstract y referencias
 - Activar el modo divulgativo para leer un resumen en lenguaje accesible
 - Exportar la cita bibliográfica del artículo
-- Comparar hasta 3 artículos en paralelo
 - Guardar artículos como favoritos con notas, etiquetas y colecciones
 - Marcar artículos para "leer más tarde"
 - Consultar y gestionar el historial de búsquedas
@@ -295,7 +293,6 @@ TFG/
         │   ├── HistorialPage.tsx
         │   ├── EstadisticasPage.tsx
         │   ├── RecomendacionesPage.tsx
-        │   ├── ComparadorPage.tsx
         │   ├── LoginPage.tsx
         │   ├── RegistroPage.tsx
         │   ├── PerfilPage.tsx
@@ -379,7 +376,6 @@ TFG/
 | `/areas/:areaId` | `AreaDetallePage` | Pública | Artículos filtrados por área |
 | `/articulo/:fuente/:id` | `ArticuloPage` | Pública | Detalle, modo divulgativo, exportar cita |
 | `/recomendados` | `RecomendacionesPage` | Pública | Artículos según áreas de interés del usuario |
-| `/comparar` | `ComparadorPage` | Pública | Comparador de hasta 3 artículos en paralelo |
 | `/login` | `LoginPage` | Pública | Formulario de inicio de sesión |
 | `/registro` | `RegistroPage` | Pública | Formulario de registro |
 | `/favoritos` | `FavoritosPage` | **Privada** | Gestión de artículos guardados y colecciones |
@@ -490,7 +486,6 @@ TFG/
 - [x] Búsqueda unificada con filtros avanzados
 - [x] Buscador con autoguardado de historial
 - [x] Detalle de artículo con modo divulgativo
-- [x] Comparador de hasta 3 artículos
 - [x] CRUD de favoritos con paginación
 - [x] Historial de búsquedas paginado
 - [x] Estadísticas con Chart.js (línea, barras, tarta)

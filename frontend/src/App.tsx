@@ -20,7 +20,6 @@ import PerfilPage from './pages/PerfilPage';
 import HistorialPage from './pages/HistorialPage';
 import AdminPage from './pages/AdminPage';
 import RecomendacionesPage from './pages/RecomendacionesPage';
-import ComparadorPage from './pages/ComparadorPage';
 import ArtemisPage from './pages/ArtemisPage';
 import NoticiasPage from './pages/NoticiasPage';
 
@@ -47,7 +46,6 @@ function App() {
                 <Route path="/areas/:areaId" element={<AreaDetallePage />} />
                 <Route path="/articulo/:fuente/:id" element={<ArticuloPage />} />
                 <Route path="/recomendados" element={<RecomendacionesPage />} />
-                <Route path="/comparar" element={<ComparadorPage />} />
                 <Route path="/artemis" element={<ArtemisPage />} />
                 <Route path="/noticias" element={<NoticiasPage />} />
                 <Route path="/login" element={<LoginPage />} />

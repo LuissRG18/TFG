@@ -8,6 +8,7 @@ import { Bar, Pie, Line } from 'react-chartjs-2';
 import { BarChart2, Loader2, BookMarked, TrendingUp, Database } from 'lucide-react';
 import { obtenerEstadisticas } from '../services/articulosService';
 import type { Estadisticas } from '../types';
+import PageHead from '../components/PageHead';
 
 ChartJS.register(
   CategoryScale, LinearScale, BarElement, ArcElement,
@@ -175,6 +176,7 @@ const EstadisticasPage = () => {
 
   return (
     <div className="estadisticas-page">
+      <PageHead titulo="Estadísticas" noIndex />
       {/* ── Hero ── */}
       <div className="inner-page-hero">
         <div className="inner-page-hero-inner">

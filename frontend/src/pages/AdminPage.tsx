@@ -12,6 +12,7 @@ import {
   obtenerEstadisticasGlobales,
 } from '../services/articulosService';
 import type { Usuario, EstadisticasGlobales } from '../types';
+import PageHead from '../components/PageHead';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -83,6 +84,7 @@ const AdminPage = () => {
 
   return (
     <div className="page-container" style={{ maxWidth: '1100px' }}>
+      <PageHead titulo="Panel de administración" noIndex />
       <div className="page-header">
         <div className="flex items-center gap-3">
           <Shield size={28} className="text-rose-500" />

@@ -4,6 +4,7 @@ import { BookMarked, Loader2, Trash2, StickyNote, Tag, Clock, FolderOpen, Chevro
 import type { Favorito } from '../types';
 import { obtenerFavoritos, eliminarFavorito, actualizarFavorito, obtenerColecciones } from '../services/favoritosService';
 import ArticuloCard from '../components/ArticuloCard';
+import PageHead from '../components/PageHead';
 
 const LIMITE = 10;
 
@@ -65,6 +66,7 @@ const FavoritosPage = () => {
 
   return (
     <div className="favoritos-page">
+      <PageHead titulo="Mis favoritos" noIndex />
       {/* ── Hero ── */}
       <div className="inner-page-hero">
         <div className="inner-page-hero-inner">

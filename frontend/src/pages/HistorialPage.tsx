@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2, Trash2, RefreshCw } from 'lucide-react';
 import type { BusquedaHistorial } from '../types';
 import { obtenerHistorial, eliminarBusqueda } from '../services/favoritosService';
+import PageHead from '../components/PageHead';
 
 const FUENTE_LABELS: Record<string, string> = {
   arxiv: 'arXiv',
@@ -70,6 +71,7 @@ const HistorialPage = () => {
 
   return (
     <div className="historial-page">
+      <PageHead titulo="Historial de búsquedas" noIndex />
       <div className="historial-page-header">
         <div className="historial-page-header-inner">
           <p className="section-eyebrow">TU ACTIVIDAD RECIENTE</p>
