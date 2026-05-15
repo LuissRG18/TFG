@@ -174,7 +174,7 @@ const BuscarPage = () => {
           <div className="sidebar-filter-group">
             <h4 className="sidebar-filter-title">ORDENAR POR</h4>
             <div className="sidebar-pills">
-              {(['relevancia', 'anio', 'citas'] as Orden[]).map((o) => (
+              {(['relevancia', 'año', 'citas'] as Orden[]).map((o) => (
                 <button
                   key={o}
                   type="button"
