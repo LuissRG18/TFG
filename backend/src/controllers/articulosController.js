@@ -4,6 +4,48 @@ const axios = require('axios');
 // ARXIV
 // ─────────────────────────────────────────────
 
+const ARXIV_TIMEOUT_MS = 12000;
+const ARXIV_USER_AGENT = 'Artemis-TFG/1.0 (mailto:admin@sendingbay.com)';
+
+// Hace una petición a arXiv con un reintento y backoff cuando el primer
+// intento falla por timeout o por 429 (rate limit). arXiv recomienda
+// identificar el cliente con User-Agent y dejar un margen entre peticiones.
+const fetchArxiv = async (url) => {
+  const config = {
+    timeout: ARXIV_TIMEOUT_MS,
+    headers: { 'User-Agent': ARXIV_USER_AGENT, Accept: 'application/atom+xml' },
+  };
+  try {
+    return await axios.get(url, config);
+  } catch (err) {
+    const status = err.response?.status;
+    const transitorio = err.code === 'ECONNABORTED' || status === 429 || (status >= 500 && status < 600);
+    if (!transitorio) throw err;
+    await new Promise((r) => setTimeout(r, 2000));
+    return axios.get(url, config);
+  }
+};
+
+// Traduce errores de la llamada a arXiv a una respuesta HTTP apropiada:
+// 503 cuando arXiv está caído / lento / rate-limited, 500 en lo demás.
+const responderErrorArxiv = (res, error, contexto) => {
+  const status = error.response?.status;
+  const esTimeout = error.code === 'ECONNABORTED';
+  const esRateLimit = status === 429;
+  const esUpstreamCaido = status >= 500 && status < 600;
+
+  if (esTimeout || esRateLimit || esUpstreamCaido) {
+    return res.status(503).json({
+      ok: false,
+      mensaje: esRateLimit
+        ? 'arXiv está limitando el número de peticiones, inténtalo en unos segundos.'
+        : 'arXiv no está disponible en este momento, prueba con OpenAlex o CrossRef.',
+      error: error.message,
+    });
+  }
+  return res.status(500).json({ ok: false, mensaje: contexto, error: error.message });
+};
+
 // Mapping from our internal area IDs to valid arXiv category prefixes
 const ARXIV_CAT_MAP = {
   cs: 'cs',
@@ -38,7 +80,7 @@ const buscarArxiv = async (req, res) => {
 
     const url = `https://export.arxiv.org/api/query?search_query=${query}&start=${inicio}&max_results=${limite}&sortBy=relevance&sortOrder=descending`;
 
-    const respuesta = await axios.get(url, { timeout: 10000 });
+    const respuesta = await fetchArxiv(url);
     const xml = respuesta.data;
 
     // Parseo básico del XML de arXiv
@@ -81,7 +123,7 @@ const buscarArxiv = async (req, res) => {
 
     res.json({ ok: true, total: articulos.length, articulos });
   } catch (error) {
-    res.status(500).json({ ok: false, mensaje: 'Error al buscar en arXiv.', error: error.message });
+    return responderErrorArxiv(res, error, 'Error al buscar en arXiv.');
   }
 };
 
@@ -93,7 +135,7 @@ const obtenerArxivPorId = async (req, res) => {
     const id = decodeURIComponent(req.params.id);
     const url = `https://export.arxiv.org/api/query?id_list=${encodeURIComponent(id)}&max_results=1`;
 
-    const respuesta = await axios.get(url, { timeout: 10000 });
+    const respuesta = await fetchArxiv(url);
     const xml = respuesta.data;
 
     const entradas = xml.match(/<entry>([\s\S]*?)<\/entry>/g) || [];
@@ -137,15 +179,9 @@ const obtenerArxivPorId = async (req, res) => {
 
     res.json({ ok: true, articulo });
   } catch (error) {
-    res.status(500).json({ ok: false, mensaje: 'Error al obtener el artículo de arXiv.', error: error.message });
+    return responderErrorArxiv(res, error, 'Error al obtener el artículo de arXiv.');
   }
 };
-
-// ─────────────────────────────────────────────
-// CROSSREF
-// ─────────────────────────────────────────────
-
-
 
 // ─────────────────────────────────────────────
 // CROSSREF
