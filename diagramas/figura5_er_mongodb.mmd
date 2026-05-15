@@ -1,0 +1,57 @@
+erDiagram
+    USERS ||--o{ ARTICULOFAVORITOS : "guarda"
+    USERS ||--o{ BUSQUEDAS : "realiza"
+
+    USERS {
+        ObjectId _id PK
+        string nombre
+        string email UK
+        string password "hash bcrypt, select:false"
+        string avatar
+        string rol "usuario | admin"
+        array areasInteres
+        boolean activo
+        Date createdAt
+        Date updatedAt
+    }
+
+    ARTICULOFAVORITOS {
+        ObjectId _id PK
+        ObjectId usuario FK
+        string articuloId "indice compuesto unico"
+        string fuente "arxiv | crossref | openalex"
+        string titulo
+        array autores
+        number anio
+        string abstract
+        string abstractDivulgativo
+        string area
+        array palabrasClave
+        string notas "max 1000"
+        array etiquetas
+        boolean leidoMasTarde
+        string coleccion
+        Date createdAt
+    }
+
+    BUSQUEDAS {
+        ObjectId _id PK
+        ObjectId usuario FK
+        string termino
+        string fuente
+        string area
+        number resultados
+        Date createdAt
+    }
+
+    NOTICIAS {
+        ObjectId _id PK
+        string titulo
+        string resumen
+        string url
+        string imagen
+        string fuente
+        string idioma "es | en"
+        Date fecha
+        Date cachedAt "TTL 3600s"
+    }

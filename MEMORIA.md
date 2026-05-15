@@ -17,7 +17,6 @@ El sistema implementa las siguientes funcionalidades principales:
 - **Búsqueda unificada** en arXiv, CrossRef y OpenAlex con filtros por área científica, fuente y paginación
 - **Visualización detallada** de artículos con abstract, autores, año, palabras clave y enlaces al PDF y fuente original
 - **Modo de lectura divulgativa** mediante resúmenes simplificados (`abstractDivulgativo`) editables por el propio usuario
-- **Comparador de artículos** para contrastar hasta tres artículos en paralelo (título, autores, año, fuente, abstract, palabras clave)
 - **Sistema de favoritos** con etiquetas personalizadas, notas privadas, marcado de lectura pendiente y organización en colecciones
 - **Historial de búsquedas** paginado con eliminación individual de entradas
 - **Estadísticas personales** con gráficos interactivos de artículos guardados por año, por área y por fuente (Chart.js)
@@ -121,7 +120,163 @@ La aplicación sigue una arquitectura **cliente-servidor completamente desacopla
 
 **Base de datos:** MongoDB Atlas (plan M0 gratuito) en la nube con tres colecciones principales definidas mediante Mongoose: `users`, `articulofavoritos` y `busquedas`. La colección `noticias` utiliza un índice TTL que elimina documentos automáticamente 1 hora después de su caché.
 
+#### Diagrama de despliegue
+
+El siguiente diagrama formaliza la topología anterior identificando cada nodo de despliegue, los protocolos de comunicación entre ellos y la tecnología que se ejecuta en cada uno:
+
+```mermaid
+graph TB
+    classDef cliente fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    classDef vercel fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    classDef bd fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    classDef externo fill:#fce4ec,stroke:#ad1457,stroke-width:2px,color:#000
+
+    subgraph CLIENTE["Cliente — Navegador"]
+        SPA["React 19 + TypeScript + Vite<br/>SPA estática<br/>Axios + interceptores JWT"]:::cliente
+    end
+
+    subgraph CDN["Vercel CDN — Frontend"]
+        STATIC["HTML + JS + CSS + WebP<br/>frontend-eta-nine-95.vercel.app"]:::vercel
+    end
+
+    subgraph FN["Vercel Serverless — Backend"]
+        API["Node.js 20 + Express 5<br/>Helmet · CORS · Rate-limit · JWT<br/>backend-scilens.vercel.app"]:::vercel
+    end
+
+    subgraph ATLAS["MongoDB Atlas M0"]
+        DB[("users, articulofavoritos<br/>busquedas, noticias (TTL 1h)")]:::bd
+    end
+
+    subgraph EXT["APIs académicas externas"]
+        ARXIV["arXiv — Atom/XML"]:::externo
+        CROSS["CrossRef — REST/JSON"]:::externo
+        OPEN["OpenAlex — REST/JSON"]:::externo
+        RSS["RSS Feeds<br/>6 fuentes de noticias"]:::externo
+    end
+
+    SPA -->|HTTPS — bundle inicial| STATIC
+    SPA -->|HTTPS · JSON<br/>Authorization Bearer JWT| API
+    API -->|TLS · Driver Mongoose| DB
+    API -->|HTTPS| ARXIV
+    API -->|HTTPS| CROSS
+    API -->|HTTPS| OPEN
+    API -->|HTTPS| RSS
+```
+
+**Figura 3.** Diagrama de despliegue UML del sistema SciLens.
+
+### 2.1.1 Casos de uso
+
+La aplicación distingue tres actores con privilegios incrementales: el **visitante anónimo** que accede a la parte pública, el **usuario registrado** que hereda todas las capacidades del visitante y añade la gestión personalizada de su biblioteca, y el **administrador** que hereda las del usuario y añade la gestión de cuentas y analíticas globales. Esta jerarquía justifica la existencia de los middleware `proteger` (rutas privadas) y `soloAdmin` (rutas de administración) documentados en la sección 2.4.
+
+```mermaid
+graph LR
+    Visitante(("Visitante<br/>anónimo"))
+    Usuario(("Usuario<br/>registrado"))
+    Admin(("Administrador"))
+
+    Usuario -.->|«extends»| Visitante
+    Admin -.->|«extends»| Usuario
+
+    subgraph PUB["Acceso público"]
+        UC1[Buscar artículos<br/>arXiv · CrossRef · OpenAlex]
+        UC2[Ver detalle de artículo]
+        UC3[Exportar cita<br/>APA · MLA · BibTeX · RIS]
+        UC4[Explorar 12 áreas científicas]
+        UC5[Leer noticias científicas]
+        UC6[Registrarse / Iniciar sesión]
+    end
+
+    subgraph PRIV["Acceso autenticado"]
+        UC7[Guardar favorito]
+        UC8[Gestionar colecciones y etiquetas]
+        UC9[Ver historial de búsquedas]
+        UC10[Ver estadísticas personales]
+        UC11[Editar perfil y contraseña]
+        UC12[Recibir recomendaciones]
+    end
+
+    subgraph ADM["Acceso administración"]
+        UC13[Listar usuarios]
+        UC14[Activar / desactivar cuenta]
+        UC15[Eliminar usuario en cascada]
+        UC16[Ver analíticas globales]
+    end
+
+    Visitante --- PUB
+    Usuario --- PRIV
+    Admin --- ADM
+```
+
+**Figura 4.** Diagrama de casos de uso de SciLens.
+
 ### 2.2 Modelo de Datos
+
+La persistencia se modela en MongoDB con cuatro colecciones. Las tres primeras (`users`, `articulofavoritos`, `busquedas`) están relacionadas mediante el `ObjectId` del usuario propietario; la colección `noticias` es independiente y actúa únicamente como caché agregada con TTL. El siguiente diagrama Entidad-Relación resume las cardinalidades y los atributos más relevantes:
+
+```mermaid
+erDiagram
+    USERS ||--o{ ARTICULOFAVORITOS : "guarda"
+    USERS ||--o{ BUSQUEDAS : "realiza"
+
+    USERS {
+        ObjectId _id PK
+        string nombre
+        string email UK
+        string password "hash bcrypt, select:false"
+        string avatar
+        string rol "usuario | admin"
+        array areasInteres
+        boolean activo
+        Date createdAt
+        Date updatedAt
+    }
+
+    ARTICULOFAVORITOS {
+        ObjectId _id PK
+        ObjectId usuario FK
+        string articuloId "índice compuesto único"
+        string fuente "arxiv | crossref | openalex"
+        string titulo
+        array autores
+        number anio
+        string abstract
+        string abstractDivulgativo
+        string area
+        array palabrasClave
+        string notas "max 1000"
+        array etiquetas
+        boolean leidoMasTarde
+        string coleccion
+        Date createdAt
+    }
+
+    BUSQUEDAS {
+        ObjectId _id PK
+        ObjectId usuario FK
+        string termino
+        string fuente
+        string area
+        number resultados
+        Date createdAt
+    }
+
+    NOTICIAS {
+        ObjectId _id PK
+        string titulo
+        string resumen
+        string url
+        string imagen
+        string fuente
+        string idioma "es | en"
+        Date fecha
+        Date cachedAt "TTL 3600s"
+    }
+```
+
+**Figura 5.** Diagrama Entidad-Relación de las colecciones MongoDB.
+
+Las tablas siguientes detallan los tipos, validaciones e índices aplicados a cada colección:
 
 #### Colección `users`
 
@@ -203,6 +358,47 @@ La aplicación implementa diversas medidas de seguridad alineadas con OWASP Top 
 | **Middleware `proteger`** | Verifica token y que el usuario existe y está activo antes de acceder a rutas privadas | A01: Broken Access Control |
 | **Middleware `soloAdmin`** | Verifica rol `admin` en rutas de administración | A01: Broken Access Control |
 | **Eliminación en cascada** | Al eliminar un usuario se eliminan también sus favoritos y búsquedas | A04: Insecure Design |
+
+### 2.5 Flujos clave — Autenticación con JWT
+
+El flujo de autenticación es el más sensible del sistema porque combina hash de contraseña, firma de token y persistencia de sesión en el cliente. El siguiente diagrama de secuencia detalla las interacciones entre los cuatro actores técnicos (`LoginPage`, `AuthContext`, backend Express y MongoDB) durante un login exitoso y las dos peticiones siguientes que ya viajan autenticadas:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant LP as LoginPage
+    participant AC as AuthContext
+    participant API as Backend Express
+    participant DB as MongoDB
+
+    U->>LP: introduce email + password
+    LP->>AC: login(email, password)
+    AC->>API: POST /api/auth/login
+    API->>DB: User.findOne({email}).select('+password')
+    DB-->>API: documento usuario con hash
+    API->>API: bcrypt.compare(password, hash)
+    API->>API: jwt.sign({id}, JWT_SECRET, expiresIn:7d)
+    API-->>AC: 200 {ok, token, usuario}
+    AC->>AC: localStorage.setItem('scilens_token', token)
+    AC->>AC: setUsuario(usuario)
+    AC-->>LP: Promise resuelta
+    LP->>LP: navigate('/')
+
+    Note over AC,API: Petición posterior — ruta privada
+
+    AC->>API: GET /api/favoritos<br/>Authorization: Bearer <token>
+    API->>API: middleware proteger() verifica JWT
+    API->>DB: User.findById(decoded.id)
+    DB-->>API: usuario activo
+    API->>DB: ArticuloFavorito.find({usuario})
+    DB-->>API: lista de favoritos
+    API-->>AC: 200 {ok, favoritos}
+```
+
+**Figura 6.** Diagrama de secuencia del flujo de autenticación con JWT y petición autenticada posterior.
+
+Los pasos 6 y 7 son críticos: `bcrypt.compare` se ejecuta en tiempo constante para evitar ataques de temporización, y el token JWT se firma con un `JWT_SECRET` que vive exclusivamente en las variables de entorno de Vercel. El paso 9 persiste el token en `localStorage` bajo la clave `scilens_token`, que es la fuente que consulta el interceptor de Axios documentado en la sección 3.4 para adjuntar la cabecera `Authorization` en todas las peticiones siguientes (paso 13).
 
 ---
 
@@ -297,7 +493,6 @@ frontend/src/
 │   ├── FavoritosPage.tsx     # Lista de favoritos con filtros, edición inline y colecciones
 │   ├── HistorialPage.tsx     # Historial de búsquedas con eliminación individual
 │   ├── EstadisticasPage.tsx  # Dashboard personal con gráficos Bar, Pie y Line (Chart.js)
-│   ├── ComparadorPage.tsx    # Comparación en tabla de hasta 3 artículos
 │   ├── RecomendacionesPage.tsx  # Artículos recomendados según áreas de interés del perfil
 │   ├── ArtemisPage.tsx       # Página divulgativa especial sobre la misión Artemis II
 │   ├── NoticiasPage.tsx      # Feed de noticias científicas en español e inglés

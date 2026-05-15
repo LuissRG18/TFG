@@ -1,0 +1,36 @@
+graph TB
+    classDef cliente fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+    classDef vercel fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    classDef bd fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000
+    classDef externo fill:#fce4ec,stroke:#ad1457,stroke-width:2px,color:#000
+
+    subgraph CLIENTE["Cliente — Navegador"]
+        SPA["React 19 + TypeScript + Vite<br/>SPA estática<br/>Axios + interceptores JWT"]:::cliente
+    end
+
+    subgraph CDN["Vercel CDN — Frontend"]
+        STATIC["HTML + JS + CSS + WebP<br/>frontend-eta-nine-95.vercel.app"]:::vercel
+    end
+
+    subgraph FN["Vercel Serverless — Backend"]
+        API["Node.js 20 + Express 5<br/>Helmet · CORS · Rate-limit · JWT<br/>backend-scilens.vercel.app"]:::vercel
+    end
+
+    subgraph ATLAS["MongoDB Atlas M0"]
+        DB[("users, articulofavoritos<br/>busquedas, noticias (TTL 1h)")]:::bd
+    end
+
+    subgraph EXT["APIs académicas externas"]
+        ARXIV["arXiv — Atom/XML"]:::externo
+        CROSS["CrossRef — REST/JSON"]:::externo
+        OPEN["OpenAlex — REST/JSON"]:::externo
+        RSS["RSS Feeds<br/>6 fuentes de noticias"]:::externo
+    end
+
+    SPA -->|HTTPS — bundle inicial| STATIC
+    SPA -->|HTTPS · JSON<br/>Authorization Bearer JWT| API
+    API -->|TLS · Driver Mongoose| DB
+    API -->|HTTPS| ARXIV
+    API -->|HTTPS| CROSS
+    API -->|HTTPS| OPEN
+    API -->|HTTPS| RSS

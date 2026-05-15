@@ -1,0 +1,30 @@
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant LP as LoginPage
+    participant AC as AuthContext
+    participant API as Backend Express
+    participant DB as MongoDB
+
+    U->>LP: introduce email + password
+    LP->>AC: login(email, password)
+    AC->>API: POST /api/auth/login
+    API->>DB: User.findOne({email}).select('+password')
+    DB-->>API: documento usuario con hash
+    API->>API: bcrypt.compare(password, hash)
+    API->>API: jwt.sign({id}, JWT_SECRET, expiresIn:7d)
+    API-->>AC: 200 {ok, token, usuario}
+    AC->>AC: localStorage.setItem('scilens_token', token)
+    AC->>AC: setUsuario(usuario)
+    AC-->>LP: Promise resuelta
+    LP->>LP: navigate('/')
+
+    Note over AC,API: Petición posterior — ruta privada
+
+    AC->>API: GET /api/favoritos<br/>Authorization: Bearer token
+    API->>API: middleware proteger() verifica JWT
+    API->>DB: User.findById(decoded.id)
+    DB-->>API: usuario activo
+    API->>DB: ArticuloFavorito.find({usuario})
+    DB-->>API: lista de favoritos
+    API-->>AC: 200 {ok, favoritos}
